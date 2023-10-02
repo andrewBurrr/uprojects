@@ -45,11 +45,19 @@ jobs:
           docker push registry.${{ secrets.COFFEEHOUSE_HOST }}:5000/uprojects_react
           # Push Django
           docker push registry.${{ secrets.COFFEEHOUSE_HOST }}:5000/uprojects_django
-
-      - name: Docker-Compose Remote Deployment
-        uses: alex-ac/github-action-ssh-docker-compose@master
+      
+      - name: Set up Remote Connection
+        uses: webfactory/ssh-agent@v0.5.2
         with:
-          ssh_host: ${{ secrets.COFFEEHOUSE_HOST }}
-          ssh_private_key: ${{ secrets.COFFEEHOUSE_KEY }}
-          ssh_user: ${{ secrets.COFFEEHOUSE_USER }}
-          docker_compose_filename: ${{ secrets.COFFEEHOUSE_COMPOSE }}
+          ssh-private-key: ${{ secrets.COFFEEHOUSE_KEY }}
+
+      - name: SSH Into the Server and Restart Docker Compose
+        run: |
+          ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY ${{ secrets.COFFEEHOUSE_USER }}@${{ secrets.COFFEEHOUSE_HOST }} 'cd ${{ secrets.COFFEEHOUSE_COMPOSE }} && docker-compose down && docker-compose up -d'
+      # - name: Docker-Compose Remote Deployment
+      #   uses: alex-ac/github-action-ssh-docker-compose@master
+      #   with:
+      #     ssh_host: ${{ secrets.COFFEEHOUSE_HOST }}
+      #     ssh_private_key: ${{ secrets.COFFEEHOUSE_KEY }}
+      #     ssh_user: ${{ secrets.COFFEEHOUSE_USER }}
+      #     docker_compose_filename: ${{ secrets.COFFEEHOUSE_COMPOSE }}
