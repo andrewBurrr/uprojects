@@ -18,12 +18,12 @@ jobs:
           cd ./frontend
           npm install
           npm run build
-          docker build -t registry.${{ secrets.COFFEEHOUSE_HOST }}/uprojects_react .
+          docker build -t registry.${{ secrets.COFFEEHOUSE_HOST }}:5000/uprojects_react .
           # TODO - run tests
 
           # Build and test django
           cd ../backend
-          docker build -f Dockerfile.prod -t registry.${{ secrets.COFFEEHOUSE_HOST }}/uprojects_django .
+          docker build -f Dockerfile.prod -t registry.${{ secrets.COFFEEHOUSE_HOST }}:5000/uprojects_django .
           # TODO - run tests
 
       - name: Install miredo (Establish IPv6)
@@ -42,9 +42,9 @@ jobs:
       - name: Push Docker Images
         run: |
           # Push React
-          docker push registry.${{ secrets.COFFEEHOUSE_HOST }}/uprojects_react
+          docker push registry.${{ secrets.COFFEEHOUSE_HOST }}:5000/uprojects_react
           # Push Django
-          docker push registry.${{ secrets.COFFEEHOUSE_HOST }}/uprojects_django
+          docker push registry.${{ secrets.COFFEEHOUSE_HOST }}:5000/uprojects_django
 
       - name: Docker-Compose Remote Deployment
         uses: alex-ac/github-action-ssh-docker-compose@master
