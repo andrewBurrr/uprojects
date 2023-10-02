@@ -47,13 +47,12 @@ jobs:
       #     docker push registry.${{ secrets.COFFEEHOUSE_HOST }}:5000/uprojects_django
 
       - name: Deploy
-        uses: appleboy/ssh-action@v1.0.0
+        uses: fifsky/ssh-action@master
         with:
           host: ${{ secrets.COFFEEHOUSE_HOST }}
           username: ${{ secrets.COFFEEHOUSE_USER }}
           key: ${{ secrets.COFFEEHOUSE_KEY }}
-          port: 22
-          script: ls -lsa
+          command: ls -lsa
             # cd ${{ secrets.COFFEEHOUSE_COMPOSE }}
             # docker-compose down
             # docker-compose up -d
