@@ -52,10 +52,11 @@ jobs:
           host: ${{ secrets.COFFEEHOUSE_HOST }}
           username: ${{ secrets.COFFEEHOUSE_USER }}
           key: ${{ secrets.COFFEEHOUSE_KEY }}
-          script: |
-            cd ${{ secrets.COFFEEHOUSE_COMPOSE }}
-            docker-compose down
-            docker-compose up -d
+          port: 22
+          script: ls -lsa
+            # cd ${{ secrets.COFFEEHOUSE_COMPOSE }}
+            # docker-compose down
+            # docker-compose up -d
       # - name: Set up Remote Connection
       #   uses: webfactory/ssh-agent@v0.5.2
       #   with:
