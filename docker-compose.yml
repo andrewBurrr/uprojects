@@ -16,6 +16,8 @@ services:
   react:
     container_name: uprojects_react
     build: ./frontend
+    volumes:
+      - ./frontend/nginx:/etc/nginx/conf.d/:ro
     ports:
       - '3000:80'
     networks:
