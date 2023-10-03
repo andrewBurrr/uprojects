@@ -12,14 +12,14 @@ ENV PYTHONUNBUFFERED 1
 RUN pip install --upgrade pip
 COPY ./requirements.txt .
 RUN pip install -r requirements.txt
-
-# copy entry point.sh
-COPY ./entrypoint.sh .
-RUN sed -i 's/\r$//g' ./entrypoint.sh
-RUN chmod +x ./entrypoint.sh
+#
+## copy entry point.sh
+#COPY ./entrypoint.sh .
+#RUN sed -i 's/\r$//g' ./entrypoint.sh
+#RUN chmod +x ./entrypoint.sh
 
 # copy project
 COPY . .
 
-# run entrypoint.sh
-ENTRYPOINT ["./entrypoint.sh"]
+## run entrypoint.sh
+#ENTRYPOINT ["./entrypoint.sh"]

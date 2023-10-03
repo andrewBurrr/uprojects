@@ -13,13 +13,13 @@ services:
       - ./backend/.env.dev
     networks:
       - framework
-#  react:
-#    container_name: uprojects_react
-#    build: ./frontend
-#    ports:
-#      - '3000:80'
-#    networks:
-#      - framework
+  react:
+    container_name: uprojects_react
+    build: ./frontend
+    ports:
+      - '3000:80'
+    networks:
+      - framework
 networks:
   framework:
     name: framework
