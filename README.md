@@ -42,3 +42,9 @@ If your development work on this application requires you to add any dependencie
     pip freeze > requirements.txt
 ```
 Any dependencies pertaining to the frontend application should be added to the ```package.json``` file which is automatic as long as you don't specify the devDependency flag ```--save-dev``` or ```-D```
+
+## Testing
+Use the included `docker-compose.test.yml` in order to test the application in a production like environment. THis command can be run with:
+```bash
+    docker-compose -f docker-compose.test.yml up -d --build
+```
