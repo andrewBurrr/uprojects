@@ -28,17 +28,51 @@ Follow these steps to clone and run U-Projects using Docker:
     ```bash
     docker-compose up -d --build
     ```
+    It is possible that testing environments will start a new db volume on each run. As a result, you may want to run:
+    ```bash
+    docker exec -it uprojects_django python manage.py createsuperuser
+    ```
+    This should give you at least a single user for testing purposes. We are working on an alternative solution that gives a shared db that is pre-filled with testing data.
 4. **Access the Application**
-    Once the containers are running, you can access the application in your web browser at `http://localhost:3000`
+    Once the containers are running, you can access the frontend react application in your web browser at `http://localhost:3000`, and the backend api will be located at `http://localhost:8000`
 5. **Stop and Clean Up**
     To stop the application and remove the containers run:
     ```bash
     docker-compose down
     ```
-
 ## Installing Dependencies
 If your development work on this application requires you to add any dependencies for the backend application, ensure that you add them to the ```requirements.txt``` file before running your program. This can be done by running the following command in the same directory as the ```manage.py```:
 ```bash
     pip freeze > requirements.txt
 ```
 Any dependencies pertaining to the frontend application should be added to the ```package.json``` file which is automatic as long as you don't specify the devDependency flag ```--save-dev``` or ```-D```
+
+## Testing
+Use the included `docker-compose.test.yml` in order to test the application in a production like environment. THis command can be run with:
+```bash
+    docker-compose -f docker-compose.test.yml up -d --build
+```
+# Additional Developer Notes
+Below is included details and policies about the development of this project, in order to assist developers in maintaining clean code, and increase the ease of development.
+## React Project structure
+The directory structure of this project is listed below:
+1. `apis`:
+    This directory contains objects and structures used to connect to backend api services
+2. `assets`:
+    This directory contains static files and assets used for rendering the frontend (i.e. pictures, markdown, etc.)
+3. `components`:
+    This directory contains components that are shared between multiple pages in the application (i.e. the same button is used on every page)
+4. `contexts`:
+    This directory contains components that provide context environments to other components (i.e. global variables)
+5. `helpers`:
+    This directory contains miscellaneous functions and helper objects that asist other components, but don't fit anywhere nicely
+6. `hooks`:
+    This directory contains react hooks that are used by more than one component
+7. `layouts`:
+    This directory contains page layout components so multiple pages can inherit the same formatting
+8. `styles`:
+    This directory contains custom styles and/or material themes that are shared between components
+9. `types`:
+    This directory defines types that are shared across components (i.e. defined types for the expected api objects)
+10. `views`:
+    This directory will have subdirectories that define each page of the application. These subdirectories should contain any single use components and a primary page component that can be routed to by react router

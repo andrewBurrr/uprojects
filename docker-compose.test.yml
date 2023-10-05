@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  django:
+    container_name: uprojects_django
+    build:
+      context: ./backend/
+      dockerfile: Dockerfile.prod
+    command: gunicorn backend.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - static_volume:/home/app/web/staticfiles/:rw
+      - media_volume:/home/app/web/mediafiles/:rw
+    env_file:
+      - ./backend/.env.test
+    depends_on:
+      - database
+    networks:
+      framework:
+        ipv4_address: 10.0.1.55
+
+  database:
+    container_name: uprojects_database
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/:rw
+    env_file:
+      - ./backend/.env.test
+    networks:
+      framework:
+        ipv4_address: 10.0.1.56
+
+  proxy:
+    container_name: uprojects_proxy
+    image: nginx:latest
+    ports:
+      - '8000:80'
+    volumes:
+      - ./backend/nginx:/etc/nginx/conf.d/:ro
+      - static_volume:/home/app/web/staticfiles/:rw
+      - media_volume:/home/app/web/mediafiles/:rw
+    depends_on:
+      - django
+    networks:
+      framework:
+        ipv4_address: 10.0.1.57
+
+  react:
+    container_name: uprojects_react
+    build:
+      context: ./frontend/
+      dockerfile: Dockerfile
+    ports:
+      - '3000:80'
+    volumes:
+      - ./frontend/nginx:/etc/nginx/conf.d/:ro
+    networks:
+      framework:
+        ipv4_address: 10.0.1.58
+
+networks:
+  framework:
+    name: framework
+    external: true
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
