@@ -89,7 +89,7 @@ class API {
         const response = await this.axiosInstance.get(endpoint);
         return response.data as T;
     }
-
+    
     postData = async <T>(data: any, endpoint: string): Promise<T> => {
         const response = await this.axiosInstance.post(endpoint, data);
         return response.data as T;

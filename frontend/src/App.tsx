@@ -3,6 +3,11 @@ import logo from './logo.svg';
 import './App.css';
 import {ApiContext} from "contexts/api";
 
+import Home from "./views/home-page/Home"
+import About from "./views/about-page/About"
+import Register from "./views/register-page/Register"
+import { Route,Routes } from 'react-router-dom';
+
 const App = () => {
 
   const api = useContext(ApiContext);
@@ -23,22 +28,13 @@ const App = () => {
   }, [api]);
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+  <div>
+<Routes>
+  <Route path="/" element={<Home/>}/>
+  <Route path="/about" element={<About/>}/>
+  <Route path="/register" element={<Register/>}/>
+  </Routes>
+</div>
   );
 }
 
