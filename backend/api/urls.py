@@ -2,7 +2,7 @@ from django.urls import path
 from .views import ProjectList, ProjectDetail
 
 # Define the url namespace for these URL patterns
-app_name = 'api'
+app_name = 'apis'
 
 urlpatterns = [
     # URL pattern to retrieve a specific project
