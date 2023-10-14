@@ -1,5 +1,6 @@
-import axios, { AxiosInstance } from 'axios';
+import axios, {AxiosInstance} from 'axios';
 import Cookies from "js-cookie";
+import jwtDecode from "jwt-decode";
 
 /**
  * API class for making HTTP requests
@@ -12,14 +13,16 @@ class API {
      * @param baseURL
      */
     constructor(baseURL: string) {
-
-        const headers: Record<string, string> = {
+        const csrf = Cookies.get('csrftoken');
+        let headers = {
             'Content-Type': 'application/json',
             accept: 'application/json',
+            'Authorization': '',
+            'X-CSRFToken': csrf,
         };
 
         if (localStorage.getItem('access_token')) {
-            headers.Authorization = `JWT ${localStorage.getItem('access_token')}`;
+            headers.Authorization = `Bearer ${localStorage.getItem('access_token')}`;
         }
 
         this.axiosInstance = axios.create({
@@ -31,7 +34,6 @@ class API {
         this.axiosInstance.interceptors.response.use(
             response => response,
             error => {
-                console.log(error);
                 if (error.response.status === 401) {
                     const refreshToken = localStorage.getItem('refresh_token');
                     if (!refreshToken) {
@@ -64,14 +66,40 @@ class API {
      * @returns {Promise<void>} - A Promise that resolves when the login is successful.
      */
     login = async (email: string, password: string): Promise<void> => {
-        const csrf = Cookies.get('csrftoken');
-        const response = await this.axiosInstance.post('/token/', {
-            email: email,
-            password: password,
-            csrfmiddlewaretoken: csrf}, {withCredentials: true});
-        const {access, refresh} = response.data;
-        localStorage.setItem('access_token', access);
-        localStorage.setItem('refresh_token', refresh);
+        try {
+            const response = await this.axiosInstance.post('/users/login/', {
+                email: email,
+                password: password,
+            }, { withCredentials: true });
+            const { access, refresh } = response.data;
+            localStorage.setItem('access_token', access);
+            localStorage.setItem('refresh_token', refresh);
+            return jwtDecode(response.data.access);
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    logout = async (): Promise<void> => {
+        await this.axiosInstance.post('/users/logout/', {
+            refresh_token: localStorage.getItem('refresh_token'),
+        });
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        this.axiosInstance.defaults.headers['Authorization'] = null;
+    }
+
+    register = async (email: string, first_name: string, last_name: string, password: string): Promise<void> => {
+        try {
+            await this.axiosInstance.post("/users/register/", {
+                first_name: first_name,
+                last_name: last_name,
+                email: email,
+                password: password,
+            }, { withCredentials: true });
+        } catch (error) {
+            throw error;
+        }
     }
 
     /**
@@ -80,7 +108,7 @@ class API {
      * @param {string} refreshToken - refr
      */
     refreshAccessToken = async (refreshToken: string): Promise<void> => {
-        const response = await this.axiosInstance.post('/token/refresh/', {refresh: refreshToken});
+        const response = await this.axiosInstance.post('/users/refresh/', {refresh: refreshToken});
         const { access } = response.data;
         localStorage.setItem('access_token', access);
     }
@@ -90,21 +118,9 @@ class API {
         return response.data as T;
     }
     
-    postData = async <T>(data: any, endpoint: string): Promise<T> => {
+    postData = async <T>(endpoint: string, data: any): Promise<T> => {
         const response = await this.axiosInstance.post(endpoint, data);
         return response.data as T;
-    }
-
-    getAccessToken() {
-        return localStorage.getItem('access_token');
-    }
-
-    setAccessToken(token :string) {
-        localStorage.setItem('access_token', token);
-    }
-
-    removeAccessToken() {
-        localStorage.removeItem('access_token');
     }
 }
 

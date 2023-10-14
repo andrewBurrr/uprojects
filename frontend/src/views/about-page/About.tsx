@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-function About(){
+const About = () => {
     return (
     <div>
     <h1>This is the about page</h1>
@@ -10,4 +10,4 @@ function About(){
     );
 }
 
-export default About;
+export { About };
