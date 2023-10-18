@@ -7,11 +7,13 @@
 # testing
 /coverage
 */venv/
+
 # production
 */build
 */node_modules
 */*/migrations
 */db.sqlite3
+*/mediafiles
 # misc
 .DS_Store
 .idea

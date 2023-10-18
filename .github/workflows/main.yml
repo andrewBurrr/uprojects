@@ -12,19 +12,19 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v3
 
-      # - name: Build and Test
-      #   run: |
-      #     # Build and test react
-      #     cd ./frontend
-      #     npm install
-      #     npm run build
-      #     docker build -t registry.${{ secrets.COFFEEHOUSE_HOST }}:5000/uprojects_react .
-      #     # TODO - run tests
+      - name: Build and Test
+        run: |
+          # Build and test react
+          cd ./frontend
+          npm install
+          npm run build
+          docker build -t registry.${{ secrets.COFFEEHOUSE_HOST }}:5000/uprojects_react .
+          # TODO - run tests
 
-      #     # Build and test django
-      #     cd ../backend
-      #     docker build -f Dockerfile.prod -t registry.${{ secrets.COFFEEHOUSE_HOST }}:5000/uprojects_django .
-      #     # TODO - run tests
+          # Build and test django
+          cd ../backend
+          docker build -f Dockerfile.prod -t registry.${{ secrets.COFFEEHOUSE_HOST }}:5000/uprojects_django .
+          # TODO - run tests
 
       - name: Install miredo (Establish IPv6)
         run: |
@@ -39,20 +39,20 @@ jobs:
           sleep 1
           ip addr
 
-      # - name: Push Docker Images
-      #   run: |
-      #     # Push React
-      #     docker push registry.${{ secrets.COFFEEHOUSE_HOST }}:5000/uprojects_react
-      #     # Push Django
-      #     docker push registry.${{ secrets.COFFEEHOUSE_HOST }}:5000/uprojects_django
+      - name: Push Docker Images
+        run: |
+          # Push React
+          docker push registry.${{ secrets.COFFEEHOUSE_HOST }}:5000/uprojects_react
+          # Push Django
+          docker push registry.${{ secrets.COFFEEHOUSE_HOST }}:5000/uprojects_django
 
-      - name: Deploy
-        uses: fifsky/ssh-action@master
-        with:
-          host: ${{ secrets.COFFEEHOUSE_HOST }}
-          username: ${{ secrets.COFFEEHOUSE_USER }}
-          key: ${{ secrets.COFFEEHOUSE_KEY }}
-          command: ls -lsa
+      # - name: Deploy
+      #   uses: fifsky/ssh-action@master
+      #   with:
+      #     host: ${{ secrets.COFFEEHOUSE_HOST }}
+      #     username: ${{ secrets.COFFEEHOUSE_USER }}
+      #     key: ${{ secrets.COFFEEHOUSE_KEY }}
+      #     command: ls -lsa
             # cd ${{ secrets.COFFEEHOUSE_COMPOSE }}
             # docker-compose down
             # docker-compose up -d

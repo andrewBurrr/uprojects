@@ -13,6 +13,8 @@ import os
 from pathlib import Path
 from datetime import timedelta
 
+import rest_framework.schemas.coreapi
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -41,6 +43,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'rest_framework_simplejwt.token_blacklist',
+    'drf_yasg',
     'users.apps.UsersConfig',
     'api.apps.ApiConfig',
     'projects.apps.ProjectsConfig',
@@ -129,7 +132,7 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
 }
 
 # Permissions:
@@ -138,6 +141,7 @@ REST_FRAMEWORK = {
 # IsAdminUser
 # IsAuthenticatedOrReadOnly
 
+# allow resource sharing with the following origins
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:8000"
@@ -145,8 +149,15 @@ CORS_ALLOWED_ORIGINS = [
 
 CORS_ALLOW_CREDENTIALS = True
 
+# Specify which hosts can submit csrf protected forms and other data
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:3000',
+    'http://localhost:8000'
+]
+
+
 # Custom User model
-AUTH_USER_MODEL = "users.NewUser"
+AUTH_USER_MODEL = "users.CustomUser"
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
@@ -169,7 +180,7 @@ SIMPLE_JWT = {
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-MEDIA_URL = '/media/'
+MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'mediafiles'
 
 # Default primary key field type
