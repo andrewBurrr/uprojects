@@ -6,10 +6,14 @@
 
 # testing
 /coverage
+*/venv/
 
 # production
-/build
-
+*/build
+*/node_modules
+*/*/migrations
+*/db.sqlite3
+*/mediafiles
 # misc
 .DS_Store
 .idea
@@ -17,9 +21,6 @@
 .env.development.local
 .env.test.local
 .env.production.local
-
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-/frontend/node_modules/
-/frontend/build/
