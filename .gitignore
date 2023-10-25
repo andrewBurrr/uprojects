@@ -7,6 +7,7 @@
 # testing
 /coverage
 */venv/
+venv/
 # production
 */build
 */node_modules
