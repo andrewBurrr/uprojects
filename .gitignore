@@ -8,6 +8,7 @@
 /coverage
 */venv/
 venv/HEAD
+venv/
 
 # production
 */build
