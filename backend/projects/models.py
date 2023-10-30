@@ -91,6 +91,7 @@ class Item(models.Model):
     STATUS = [
         ("NOTAPPROVED", "notapproved"),
         ("INPROGRESS", "inprogress"),
+        ("PENDINGAPPROVAL", "pendingapproval")
         ("COMPLETED", "completed"),
     ]
     project_id = models.ForeignKey(Project, on_delete=models.CASCADE)
@@ -101,8 +102,8 @@ class Item(models.Model):
     description = models.TextField()
     is_approved = models.BooleanField()
     due_date = models.DateField()
-    owner_id = ""
-    team_name = ""
+    owner_id = ""       # Do we set this to null if owner gets deleted?
+    team_name = ""      # Same as above? The primary key is technically (project_id, repo_name)
 
     class Meta:
         constraints = [
