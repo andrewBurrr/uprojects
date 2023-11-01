@@ -49,6 +49,9 @@ class CustomAccountManager(BaseUserManager):
 
 
 class CustomAccount(AbstractBaseUser, PermissionsMixin):
+    """
+    TODO: comment
+    """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
     profile_image = models.ImageField(upload_to=image_to_path, storage=OverwriteStorage(), blank=True)
     email = models.EmailField(unique=True)
@@ -67,23 +70,38 @@ class CustomAccount(AbstractBaseUser, PermissionsMixin):
         return f'{self.first_name} {self.last_name}'
     
 class Owner(models.Model):
+    """
+    TODO: comment
+    """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
 
 
 class Interest(models.Model):
+    """
+    TODO: comment
+    """
     interest = models.CharField(max_length=60, primary_key=True)    
 
 
 class CustomUser(CustomAccount):
+    """
+    TODO: comment
+    """
     owner_id = models.ForeignKey(Owner, on_delete=models.SET_NULL, null=True)  # TODO: Should we do an on_delete?
     interest = models.ManyToManyField(Interest)
     
 
 class CustomAdmin(CustomAccount):
+    """
+    TODO: comment
+    """
     admin_type = models.CharField(max_length=60)
 
 
 class CustomAdminPermission(models.Model):
+    """
+    TODO: comment
+    """
     PERMISSIONS = [
         ("R", "read"),
         ("W", "write"),
@@ -102,10 +120,16 @@ class CustomAdminPermission(models.Model):
 
 
 class Tag(models.Model):
+    """
+    TODO: comment
+    """
     tag = models.CharField(max_length=60, primary_key=True)  
 
 
 class Organization(models.Model):
+    """
+    TODO: comment
+    """
     org_id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
     logo = models.ImageField(upload_to=image_to_path, storage=OverwriteStorage(), blank=True)
     name = models.CharField(max_length=60)

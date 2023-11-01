@@ -18,6 +18,7 @@ class Tag(models.Model):
 
 class Collaborator(models.Model):
     """
+    TODO: comment
     """
     owner_id = models.ForeignKey(Owner, on_delete=models.SET_NULL, null=True)
     team_name = models.CharField(max_length=60)
@@ -28,12 +29,15 @@ class Collaborator(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=["owner_id", "team_name"],
-                name="unique_owner_team_constraint"
+                name="unique_owner_team_collaborator_constraint"
             )
         ]
 
 #TODO: make note somewhere saying that we changed how permissions for collaborators work
 class CollaboratorPermission(models.model):
+    """
+    TODO: comment
+    """
     PERMISSIONS = [
         ("R", "read"),
         ("W", "write"),
@@ -63,7 +67,7 @@ class Member(models.model):
         constraints = [
             models.UniqueConstraint(
                 fields=["user_id", "owner_id", "team_name"],
-                name="unique_user_owner_team_constraint"
+                name="unique_user_owner_team_member_constraint"
             )
         ]
 
@@ -80,6 +84,7 @@ class Project(models.Model):
         visibility (str): The text field containing the projects visibility.
         description (str): The text field containing the projects descritiption.
         owner_id (int): The id of the owner of the project. Is a foreign key.
+        tags (): #TODO: finish
     """
     VISIBILITY = [
         ("PUBLIC", "public"),
@@ -92,6 +97,7 @@ class Project(models.Model):
     owner_id = models.ForeignKey(Owner, on_delete=models.SET_NULL, null=True)
     tags = models.ManyToManyField(Tag)
 
+    #TODO: what is this?-asked by david
     def __str__(self):
         return self.name
 
@@ -99,15 +105,15 @@ class PartOf(models.Model):
     """
     TODO: comment
     """
-    project_id = models.ForeignKey(Project, on_delete=CASCADE)
-    owner_id = models.ForeignKey(Owner, on_delete=CASCADE)
-    team_name = models.ForeignKey(Collaborator, on_delete=CASCADE)
+    project_id = models.ForeignKey(Project, on_delete=models.CASCADE)
+    owner_id = models.ForeignKey(Owner, on_delete=models.CASCADE)
+    team_name = models.ForeignKey(Collaborator, on_delete=models.CASCADE)
 
     class Meta:
         constraints = [
             models.UniqueConstraint(
                 fields=["project_id", "owner_id", "team_name"],
-                name="unique_project_owner_team_constraint"
+                name="unique_project_owner_team_partof_constraint"
             )
         ]
 
@@ -148,16 +154,16 @@ class Item(models.Model):
         description (str): The text field containing this item's descritiption.
         is_approved (bool): The boolean value representing is this item is approved.
         due_date (): #TODO: what format is date in by defualt?
-        owner_id (int):
-        team_name (str):
+        owner_id (int): TODO: finish
+        team_name (str): TODO: finish
     """
 
     #TODO: test if item id will auto increment
     #TODO: add more status choices if needed
     STATUS = [
-        ("NOTAPPROVED", "notapproved"),
-        ("INPROGRESS", "inprogress"),
-        ("PENDINGAPPROVAL", "pendingapproval")
+        ("NOTAPPROVED", "not approved"),
+        ("INPROGRESS", "in progress"),
+        ("PENDINGAPPROVAL", "pending approval")
         ("COMPLETED", "completed"),
     ]
     project_id = models.ForeignKey(Project, on_delete=models.CASCADE)
@@ -186,9 +192,6 @@ class PullRequest(Item):
     the pull request table
 
     Attributes:
-        project_id (int): The id of the project this pull request refers to. Is a foreign key.
-        repo_name (str): The name of the repository this pull request refers to. It is a foreign key.
-        item_id (int): The id of the item this pull request belongs to. Is a foreign key.
         branch_name (str): The text field containing the name of this pull request.
     """
     branch_name = models.CharField(max_length=60)
@@ -201,9 +204,6 @@ class Issue(Item):
     the issue table
 
     Attributes:
-        project_id (int): The id of the project this issue refers to. Is a foreign key.
-        repo_name (str): The name of the repository this issue refers to. It is a foreign key.
-        item_id (int): The id of the item this issue belongs to. Is a foreign key.
         issue_type (str): The text field containing the type of this issue.
     """
     issue_type = models.CharField(max_length=60) #could this also be a choice?
@@ -212,13 +212,10 @@ class Commit(models.Model):
     """
 
     This model defines the fields and parameters that will be defined for
-    the commits table
+    the commit table
 
     Attributes:
-        commit_id ():
-        project_id (int): The id of the project this commit refers to. Is a foreign key.
-        repo_name (str): The name of the repository this commit refers to. It is a foreign key.
-        item_id (int): The id of the item this commit belongs to. Is a foreign key.
+        commit_id (str): #TODO: finish
     """
     commit_id = models.CharField(max_length=60)
 
@@ -230,9 +227,7 @@ class CodeReview(Item):
     the code review table
 
     Attributes:
-        project_id (int): The id of the project this code review refers to. Is a foreign key.
-        repo_name (str): The name of the repository this code review refers to. It is a foreign key.
-        item_id (int): The id of the item this code review belongs to. Is a foreign key.
+        #TODO: fill in
     """
     commits = models.ManyToManyField(Commit)
 
@@ -253,7 +248,7 @@ class Follow(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=["user_id", "project_id"],
-                name="unique_user_project_follows_constraint"
+                name="unique_user_project_follow_constraint"
             )
         ]
 
@@ -264,7 +259,7 @@ class Own(models.Model):
     the owns table
 
     Attributes:
-        owner_id (): The id of the owner of the project. #TODO: finish this comment
+        owner_id (int): The id of the owner of the project. Is a foreign key.
         project_id (int): The id of the project that is owned by the owner. Is a foreign key.
     """
     owner_id = models.ForeignKey(Owner, on_delete=models.CASCADE)
