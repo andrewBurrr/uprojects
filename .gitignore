@@ -7,6 +7,10 @@
 # testing
 /coverage
 */venv/
+venv/HEAD
+venv/
+__pycache__/
+*.pyc
 
 # production
 */build
