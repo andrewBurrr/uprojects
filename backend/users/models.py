@@ -8,6 +8,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseU
 from .storage import OverwriteStorage
 
 # TODO: Make sure that models create Owner_id for each user when user is created.
+#TODO: comment
 
 def image_to_path(instance, filename):
     extension = filename.split('.')[-1]
@@ -68,8 +69,9 @@ class CustomAccount(AbstractBaseUser, PermissionsMixin):
 class Owner(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
 
+
 class Interest(models.Model):
-    interest= models.CharField(max_length=60, primary_key=True)    
+    interest = models.CharField(max_length=60, primary_key=True)    
 
 
 class CustomUser(CustomAccount):
@@ -78,7 +80,6 @@ class CustomUser(CustomAccount):
     
 
 class CustomAdmin(CustomAccount):
-    
     admin_type = models.CharField(max_length=60)
 
 
@@ -87,7 +88,7 @@ class CustomAdminPermission(models.Model):
         ("R", "read"),
         ("W", "write"),
         ("X", "execute")
-        ]
+    ]
     admin_id = models.ForeignKey(CustomAdmin, on_delete=models.CASCADE)
     permission = models.CharField(max_length=1, choices=PERMISSIONS, default="R")
 
@@ -101,7 +102,7 @@ class CustomAdminPermission(models.Model):
 
 
 class Tag(models.Model):
-    tag= models.CharField(max_length=60, primary_key=True)  
+    tag = models.CharField(max_length=60, primary_key=True)  
 
 
 class Organization(models.Model):
