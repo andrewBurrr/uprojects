@@ -1,17 +1,53 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {Link as RouterLink, useNavigate} from 'react-router-dom';
 import { useAuth } from "contexts/AuthContext";
 import {
     AppBar, Avatar, Box, Button, Container, Divider, Drawer,
     IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText,
-    Menu, MenuItem, Toolbar, Tooltip, Typography,
+    Menu, MenuItem, styled, Toolbar, Tooltip, Typography,
 } from "@mui/material";
 import {
-    Adb as AdbIcon, Home as HomeIcon, Menu as MenuIcon,
-    ImportContacts as AboutIcon, Settings as SettingsIcon,
+    Menu as MenuIcon,
+    Settings as SettingsIcon,
     Logout as LogoutIcon
 } from '@mui/icons-material';
+import {authOnlyRoutes, publicRoutes, unauthOnlyRoutes} from "../../helpers/RouteConfig";
 
+
+const LogoTypography = styled(Typography) `
+  padding: ${props => props.theme.spacing(1)};
+  font-family: Garamond, serif;
+  color: inherit;
+  text-transform: uppercase;
+  text-decoration: none;
+` as typeof Typography;
+
+const SmallBox = styled (Box) `
+  align-items: center;
+  justify-content: space-between;
+  flex-grow: 1;
+  display: flex;
+  
+  ${props => props.theme.breakpoints.up('md')} {
+    display: none;
+  }
+`
+
+const MediumBox = styled(Box) `
+  align-items: center;
+  justify-content: space-between;
+  flex-grow: 1;
+  display: none;
+  
+  ${props => props.theme.breakpoints.up('md')} {
+    display: flex;
+  }
+`
+
+const LinkContainer = styled('div') `
+  display: flex;
+  align-items: center;
+`
 
 const Header: React.FC = () => {
     const { user, isAuthenticated, logout } = useAuth();
@@ -20,10 +56,14 @@ const Header: React.FC = () => {
     const [drawerState, setDrawerState] = useState(false);
     const open = Boolean(anchorElUser);
 
-    const pages = [
-        { name: "Home", url: "/", icon: <HomeIcon/> },
-        { name: "About", url: "/about", icon: <AboutIcon/>},
+    const links = [
+        ...(isAuthenticated ? authOnlyRoutes : unauthOnlyRoutes),
+        ...publicRoutes
     ]
+
+    useEffect(() => {
+        console.log(links);
+    }, []);
 
     const handleUserMenuClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElUser(event.currentTarget);
@@ -45,28 +85,10 @@ const Header: React.FC = () => {
     return (
         <React.Fragment>
             <AppBar position="static" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-                <Container maxWidth="xl">
+                <Container maxWidth={false}>
                     <Toolbar disableGutters>
-                        <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
-                        <Typography
-                            variant="h6"
-                            noWrap
-                            component={RouterLink}
-                            to="/"
-                            sx={{
-                                mr: 2,
-                                display: { xs: 'none', md: 'flex' },
-                                fontFamily: 'monospace',
-                                fontWeight: 700,
-                                letterSpacing: '.3rem',
-                                color: 'inherit',
-                                textDecoration: 'none',
-                            }}
-                        >
-                            LOGO
-                        </Typography>
-
-                        <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+                        { /* Menu for small displays */ }
+                        <SmallBox>
                             <IconButton
                                 size="large"
                                 aria-label="account of current user"
@@ -77,40 +99,16 @@ const Header: React.FC = () => {
                             >
                                 <MenuIcon />
                             </IconButton>
-                        </Box>
-                        <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-                        <Typography
-                            variant="h5"
-                            noWrap
-                            component={RouterLink}
-                            to="/"
-                            sx={{
-                                mr: 2,
-                                display: { xs: 'flex', md: 'none' },
-                                flexGrow: 1,
-                                fontFamily: 'monospace',
-                                fontWeight: 700,
-                                letterSpacing: '.3rem',
-                                color: 'inherit',
-                                textDecoration: 'none',
-                            }}
-                        >
-                            LOGO
-                        </Typography>
-                        <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                            {pages.map((page) => (
-                                <Button
-                                    key={page.name}
-                                    component={RouterLink}
-                                    to={page.url}
-                                    sx={{ my: 2, color: 'white', display: 'block' }}
-                                >
-                                    {page.name}
-                                </Button>
-                            ))}
-                        </Box>
-
-                        { isAuthenticated ?
+                            <LogoTypography
+                                variant="h6"
+                                noWrap
+                                component={RouterLink}
+                                to="/"
+                            >
+                                uprojects
+                            </LogoTypography>
+                            { /* auth menu */ }
+                            { isAuthenticated ?
                             <Box sx={{ flexGrow: 0 }}>
                                 <Tooltip title="Open settings">
                                     <IconButton onClick={handleUserMenuClick} sx={{ p: 0 }}>
@@ -167,6 +165,32 @@ const Header: React.FC = () => {
                             :
                             <Button sx={{ color: "white" }} component={RouterLink} to="/login">Login</Button>
                         }
+                        </SmallBox>
+                        { /* Menu for medium displays and up */ }
+                        <MediumBox>
+                            <LinkContainer>
+                                <LogoTypography
+                                    variant="h6"
+                                    noWrap
+                                    component={RouterLink}
+                                    to="/"
+                                >
+                                    uprojects
+                                </LogoTypography>
+                                {links.filter((link) => link.icon).map((link) => (
+                                    <Button
+                                        key={link.title}
+                                        component={RouterLink}
+                                        to={link.path}
+                                        sx={{ my: 1, color: 'white', display: 'block' }}
+                                    >
+                                        {link.title}
+                                    </Button>
+                                ))}
+                            </LinkContainer>
+                            { /* auth menu */ }
+                            <Button sx={{ color: "white" }} component={RouterLink} to="/login">Login</Button>
+                        </MediumBox>
                     </Toolbar>
                 </Container>
             </AppBar>
@@ -178,13 +202,13 @@ const Header: React.FC = () => {
                 <Box onClick={handleDrawerToggle}>
                     <Toolbar />
                     <List>
-                        { pages.map((page, index) => (
+                        { links.filter((link) => link.icon).map((link, index) => (
                             <ListItem disablePadding key={index}>
-                                <ListItemButton component={RouterLink} to={page.url}>
+                                <ListItemButton component={RouterLink} to={link.path}>
                                     <ListItemIcon>
-                                        { page.icon }
+                                        { link.icon }
                                     </ListItemIcon>
-                                    <ListItemText primary={page.name} />
+                                    <ListItemText primary={link.title} />
                                 </ListItemButton>
                             </ListItem>
                         ))}
