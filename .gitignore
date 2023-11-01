@@ -7,12 +7,17 @@
 # testing
 /coverage
 */venv/
+venv/HEAD
 venv/
+__pycache__/
+*.pyc
+
 # production
 */build
 */node_modules
 */*/migrations
 */db.sqlite3
+*/mediafiles
 # misc
 .DS_Store
 .idea
