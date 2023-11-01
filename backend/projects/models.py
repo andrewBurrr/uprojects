@@ -2,7 +2,8 @@ import uuid
 from django.db import models
 from users.models import CustomUser, Owner
 
-#TODO: finish filling in comments for each
+
+# TODO: finish filling in comments for each
 
 # Create your models here.
 class Tag(models.Model):
@@ -16,13 +17,13 @@ class Tag(models.Model):
     """
     tag_name = models.CharField(max_length=60, primary_key=True)
 
+
 class Collaborator(models.Model):
     """
     TODO: comment
     """
     owner_id = models.ForeignKey(Owner, on_delete=models.SET_NULL, null=True)
     team_name = models.CharField(max_length=60)
-    #TODO: WTF is object?
     tags = models.ManyToManyField(Tag)
 
     class Meta:
@@ -33,8 +34,9 @@ class Collaborator(models.Model):
             )
         ]
 
-#TODO: make note somewhere saying that we changed how permissions for collaborators work
-class CollaboratorPermission(models.model):
+
+# TODO: make note somewhere saying that we changed how permissions for collaborators work
+class CollaboratorPermission(models.Model):
     """
     TODO: comment
     """
@@ -54,7 +56,8 @@ class CollaboratorPermission(models.model):
             )
         ]
 
-class Member(models.model):
+
+class Member(models.Model):
     """
     TODO: comment
     """
@@ -71,6 +74,7 @@ class Member(models.model):
             )
         ]
 
+
 class Project(models.Model):
     """
     Project model used by django's built in ORM
@@ -84,7 +88,6 @@ class Project(models.Model):
         visibility (str): The text field containing the projects visibility.
         description (str): The text field containing the projects descritiption.
         owner_id (int): The id of the owner of the project. Is a foreign key.
-        tags (): #TODO: finish
     """
     VISIBILITY = [
         ("PUBLIC", "public"),
@@ -97,9 +100,9 @@ class Project(models.Model):
     owner_id = models.ForeignKey(Owner, on_delete=models.SET_NULL, null=True)
     tags = models.ManyToManyField(Tag)
 
-    #TODO: what is this?-asked by david
     def __str__(self):
         return self.name
+
 
 class PartOf(models.Model):
     """
@@ -139,6 +142,7 @@ class Repository(models.Model):
             )
         ]
 
+
 class Item(models.Model):
     """
 
@@ -153,22 +157,21 @@ class Item(models.Model):
         status (str): The text field containing the status of this item.
         description (str): The text field containing this item's descritiption.
         is_approved (bool): The boolean value representing is this item is approved.
-        due_date (): #TODO: what format is date in by defualt?
-        owner_id (int): TODO: finish
-        team_name (str): TODO: finish
+        due_date (): default django date format see docs
+        owner_id (int): foreign key of the owner of the project this belongs to
+        team_name (str): name of the team assigned to this.
     """
 
-    #TODO: test if item id will auto increment
-    #TODO: add more status choices if needed
+    # TODO: test if item id will auto increment
     STATUS = [
         ("NOTAPPROVED", "not approved"),
         ("INPROGRESS", "in progress"),
-        ("PENDINGAPPROVAL", "pending approval")
+        ("PENDINGAPPROVAL", "pending approval"),
         ("COMPLETED", "completed"),
     ]
     project_id = models.ForeignKey(Project, on_delete=models.CASCADE)
     repo_name = models.ForeignKey(Repository, on_delete=models.CASCADE)
-    item_id = models.IntegerField()
+    item_id = models.IntegerField(default=1)
     item_name = models.CharField(max_length=60)
     status = models.CharField(max_length=60, choices=STATUS, default="NOTAPPROVED")
     description = models.TextField()
@@ -177,6 +180,13 @@ class Item(models.Model):
     owner_id = models.ForeignKey(Owner, on_delete=models.SET_NULL, null=True)
     team_name = models.ForeignKey(Collaborator, on_delete=models.SET_NULL, null=True)
 
+    def save(self, *args, **kwargs):
+        if self._state.adding:
+            last_id = self.objects.all().aggregate(largest=models.Max('item_id'))['largest']
+            if last_id is not None:
+                self.item_id = last_id + 1
+        super(Item, self).save(*args, **kwargs)
+
     class Meta:
         constraints = [
             models.UniqueConstraint(
@@ -184,6 +194,7 @@ class Item(models.Model):
                 name="unique_project_repository_item_key_constraint"
             )
         ]
+
 
 class PullRequest(Item):
     """
@@ -206,7 +217,8 @@ class Issue(Item):
     Attributes:
         issue_type (str): The text field containing the type of this issue.
     """
-    issue_type = models.CharField(max_length=60) #could this also be a choice?
+    issue_type = models.CharField(max_length=60)  # could this also be a choice?
+
 
 class Commit(models.Model):
     """
@@ -231,6 +243,7 @@ class CodeReview(Item):
     """
     commits = models.ManyToManyField(Commit)
 
+
 class Follow(models.Model):
     """
 
@@ -251,6 +264,7 @@ class Follow(models.Model):
                 name="unique_user_project_follow_constraint"
             )
         ]
+
 
 class Own(models.Model):
     """
