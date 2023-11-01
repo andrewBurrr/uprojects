@@ -173,7 +173,7 @@ CSRF_TRUSTED_ORIGINS = [
 
 
 # Custom User model
-AUTH_USER_MODEL = "users.CustomUser"
+AUTH_USER_MODEL = "users.CustomAccount"
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
