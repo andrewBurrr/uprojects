@@ -19,9 +19,15 @@ def image_to_path(instance, filename):
 
 
 class CustomAccountManager(BaseUserManager):
+    """
+    Custom Account Manager inheriting from Django's BaseUserManager class
+    - This class creates users and superusers within the specs of our project.
+    """
 
     def create_superuser(self, email, first_name, last_name, password, **other_fields):
-
+        """
+        TODO: Document
+        """
         other_fields.setdefault('is_staff', True)
         other_fields.setdefault('is_superuser', True)
         other_fields.setdefault('is_active', True)
@@ -36,7 +42,9 @@ class CustomAccountManager(BaseUserManager):
         return self.create_user(email, first_name, last_name, password, **other_fields)
 
     def create_user(self, email, first_name, last_name, password, **other_fields):
-
+        """
+        TODO: Document
+        """
         if not email:
             raise ValueError(_('You must provide an email address'))
 
@@ -50,7 +58,8 @@ class CustomAccountManager(BaseUserManager):
 
 class CustomAccount(AbstractBaseUser, PermissionsMixin):
     """
-    TODO: comment
+    Custom Account Model using Django's AbstractBaseUser and Django's PermissionsMixin
+    
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
     profile_image = models.ImageField(upload_to=image_to_path, storage=OverwriteStorage(), blank=True)
@@ -71,23 +80,49 @@ class CustomAccount(AbstractBaseUser, PermissionsMixin):
     
 class Owner(models.Model):
     """
-    TODO: comment
+    Owner model used by django's built in ORM
+
+    This model defines the fields and parameters that will be defined for the 
+    Owner table.
+
+    Attributes:
+        id (int): (Primary Key)The owner identification number of both user's and 
+                 Organizations.
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
 
 
 class Interest(models.Model):
     """
-    TODO: comment
+    Interest model used by django's built in ORM
+
+    This model defines the fields and parameters that will be defined for the 
+    Interest table.
+
+    Attributes:
+        interest (str): (Primary Key) Char Field containing the specified interest 
     """
-    interest = models.CharField(max_length=60, primary_key=True)    
+    # TODO: should we set the field value unique=True for this to avoid doubles 
+    #       in our interest table? 
+    interest = models.CharField(max_length=60, primary_key=True, )    
 
 
 class CustomUser(CustomAccount):
     """
-    TODO: comment
+    CustomUser model inheriting from the CustomAccount model.
+
+    This model defines the fields and parameters that will be defined for the 
+    CustomUser table.
+
+    Attributes:
+        owner_id (int): (Foreign Key) A custom user's assigned Owner id number.
+        interest (Any|str): TODO: How do we define this? could we say it's a 
+                            reference to a table containing a Custom User's interests?
     """
-    owner_id = models.ForeignKey(Owner, on_delete=models.SET_NULL, null=True)  # TODO: Should we do an on_delete?
+    # TODO: We changed the on delete behaviour to SET_NULL. If an owner get's 
+    # deleted shouldn't we cascade? because every user,organzation, project, etc
+    # needs a ownerID.
+    owner_id = models.ForeignKey(Owner, on_delete=models.SET_NULL, null=True) 
     interest = models.ManyToManyField(Interest)
     
 

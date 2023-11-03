@@ -43,22 +43,23 @@ class UserAdminConfig(UserAdmin):
          ),
     )
 
+
 class AdminAdminConfig(UserAdmin):
     """
-        Admin Definition for managing our custom user models
+    Admin Definition for managing our Admin models
 
-        This class extends the `admin.ModelAdmin` class provided by
-        Django as a means of providing the builtin admin with the ability
-        to modify the Users table in the Database.
+    This class extends the `admin.ModelAdmin` class provided by
+    Django as a means of providing the builtin admin with the ability
+    to modify the Admin table in the Database.
 
-        Attributes:
-            model CustomUser: the specified user model
-            search_fields (tuple): specify the searchable fields
-            list_filtering (tuple): specify fields that can be reordered or filtered to limit results
-            ordering (tuple): gives the default ordering pattern for listing users
-            list_display (tuple): The listdisplay of an admin model is used to instruct
-            the admin site on how to display objects within the admin site
-        """
+    Attributes:
+        model CustomAdmin: the specified Admin model
+        search_fields (tuple): specify the searchable fields
+        list_filtering (tuple): specify fields that can be reordered or filtered to limit results
+        ordering (tuple): gives the default ordering pattern for listing account.admins. 
+        list_display (tuple): The listdisplay of an admin model is used to instruct
+        the admin site on how to display objects within the admin site
+    """
     model = CustomAdmin
     search_fields = ('email', 'first_name', 'last_name')
     list_filter = ('email', 'first_name', 'last_name', 'is_active', 'is_staff')
@@ -83,11 +84,35 @@ class AdminAdminConfig(UserAdmin):
 
 
 class OwnerAdmin(admin.ModelAdmin):
+    """
+        Admin Definition for managing our Owner models
+
+        This class extends the `admin.ModelAdmin` class provided by
+        Django as a means of providing the builtin admin with the ability
+        to modify the Owner table in the Database.
+
+        Attributes:
+            model Owner: Specified Owner model
+            list_display (tuple): The list display of an Owner model is used to 
+            instruct the admin site on how to display objects within the admin site
+        """
     model = Owner
     list_display = ("id",)
     
 
 class InterestAdmin(admin.ModelAdmin):
+    """
+        Admin Definition for managing our Interest models
+
+        This class extends the `admin.ModelAdmin` class provided by
+        Django as a means of providing the builtin admin with the ability
+        to modify the Interest table in the Database.
+
+        Attributes:
+            model Interest: Specified Interest model
+            list_display (tuple): The list display of an Interest model is used to 
+            instruct the admin site on how to display objects within the admin site
+        """
     model = Interest
     list_display = ("interest",)
     
@@ -103,19 +128,56 @@ class InterestAdmin(admin.ModelAdmin):
 
 
 class CustomAdminPermissionAdmin(admin.ModelAdmin):
+    """
+    Admin Definition for managing our CustomAdminPermission models
+
+        This class extends the `admin.ModelAdmin` class provided by
+        Django as a means of providing the builtin admin with the ability
+        to modify the CustomAdminPermission table in the Database.
+
+        Attributes:
+            model CustomAdminPermission: Specified CustomAdminPermission model
+            list_display (tuple): The list display of an CustomAdminPermission 
+            model is used to instruct the admin site on how to display objects 
+            within the admin site 
+    """
     model = CustomAdminPermission
     list_display = ("admin_id", "permission",)
 
 
 class TagAdmin(admin.ModelAdmin):
+    """
+    Admin Definition for managing our Tag models
+
+        This class extends the `admin.ModelAdmin` class provided by
+        Django as a means of providing the builtin admin with the ability
+        to modify the Tag table in the Database.
+
+        Attributes:
+            model Tag: Specified Tag model
+            list_display (tuple): The list display of an Tag model is used to 
+            instruct the admin site on how to display objects within the admin site 
+    """
     model = Tag
     list_display = ("tag",)
 
 
 class OrganizationAdmin(admin.ModelAdmin):
+    """
+    Admin Definition for managing our O models
+
+        This class extends the `admin.ModelAdmin` class provided by
+        Django as a means of providing the builtin admin with the ability
+        to modify the Organization table in the Database.
+
+        Attributes:
+            model Organization: Specified Organization model
+            list_display (tuple): The list display of an Organization model is used to 
+            instruct the admin site on how to display objects within the admin site 
+    """
+    
     model = Organization
     list_display = ("org_id", "name", "owner_id",)
-
 
 
 admin.site.register(Owner, OwnerAdmin)

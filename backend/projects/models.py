@@ -22,6 +22,7 @@ class Collaborator(models.Model):
     """
     TODO: comment
     """
+            
     owner_id = models.ForeignKey(Owner, on_delete=models.SET_NULL, null=True)
     team_name = models.CharField(max_length=60)
     tags = models.ManyToManyField(Tag)
