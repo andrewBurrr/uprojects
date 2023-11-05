@@ -76,3 +76,29 @@ The directory structure of this project is listed below:
     This directory defines types that are shared across components (i.e. defined types for the expected api objects)
 10. `views`:
     This directory will have subdirectories that define each page of the application. These subdirectories should contain any single use components and a primary page component that can be routed to by react router
+## Updates to Models (Backend)
+When any of the models.py files are updated:
+1. Clean-up:
+    Delete the "*/uprojects/backend/db.sqlite3" file
+2. Re-make all migrations:
+    Navigate to "*/uprojects/backend/"
+    If you have not made migrations before execute:
+```bash
+    python manage.py makemigrations users
+    python manage.py makemigrations projects
+    python manage.py migrate users
+    python manage.py migrate projects
+```
+    If you have made migrations for both users and projects before execute:
+```bash
+    python manage.py makemigrations
+    python manage.py migrate
+```
+3. Run
+    Depending on whether or the frontend needs to be run as well:
+        Frontend running:
+            Build and run the docker containers like normal
+        Only backend running:
+```bash
+                python manage.py runserver
+```
