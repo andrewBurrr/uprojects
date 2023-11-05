@@ -95,10 +95,8 @@ When any of the models.py files are updated:
     python manage.py migrate
     ```
 3. Run
-    Depending on whether or the frontend needs to be run as well:
-        Frontend running:
-            Build and run the docker containers like normal
-        Only backend running:
-        ```bash
-        python manage.py runserver
-        ```
+    If you need the forntend running, follow the instructions for building and running the docker containers.
+    If you only need the backend running, execute:
+    ```bash
+    python manage.py runserver
+    ```
