@@ -83,22 +83,22 @@ When any of the models.py files are updated:
 2. Re-make all migrations:
     Navigate to `*/uprojects/backend/`
     If you have not made migrations before execute:
-```bash
+    ```bash
     python manage.py makemigrations users
     python manage.py makemigrations projects
     python manage.py migrate users
     python manage.py migrate projects
-```
-If you have made migrations for both users and projects before execute:
-```bash
+    ```
+    If you have made migrations for both users and projects before execute:
+    ```bash
     python manage.py makemigrations
     python manage.py migrate
-```
+    ```
 3. Run
     Depending on whether or the frontend needs to be run as well:
         Frontend running:
             Build and run the docker containers like normal
         Only backend running:
-```bash
-                python manage.py runserver
-```
+        ```bash
+        python manage.py runserver
+        ```
