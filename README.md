@@ -79,9 +79,9 @@ The directory structure of this project is listed below:
 ## Updates to Models (Backend)
 When any of the models.py files are updated:
 1. Clean-up:
-    Delete the "*/uprojects/backend/db.sqlite3" file
+    Delete the `*/uprojects/backend/db.sqlite3` file
 2. Re-make all migrations:
-    Navigate to "*/uprojects/backend/"
+    Navigate to `*/uprojects/backend/`
     If you have not made migrations before execute:
 ```bash
     python manage.py makemigrations users
@@ -89,7 +89,7 @@ When any of the models.py files are updated:
     python manage.py migrate users
     python manage.py migrate projects
 ```
-    If you have made migrations for both users and projects before execute:
+If you have made migrations for both users and projects before execute:
 ```bash
     python manage.py makemigrations
     python manage.py migrate
