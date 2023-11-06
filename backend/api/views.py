@@ -416,16 +416,15 @@ class PartOfTeamList(generics.ListCreateAPIView):
         TODO properly fetch by team_name
             FIXME TEAM NAMES ARENT UNIQUE, THEY NEED AN OWNER AND THE OWNER
                     IN THIS RELATIONSHIP IS THE OWNER OF THE PROJECT
-        queryset (QuerySet): The queryset of CollaboratorPermission instances to be used for listing.
+        TODO maybe get more info from collaborators?
+        queryset (QuerySet): The queryset of PartOf instances to be used for listing.
         serializer_class (Serializer): The serializer class used for
-            serializing/deserializing CollaboratorPermission instances.
+            serializing/deserializing PartOf instances.
 
     Note:
         This view assumes that you have configured the URL pattern to map to it
         and that you have set the 'api_name' namespace for the URL pattern.
     """
-    #TODO: filter by team_name
-        #maybe get more info from collaborators?
     queryset = PartOf.objects.all()
     serializer_class = PartOfTeamSerializer
 
