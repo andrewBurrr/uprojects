@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from projects.models import (Project, Repository, Item, PullRequest, Issue, Commit,
-                             CodeReview, Tag, Collaborator, CollaboratorPermission, Member, PartOf)
+                             CodeReview, Tag, Collaborator, CollaboratorPermission, Member, PartOf, Follow, Own)
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -177,4 +177,25 @@ class PartOfTeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = PartOf
         fields = ('project_id', 'owner_id')
+
+class FollowSerializer(serializers.ModelSerializer):
+    """
+    """
+    class Meta:
+        model = Follow
+        fields = ('project_id', )
+
+class FollowerSerializer(serializers.ModelSerializer):
+    """
+    """
+    class Meta:
+        model = Follow
+        fields = ('user_id', )
+
+class OwnDetailSerializer(serializers.ModelSerializer):
+    """
+    """
+    class Meta:
+        model = Own
+        fields = ('owner_id', )
 

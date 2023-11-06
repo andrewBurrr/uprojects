@@ -1,12 +1,14 @@
 from projects.models import (Project, Repository, Item, PullRequest, Issue, Commit,
-                             CodeReview, Tag, Collaborator, CollaboratorPermission, Member, PartOf)
+                             CodeReview, Tag, Collaborator, CollaboratorPermission, Member, PartOf, Follow, Own)
 from .serializers import (ProjectSerializer, ProjectDetailSerializer, RepositorySerializer,
                           ItemSerializer, ItemDetailSerializer, PullRequestSerializer, PullRequestDetailSerializer,
                           IssueSerializer, IssueDetailSerializer, CommitSerializer, CommitDetailSerializer,
                           CodeReviewSerializer, CodeReviewDetailSerializer, TagSerializer,
                           OwnerOfCollaboratorSerializer, CollaboratorSerializer, CollaboratorPermissionSerializer,
                           UserIsMemberOfSerializer, MemberUserSerializer, MemberDetailSerializer,
-                          PartOfProjectSerializer, PartOfTeamSerializer)
+                          PartOfProjectSerializer, PartOfTeamSerializer,
+                          FollowSerializer, FollowerSerializer,
+                          OwnDetailSerializer)
 from rest_framework import generics
 
 
@@ -261,6 +263,38 @@ class PartOfProjectDetail(generics.RetrieveDestroyAPIView):
     queryset = PartOf.objects.all()
     serializer_class = PartOfTeamSerializer
 
+class FollowList(generics.ListCreateAPIView):
+    """
+    """
+    #TODO: filter by user id
+        #maybe get more info from project (name...)
+    queryset = Follow.objects.all()
+    serializer_class = FollowSerializer
+
+class FolowDetail(generics.RetrieveDestroyAPIView):
+    """
+    """
+    #TODO: filter by user id and project id
+        #get more info from projects (most of it?)?
+    queryset = Follow.objects.all()
+    serializer_class = FollowSerializer
+
+#NOTE when a project is changed from public to pricate how delete all followers?
+class FolowersList(generics.ListCreateAPIView):
+    """
+    """
+    #TODO: filter by project id
+        #get more info from users? (name....)
+    queryset = Follow.objects.all()
+    serializer_class = FollowerSerializer
+
+class OwnDetail(generics.ListCreateAPIView):
+    """
+    """
+    #TODO: filter by project id
+        #get more info from owner? (most of it?)
+    queryset = Own.objects.all()
+    serializer_class = OwnDetailSerializer
 
 """ Concrete View Classes
 #CreateAPIView
@@ -273,9 +307,9 @@ Used for read-only endpoints to represent a single model instance.
 Used for delete-only endpoints for a single model instance.
 #UpdateAPIView
 Used for update-only endpoints for a single model instance.
-##ListCreateAPIView
+#ListCreateAPIView
 Used for read-write endpoints to represent a collection of model instances.
-RetrieveUpdateAPIView
+#RetrieveUpdateAPIView
 Used for read or update endpoints to represent a single model instance.
 #RetrieveDestroyAPIView
 Used for read or delete endpoints to represent a single model instance.
