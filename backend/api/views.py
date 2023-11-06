@@ -37,11 +37,20 @@ class ProjectList(generics.ListCreateAPIView):
 
 class PublicProjectList(generics.ListAPIView):
     """
+    API view for listing public projects.
+
+    Attributes:
+        TODO properly fetch by visibility
+        queryset (QuerySet): The queryset of Project instances to be used for listing.
+        serializer_class (Serializer): The serializer class used for
+            serializing/deserializing Project instances.
+
+    Note:
+        This view assumes that you have configured the URL pattern to map to it
+        and that you have set the 'api_name' namespace for the URL pattern.
     """
-    #TODO: filter by visibility = "PUBLIC"
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
-
 
 class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):
     """
@@ -62,8 +71,18 @@ class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):
 
 class RepositoryList(generics.ListCreateAPIView):
     """
+    API view for listing and creating repositories.
+
+    Attributes:
+        TODO properly fetch by project_id
+        queryset (QuerySet): The queryset of Repository instances to be used for listing.
+        serializer_class (Serializer): The serializer class used for
+            serializing/deserializing Repository instances.
+
+    Note:
+        This view assumes that you have configured the URL pattern to map to it
+        and that you have set the 'api_name' namespace for the URL pattern.
     """
-    #TODO: all repositories in a project
     queryset = Repository.objects.all()
     serializer_class = RepositorySerializer
 
@@ -78,15 +97,35 @@ class RepositoryDetail(generics.RetrieveUpdateDestroyAPIView):
 #NOTE need?
 class ItemProjectList(generics.ListCreateAPIView):
     """
+    API view for listing and creating items for a project.
+
+    Attributes:
+        TODO properly fetch by project_id
+        queryset (QuerySet): The queryset of Item instances to be used for listing.
+        serializer_class (Serializer): The serializer class used for
+            serializing/deserializing Item instances.
+
+    Note:
+        This view assumes that you have configured the URL pattern to map to it
+        and that you have set the 'api_name' namespace for the URL pattern.
     """
-    #TODO: all items for a project
     queryset = Item.objects.all()
     serializer_class = ItemSerializer
 
 class ItemRepositoryList(generics.ListCreateAPIView):
     """
+    API view for listing and creating items for a repository.
+
+    Attributes:
+        TODO properly fetch by project_id and repository_name
+        queryset (QuerySet): The queryset of Item instances to be used for listing.
+        serializer_class (Serializer): The serializer class used for
+            serializing/deserializing Item instances.
+
+    Note:
+        This view assumes that you have configured the URL pattern to map to it
+        and that you have set the 'api_name' namespace for the URL pattern.
     """
-    #TODO: all items for a project
     queryset = Item.objects.all()
     serializer_class = ItemSerializer
 
@@ -100,15 +139,35 @@ class ItemDetail(generics.RetrieveUpdateDestroyAPIView):
 #NOTE need?
 class PullRequestProjectList(generics.ListCreateAPIView):
     """
+    API view for listing and creating pull requests for a project.
+
+    Attributes:
+        TODO properly fetch by project_id
+        queryset (QuerySet): The queryset of PullRequest instances to be used for listing.
+        serializer_class (Serializer): The serializer class used for
+            serializing/deserializing PullRequest instances.
+
+    Note:
+        This view assumes that you have configured the URL pattern to map to it
+        and that you have set the 'api_name' namespace for the URL pattern.
     """
-    #TODO: list of pull requests for a project
     queryset = PullRequest.objects.all()
     serializer_class = PullRequestSerializer
 
 class PullRequestRepositoryList(generics.ListCreateAPIView):
     """
+    API view for listing and creating pull requests for a repository.
+
+    Attributes:
+        TODO properly fetch by project_id and repository_name
+        queryset (QuerySet): The queryset of PullRequest instances to be used for listing.
+        serializer_class (Serializer): The serializer class used for
+            serializing/deserializing PullRequest instances.
+
+    Note:
+        This view assumes that you have configured the URL pattern to map to it
+        and that you have set the 'api_name' namespace for the URL pattern.
     """
-    #TODO: list of pull requests for a repository
     queryset = PullRequest.objects.all()
     serializer_class = PullRequestSerializer
 
@@ -122,15 +181,35 @@ class PullRequestDetail(generics.RetrieveUpdateDestroyAPIView):
 #NOTE need?
 class IssueProjectList(generics.ListCreateAPIView):
     """
+    API view for listing and creating issues for a project.
+
+    Attributes:
+        TODO properly fetch by project_id
+        queryset (QuerySet): The queryset of Issue instances to be used for listing.
+        serializer_class (Serializer): The serializer class used for
+            serializing/deserializing Issue instances.
+
+    Note:
+        This view assumes that you have configured the URL pattern to map to it
+        and that you have set the 'api_name' namespace for the URL pattern.
     """
-    #TODO: list of issues for a project
     queryset = Issue.objects.all()
     serializer_class = IssueSerializer
 
 class IssueRepositoryList(generics.ListCreateAPIView):
     """
+    API view for listing and creating issues for a repository.
+
+    Attributes:
+        TODO properly fetch by project_id and repository_name
+        queryset (QuerySet): The queryset of Issue instances to be used for listing.
+        serializer_class (Serializer): The serializer class used for
+            serializing/deserializing Issue instances.
+
+    Note:
+        This view assumes that you have configured the URL pattern to map to it
+        and that you have set the 'api_name' namespace for the URL pattern.
     """
-    #TODO: list of issues for a repository
     queryset = Issue.objects.all()
     serializer_class = IssueSerializer
 
@@ -144,8 +223,18 @@ class IssueDetail(generics.RetrieveUpdateDestroyAPIView):
 #NOTE DIDNT INCLUDE ALL COMMITS FOR PROJECT
 class CommitRepositoryList(generics.ListCreateAPIView):
     """
+    API view for listing and creating commits for a repository.
+
+    Attributes:
+        TODO properly fetch by project_id and repository_name
+        queryset (QuerySet): The queryset of Commit instances to be used for listing.
+        serializer_class (Serializer): The serializer class used for
+            serializing/deserializing Commit instances.
+
+    Note:
+        This view assumes that you have configured the URL pattern to map to it
+        and that you have set the 'api_name' namespace for the URL pattern.
     """
-    #TODO: list of commits for a repository
     queryset = Commit.objects.all()
     serializer_class = CommitSerializer
 
@@ -159,15 +248,35 @@ class CommitDetail(generics.RetrieveUpdateDestroyAPIView):
 #NOTE need?
 class CodeReviewProjectList(generics.ListCreateAPIView):
     """
+    API view for listing and creating code reviews for a project.
+
+    Attributes:
+        TODO properly fetch by project_id
+        queryset (QuerySet): The queryset of CodeReview instances to be used for listing.
+        serializer_class (Serializer): The serializer class used for
+            serializing/deserializing CodeReview instances.
+
+    Note:
+        This view assumes that you have configured the URL pattern to map to it
+        and that you have set the 'api_name' namespace for the URL pattern.
     """
-    #TODO: list of code reviews for a project
     queryset = CodeReview.objects.all()
     serializer_class = CodeReviewSerializer
 
 class CodeReviewRepositoryList(generics.ListCreateAPIView):
     """
+    API view for listing and creating code reviews for a repository.
+
+    Attributes:
+        TODO properly fetch by project_id and repository_name
+        queryset (QuerySet): The queryset of CodeReview instances to be used for listing.
+        serializer_class (Serializer): The serializer class used for
+            serializing/deserializing CodeReview instances.
+
+    Note:
+        This view assumes that you have configured the URL pattern to map to it
+        and that you have set the 'api_name' namespace for the URL pattern.
     """
-    #TODO: list of code reviews for a repository
     queryset = CodeReview.objects.all()
     serializer_class = CodeReviewSerializer
 
@@ -181,18 +290,38 @@ class CodeReviewDetail(generics.RetrieveUpdateDestroyAPIView):
 #NOTE not sure if this is the way to do it, but so that when tags are added to anything, if it didn't exist before, its added. if it existed before, it is matched (case insensitive)
 class TagList(generics.ListCreateAPIView):
     """
+    API view for listing and creating tags.
+
+    Attributes:
+        queryset (QuerySet): The queryset of Tag instances to be used for listing.
+        serializer_class (Serializer): The serializer class used for
+            serializing/deserializing Tag instances.
+
+    Note:
+        This view assumes that you have configured the URL pattern to map to it
+        and that you have set the 'api_name' namespace for the URL pattern.
     """
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
 
-class OwnerOfCollaboratorList(generics.RetrieveUpdateDestroyAPIView):
+class OwnerOfCollaboratorList(generics.ListCreateAPIView):
     """
+    API view for listing and creating teams that an owner is an owner of.
+
+    Attributes:
+        TODO properly fetch by owner_id
+        queryset (QuerySet): The queryset of Collaborator instances to be used for listing.
+        serializer_class (Serializer): The serializer class used for
+            serializing/deserializing Collaborator instances.
+
+    Note:
+        This view assumes that you have configured the URL pattern to map to it
+        and that you have set the 'api_name' namespace for the URL pattern.
     """
-    #TODO: filter by owner
     queryset = Collaborator.objects.all()
     serializer_class = OwnerOfCollaboratorSerializer
 
-#NOTE since we still have team tags, i (david) propose adding a visibility field to collaborators
+#NOTE since we still have team tags for searching, i (david) propose adding a visibility field to collaborators
 class CollaboratorList(generics.ListCreateAPIView):
     """
     """
@@ -202,8 +331,18 @@ class CollaboratorList(generics.ListCreateAPIView):
 
 class CollaboratorPemissionList(generics.ListCreateAPIView):
     """
+    API view for listing and creating permissions for a team.
+
+    Attributes:
+        TODO properly fetch by collaborator_id
+        queryset (QuerySet): The queryset of CollaboratorPermission instances to be used for listing.
+        serializer_class (Serializer): The serializer class used for
+            serializing/deserializing CollaboratorPermission instances.
+
+    Note:
+        This view assumes that you have configured the URL pattern to map to it
+        and that you have set the 'api_name' namespace for the URL pattern.
     """
-    #TODO: filter by collaborator
     queryset = CollaboratorPermission.objects.all()
     serializer_class = CollaboratorPermissionSerializer
 
@@ -215,7 +354,7 @@ class CollaboratorPemissionDetail(generics.DestroyAPIView):
     queryset = CollaboratorPermission.objects.all()
     serializer_class = CollaboratorPermissionSerializer
 
-class UserIsMemberOfList(generics.RetrieveDestroyAPIView):
+class UserIsMemberOfList(generics.ListCreateAPIView):
     """
     """
     #TODO: filter by user id
@@ -225,9 +364,19 @@ class UserIsMemberOfList(generics.RetrieveDestroyAPIView):
 
 class MemberList(generics.ListCreateAPIView):
     """
+    API view for listing and creating members of a team.
+
+    Attributes:
+        TODO properly fetch by owner_id and team_name
+        TODO maybe get more info about users?
+        queryset (QuerySet): The queryset of Member instances to be used for listing.
+        serializer_class (Serializer): The serializer class used for
+            serializing/deserializing Member instances.
+
+    Note:
+        This view assumes that you have configured the URL pattern to map to it
+        and that you have set the 'api_name' namespace for the URL pattern.
     """
-    #TODO: filter by owner id and team name
-        #all members in one team
     queryset = CollaboratorPermission.objects.all()
     serializer_class = MemberUserSerializer
 
@@ -240,15 +389,40 @@ class MemberInfo(generics.RetrieveDestroyAPIView):
     queryset = Member.objects.all()
     serializer_class = MemberDetailSerializer
 
+#NOTE need class to delete a team from a users list
+
 class PartOfProjectList(generics.ListCreateAPIView):
     """
+    API view for listing and adding teams to a project.
+
+    Attributes:
+        TODO properly fetch by project_id
+        queryset (QuerySet): The queryset of PartOf instances to be used for listing.
+        serializer_class (Serializer): The serializer class used for
+            serializing/deserializing PartOf instances.
+
+    Note:
+        This view assumes that you have configured the URL pattern to map to it
+        and that you have set the 'api_name' namespace for the URL pattern.
     """
-    #TODO: filter by project
     queryset = PartOf.objects.all()
     serializer_class = PartOfProjectSerializer
 
 class PartOfTeamList(generics.ListCreateAPIView):
     """
+    API view for listing and adding projects to a team.
+
+    Attributes:
+        TODO properly fetch by team_name
+            FIXME TEAM NAMES ARENT UNIQUE, THEY NEED AN OWNER AND THE OWNER
+                    IN THIS RELATIONSHIP IS THE OWNER OF THE PROJECT
+        queryset (QuerySet): The queryset of CollaboratorPermission instances to be used for listing.
+        serializer_class (Serializer): The serializer class used for
+            serializing/deserializing CollaboratorPermission instances.
+
+    Note:
+        This view assumes that you have configured the URL pattern to map to it
+        and that you have set the 'api_name' namespace for the URL pattern.
     """
     #TODO: filter by team_name
         #maybe get more info from collaborators?
