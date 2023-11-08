@@ -1,11 +1,35 @@
 import uuid
 from django.db import models
-from users.models import CustomUser, Owner
-
+from django.utils import timezone
+from users.models import CustomAdmin, CustomUser, Organization, Owner
 
 # TODO: finish filling in comments for each
 
 # Create your models here.
+class BugReport(models.Model):
+    """
+    """
+    bug_id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
+    time_stamp = models.DateTimeField(default=timezone.now)
+    description = models.TextField()
+    user_id = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
+
+
+class Respond(models.Model):
+    """
+    """
+    admin_id = models.ForeignKey(CustomAdmin, on_delete=models.SET_NULL, null=True)
+    bug_id = models.ForeignKey(BugReport, on_delete=models.CASCADE)
+    comment = models.TextField()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["admin_id", "bug_id"],
+                name="unique_admin_bug_respond_constraint"
+            )
+        ]
+
 class Tag(models.Model):
     """
 
@@ -22,7 +46,6 @@ class Collaborator(models.Model):
     """
     TODO: comment
     """
-            
     owner_id = models.ForeignKey(Owner, on_delete=models.SET_NULL, null=True)
     team_name = models.CharField(max_length=60)
     tags = models.ManyToManyField(Tag)
@@ -104,6 +127,62 @@ class Project(models.Model):
     def __str__(self):
         return self.name
 
+class Event(models.Model):
+    """
+    """
+    event_id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
+    event_type = models.CharField(max_length=60)
+    start_date = models.DateTimeField(default=timezone.now)
+    start_date = models.DateTimeField()
+    name = models.CharField(max_length=60)
+    tags = models.ManyToManyField(Tag)
+
+class Hosts(models.Model):
+    """
+    """
+    event_id = models.ForeignKey(Event, on_delete=models.CASCADE)
+    org_id = models.ForeignKey(Organization, on_delete=models.CASCADE)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["event_id", "org_id"],
+                name="unique_event_org_host_constraint"
+            )
+        ]
+
+class ProjectSubmission(models.Model):
+    """
+    """
+    event_id = models.ForeignKey(Event, on_delete=models.CASCADE)
+    owner_id = models.ForeignKey(Collaborator, on_delete=models.CASCADE)
+    project_id = models.ForeignKey(Project, on_delete=models.CASCADE)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["event_id", "owner_id"],
+                name="unique_event_owner_project_submission_constraint"
+            )
+        ]
+
+class FileSubmission(models.Model):
+    """
+    """
+    event_id = models.ForeignKey(Event, on_delete=models.CASCADE)
+    #TODO: figure out how to deal with both of these using primary key and not attr we want
+    owner_id = models.ForeignKey(Collaborator, on_delete=models.CASCADE)
+    team_name = models.ForeignKey(Collaborator, on_delete=models.CASCADE)
+    file = models.FileField()
+    file_type = models.CharField(20)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["event_id", "owner_id", "team_name"],
+                name="unique_event_owner_name_file_submission_constraint"
+            )
+        ]
 
 class PartOf(models.Model):
     """
