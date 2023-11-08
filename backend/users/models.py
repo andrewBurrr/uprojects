@@ -63,6 +63,7 @@ class CustomAccount(AbstractBaseUser, PermissionsMixin):
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
     profile_image = models.ImageField(upload_to=image_to_path, storage=OverwriteStorage(), blank=True)
+    about = models.TextField(max_length=1000)
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=150)
     last_name = models.CharField(max_length=150)
@@ -170,6 +171,6 @@ class Organization(models.Model):
     name = models.CharField(max_length=60)
     description = models.TextField()
     owner_id = models.ForeignKey(Owner, on_delete=models.SET_NULL, null=True)
-    tag = models.ManyToManyField(Tag)
+    tags = models.ManyToManyField(Tag)
 
 

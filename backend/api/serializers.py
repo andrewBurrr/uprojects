@@ -1,6 +1,26 @@
 from rest_framework import serializers
-from projects.models import (Project, Repository, Item, PullRequest, Issue, Commit,
-                             CodeReview, Tag, Collaborator, CollaboratorPermission, Member, PartOf, Follow, Own)
+from projects.models import ( Project, Tag, Collaborator)
+from users.models import CustomUser, Interest, Organization
+
+
+class InterestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Interest
+        fields = ('id', 'interest')
+
+
+class UserSerializer(serializers.ModelSerializer):
+    interests = InterestSerializer(read_only=True, many=True)
+
+    class Meta:
+        model = CustomUser
+        fields = ['id', 'first_name', 'last_name', 'email', 'profile_image', 'start_date', 'interests']
+
+
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = ('id', 'tag')
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -20,182 +40,248 @@ class ProjectSerializer(serializers.ModelSerializer):
             This serializer is used in conjunction with views to provide a
             RESTful API for managing Project instances.
         """
-    class Meta:
-        model = Project
-        fields = ('id', 'name')
+    tags = TagSerializer(read_only=True, many=True)
 
-class ProjectDetailSerializer(serializers.ModelSerializer):
-    """
-    """
     class Meta:
         model = Project
         fields = ('id', 'name', 'visibility', 'description', 'owner_id', 'tags')
 
-class RepositorySerializer(serializers.ModelSerializer):
-    """
-    """
-    class Meta:
-        model = Repository
-        fields = ('repo_name',)
-
-class ItemSerializer(serializers.ModelSerializer):
-    """
-    """
-    class Meta:
-        model = Item
-        fields = ('item_id', 'item_name', 'status', 'owner_id')
-
-class ItemDetailSerializer(serializers.ModelSerializer):
-    """
-    """
-    class Meta:
-        model = Item
-        fields = ('project_id', 'repo_name', 'item_id', 'item_name', 'status', 'description', 'is_approved', 'due_date', 'owner_id', 'team_name')
-
-class PullRequestSerializer(serializers.ModelSerializer):
-    """
-    """
-    class Meta:
-        model = PullRequest
-        fields = ('id', 'branch_name')
-
-class PullRequestDetailSerializer(serializers.ModelSerializer):
-    """
-    """
-    #TODO: have it list the item details for it too
-    class Meta:
-        model = PullRequest
-        fields = ('id', 'branch_name')
-
-class IssueSerializer(serializers.ModelSerializer):
-    """
-    """
-    class Meta:
-        model = Issue
-        fields = ('id', 'issue_type')
-
-class IssueDetailSerializer(serializers.ModelSerializer):
-    """
-    """
-    #TODO: have it list the item details for it too
-    class Meta:
-        model = Issue
-        fields = ('id', 'issue_type')
-
-#NOTE TO READERS: I (david) think that commits could also use a name even if not used as PK (for human readability)
-class CommitSerializer(serializers.ModelSerializer):
-    """
-    """
-    class Meta:
-        model = Commit
-        fields = ('id', 'commit_id')
-
-class CommitDetailSerializer(serializers.ModelSerializer):
-    """
-    """
-    #TODO: have it list the item details for it too
-    class Meta:
-        model = Commit
-        fields = ('id', 'commit_id')
-
-#NOTE TO READERS: I (david) think that code reviews could use a name even if not used as PK (for human readability)
-class CodeReviewSerializer(serializers.ModelSerializer):
-    """
-    """
-    class Meta:
-        model = CodeReview
-        fields = ('id', 'commits')
-
-class CodeReviewDetailSerializer(serializers.ModelSerializer):
-    """
-    """
-    #TODO: have it list the item details for it too
-    class Meta:
-        model = CodeReview
-        fields = ('id', 'commits')
-
-class TagSerializer(serializers.ModelSerializer):
-    """
-    """
-    class Meta:
-        model = Tag
-        fields = ('tag_name',)
-
-class OwnerOfCollaboratorSerializer(serializers.ModelSerializer):
-    """
-    """
-    #TODO: tags?
-    class Meta:
-        model = Collaborator
-        fields = ('team_name',)
 
 class CollaboratorSerializer(serializers.ModelSerializer):
-    """
-    """
+    tags = TagSerializer(read_only=True, many=True)
+
     class Meta:
         model = Collaborator
-        fields = ('team_name', 'owner_id', 'tags')
+        fields = ('owner_id', 'team_name', 'tags')
 
-class CollaboratorPermissionSerializer(serializers.ModelSerializer):
-    """
-    """
+
+class OrganizationSerializer(serializers.ModelSerializer):
+    tags = TagSerializer(read_only=True, many=True)
+
     class Meta:
-        model = CollaboratorPermission
-        fields = ('permission',)
+        model = Organization
+        fields = ('org_id', 'logo', 'name', 'description', 'owner_id', 'tags')
 
-class UserIsMemberOfSerializer(serializers.ModelSerializer):
-    """
-    """
-    class Meta:
-        model = Member
-        fields = ('team_name', 'owner_id', 'role')
 
-class MemberUserSerializer(serializers.ModelSerializer):
-    """
-    """
-    class Meta:
-        model = Member
-        fields = ('user_id', 'role')
-
-class MemberDetailSerializer(serializers.ModelSerializer):
-    """
-    """
-    class Meta:
-        model = Member
-        fields = ('role', )
-
-class PartOfProjectSerializer(serializers.ModelSerializer):
-    """
-    """
-    class Meta:
-        model = PartOf
-        fields = ('team_name', )
-
-class PartOfTeamSerializer(serializers.ModelSerializer):
-    """
-    """
-    class Meta:
-        model = PartOf
-        fields = ('project_id', 'owner_id')
-
-class FollowSerializer(serializers.ModelSerializer):
-    """
-    """
-    class Meta:
-        model = Follow
-        fields = ('project_id', )
-
-class FollowerSerializer(serializers.ModelSerializer):
-    """
-    """
-    class Meta:
-        model = Follow
-        fields = ('user_id', )
-
-class OwnDetailSerializer(serializers.ModelSerializer):
-    """
-    """
-    class Meta:
-        model = Own
-        fields = ('owner_id', )
-
+# class ProjectDetailSerializer(serializers.ModelSerializer):
+#     """
+#     """
+#
+#     class Meta:
+#         model = Project
+#         fields = ('id', 'name', 'visibility', 'description', 'owner_id', 'tags')
+#
+#
+# class RepositorySerializer(serializers.ModelSerializer):
+#     """
+#     """
+#
+#     class Meta:
+#         model = Repository
+#         fields = ('repo_name',)
+#
+#
+# class ItemSerializer(serializers.ModelSerializer):
+#     """
+#     """
+#
+#     class Meta:
+#         model = Item
+#         fields = ('item_id', 'item_name', 'status', 'owner_id')
+#
+#
+# class ItemDetailSerializer(serializers.ModelSerializer):
+#     """
+#     """
+#
+#     class Meta:
+#         model = Item
+#         fields = ('project_id', 'repo_name', 'item_id', 'item_name', 'status', 'description', 'is_approved', 'due_date',
+#                   'owner_id', 'team_name')
+#
+#
+# class PullRequestSerializer(serializers.ModelSerializer):
+#     """
+#     """
+#
+#     class Meta:
+#         model = PullRequest
+#         fields = ('id', 'branch_name')
+#
+#
+# class PullRequestDetailSerializer(serializers.ModelSerializer):
+#     """
+#     """
+#
+#     # TODO: have it list the item details for it too
+#     class Meta:
+#         model = PullRequest
+#         fields = ('id', 'branch_name')
+#
+#
+# class IssueSerializer(serializers.ModelSerializer):
+#     """
+#     """
+#
+#     class Meta:
+#         model = Issue
+#         fields = ('id', 'issue_type')
+#
+#
+# class IssueDetailSerializer(serializers.ModelSerializer):
+#     """
+#     """
+#
+#     # TODO: have it list the item details for it too
+#     class Meta:
+#         model = Issue
+#         fields = ('id', 'issue_type')
+#
+#
+# # NOTE TO READERS: I (david) think that commits could also use a name even if not used as PK (for human readability)
+# class CommitSerializer(serializers.ModelSerializer):
+#     """
+#     """
+#
+#     class Meta:
+#         model = Commit
+#         fields = ('id', 'commit_id')
+#
+#
+# class CommitDetailSerializer(serializers.ModelSerializer):
+#     """
+#     """
+#
+#     # TODO: have it list the item details for it too
+#     class Meta:
+#         model = Commit
+#         fields = ('id', 'commit_id')
+#
+#
+# # NOTE TO READERS: I (david) think that code reviews could use a name even if not used as PK (for human readability)
+# class CodeReviewSerializer(serializers.ModelSerializer):
+#     """
+#     """
+#
+#     class Meta:
+#         model = CodeReview
+#         fields = ('id', 'commits')
+#
+#
+# class CodeReviewDetailSerializer(serializers.ModelSerializer):
+#     """
+#     """
+#
+#     # TODO: have it list the item details for it too
+#     class Meta:
+#         model = CodeReview
+#         fields = ('id', 'commits')
+#
+#
+# class TagSerializer(serializers.ModelSerializer):
+#     """
+#     """
+#
+#     class Meta:
+#         model = Tag
+#         fields = ('tag_name',)
+#
+#
+# class OwnerOfCollaboratorSerializer(serializers.ModelSerializer):
+#     """
+#     """
+#
+#     # TODO: tags?
+#     class Meta:
+#         model = Collaborator
+#         fields = ('team_name',)
+#
+#
+# class CollaboratorSerializer(serializers.ModelSerializer):
+#     """
+#     """
+#
+#     class Meta:
+#         model = Collaborator
+#         fields = ('team_name', 'owner_id', 'tags')
+#
+#
+# class CollaboratorPermissionSerializer(serializers.ModelSerializer):
+#     """
+#     """
+#
+#     class Meta:
+#         model = CollaboratorPermission
+#         fields = ('permission',)
+#
+#
+# class UserIsMemberOfSerializer(serializers.ModelSerializer):
+#     """
+#     """
+#
+#     class Meta:
+#         model = Member
+#         fields = ('team_name', 'owner_id', 'role')
+#
+#
+# class MemberUserSerializer(serializers.ModelSerializer):
+#     """
+#     """
+#
+#     class Meta:
+#         model = Member
+#         fields = ('user_id', 'role')
+#
+#
+# class MemberDetailSerializer(serializers.ModelSerializer):
+#     """
+#     """
+#
+#     class Meta:
+#         model = Member
+#         fields = ('role',)
+#
+#
+# class PartOfProjectSerializer(serializers.ModelSerializer):
+#     """
+#     """
+#
+#     class Meta:
+#         model = PartOf
+#         fields = ('team_name',)
+#
+#
+# class PartOfTeamSerializer(serializers.ModelSerializer):
+#     """
+#     """
+#
+#     class Meta:
+#         model = PartOf
+#         fields = ('project_id', 'owner_id')
+#
+#
+# class FollowSerializer(serializers.ModelSerializer):
+#     """
+#     """
+#
+#     class Meta:
+#         model = Follow
+#         fields = ('project_id',)
+#
+#
+# class FollowerSerializer(serializers.ModelSerializer):
+#     """
+#     """
+#
+#     class Meta:
+#         model = Follow
+#         fields = ('user_id',)
+#
+#
+# class OwnDetailSerializer(serializers.ModelSerializer):
+#     """
+#     """
+#
+#     class Meta:
+#         model = Own
+#         fields = ('owner_id',)

@@ -156,7 +156,7 @@ class Item(models.Model):
         item_id (int): The id of this item.
         item_name (str): The text field containing the name of this item.
         status (str): The text field containing the status of this item.
-        description (str): The text field containing this item's descritiption.
+        description (str): The text field containing this item's description.
         is_approved (bool): The boolean value representing is this item is approved.
         due_date (): default django date format see docs
         owner_id (int): foreign key of the owner of the project this belongs to
