@@ -133,7 +133,7 @@ class Event(models.Model):
     event_id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
     event_type = models.CharField(max_length=60)
     start_date = models.DateTimeField(default=timezone.now)
-    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
     name = models.CharField(max_length=60)
     tags = models.ManyToManyField(Tag)
 
@@ -155,6 +155,7 @@ class ProjectSubmission(models.Model):
     """
     """
     event_id = models.ForeignKey(Event, on_delete=models.CASCADE)
+    #TODO: owner of team that submitted project? also note this uses collaborator as opposed to owner
     owner_id = models.ForeignKey(Collaborator, on_delete=models.CASCADE)
     project_id = models.ForeignKey(Project, on_delete=models.CASCADE)
 
@@ -257,6 +258,8 @@ class Item(models.Model):
     description = models.TextField()
     is_approved = models.BooleanField()
     due_date = models.DateField()
+    #TODO: this is the teams owner id, but it points straight to owner?
+        #there are other instances of similar problem
     owner_id = models.ForeignKey(Owner, on_delete=models.SET_NULL, null=True)
     team_name = models.ForeignKey(Collaborator, on_delete=models.SET_NULL, null=True)
 
