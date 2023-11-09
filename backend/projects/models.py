@@ -300,7 +300,7 @@ class Issue(Item):
     issue_type = models.CharField(max_length=60)  # could this also be a choice?
 
 
-class Commit(models.Model):
+class Commit(Item):
     """
 
     This model defines the fields and parameters that will be defined for
