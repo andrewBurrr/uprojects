@@ -30,6 +30,7 @@ class Respond(models.Model):
             )
         ]
 
+
 class Tag(models.Model):
     """
 
@@ -127,6 +128,7 @@ class Project(models.Model):
     def __str__(self):
         return self.name
 
+
 class Event(models.Model):
     """
     """
@@ -136,6 +138,7 @@ class Event(models.Model):
     end_date = models.DateTimeField()
     name = models.CharField(max_length=60)
     tags = models.ManyToManyField(Tag)
+
 
 class Hosts(models.Model):
     """
@@ -150,6 +153,7 @@ class Hosts(models.Model):
                 name="unique_event_org_host_constraint"
             )
         ]
+
 
 class ProjectSubmission(models.Model):
     """
@@ -166,6 +170,7 @@ class ProjectSubmission(models.Model):
                 name="unique_event_owner_project_submission_constraint"
             )
         ]
+
 
 class FileSubmission(models.Model):
     """
@@ -184,6 +189,7 @@ class FileSubmission(models.Model):
                 name="unique_event_owner_name_file_submission_constraint"
             )
         ]
+
 
 class PartOf(models.Model):
     """
