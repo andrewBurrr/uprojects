@@ -41,6 +41,7 @@ class CustomAccountManager(BaseUserManager):
 
         return self.create_user(email, first_name, last_name, password, **other_fields)
 
+
     def create_user(self, email, first_name, last_name, password, **other_fields):
         """
         TODO: Document
@@ -77,7 +78,8 @@ class CustomAccount(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
-    
+
+
 class Owner(models.Model):
     """
     Owner model used by django's built in ORM
@@ -170,6 +172,8 @@ class Organization(models.Model):
     name = models.CharField(max_length=60)
     description = models.TextField()
     owner_id = models.ForeignKey(Owner, on_delete=models.SET_NULL, null=True)
+    user_owner = models.ForeignKey(Owner, on_delete=models.CASCADE)     
+    # Cascade delete because if an Organizations Owner get's deleted than all objects owned by that user also get deleted.
     tag = models.ManyToManyField(Tag)
 
 
