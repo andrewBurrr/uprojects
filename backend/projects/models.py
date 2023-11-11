@@ -159,8 +159,10 @@ class ProjectSubmission(models.Model):
     """
     """
     event_id = models.ForeignKey(Event, on_delete=models.CASCADE)
-    #TODO: owner of team that submitted project? also note this uses collaborator as opposed to owner
+    #TODO: owner of team that submitted project
+        #same issue as file submission
     owner_id = models.ForeignKey(Collaborator, on_delete=models.CASCADE)
+    team_name = models.ForeignKey(Collaborator, on_delete=models.CASCADE)
     project_id = models.ForeignKey(Project, on_delete=models.CASCADE)
 
     class Meta:
