@@ -94,6 +94,8 @@ class Owner(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
 
 
+
+
 class Interest(models.Model):
     """
     Interest model used by django's built in ORM
@@ -106,7 +108,19 @@ class Interest(models.Model):
     """
     # TODO: should we set the field value unique=True for this to avoid doubles 
     #       in our interest table? 
+    #interest_id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
     interest = models.CharField(max_length=60, primary_key=True, )    
+
+"""TODO: Kyle proposes that we create a userInterests model containing
+    interest id as a means of explictly showing the many to many relation of 
+    Interest's and customUser. Frankly I'd be happy if we could nuke the Interest
+    table and just have user interests use tag's with a tag id. They're essentially 
+    going to be the same thing."""
+# class userInterests(models.Model):
+#     """ Keeps track of all the users interests refers to unique interest id's 
+#         for each given interest."
+#     user_id = models.ForeignKey(CustomAccount, on_delete=models.CASCADE)
+#     interest_id = models.ForeignKey(Interest, on_delete=models.CASCADE)
 
 
 class CustomUser(CustomAccount):
@@ -125,7 +139,7 @@ class CustomUser(CustomAccount):
     # deleted shouldn't we cascade? because every user,organzation, project, etc
     # needs a ownerID.
     owner_id = models.ForeignKey(Owner, on_delete=models.SET_NULL, null=True) 
-    interest = models.ManyToManyField(Interest)
+    interest = models.ManyToManyField(Interest) # I wanna nuke this so bad :')
     
 
 class CustomAdmin(CustomAccount):
@@ -160,6 +174,7 @@ class Tag(models.Model):
     """
     TODO: comment
     """
+    #tag_id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
     tag = models.CharField(max_length=60, primary_key=True)  
 
 
@@ -174,6 +189,14 @@ class Organization(models.Model):
     owner_id = models.ForeignKey(Owner, on_delete=models.SET_NULL, null=True)
     user_owner = models.ForeignKey(Owner, on_delete=models.CASCADE)     
     # Cascade delete because if an Organizations Owner get's deleted than all objects owned by that user also get deleted.
-    tag = models.ManyToManyField(Tag)
+    tag = models.ManyToManyField(Tag) # delete this if proposed changes are accepted.
 
 
+"""TODO: Kyle proposes that we create a orgTag model containing
+    tag id and org_id as a means of explictly showing the many to many relation of 
+    tags's and Organizations. """
+# class OrgTags(models.Model):
+#     """ Keeps track of all Organization's related tags refers to unique tag id's 
+#         for each Org_id."
+#     org_id = models.ForeignKey(Organization, on_delete=models.CASCADE) # Organization owner_id
+#     tag_id = models.ForeignKey(Tag, on_delete=models.CASCADE)

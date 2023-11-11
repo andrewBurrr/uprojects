@@ -2,7 +2,7 @@ import uuid
 from django.db import models
 from django.utils import timezone
 from users.models import CustomAdmin, CustomUser, Organization, Owner
-
+# TODO: from user.models import Tag # use tag model defined in users to avoid duplicate tag db's
 # TODO: finish filling in comments for each
 
 # Create your models here.
@@ -30,7 +30,8 @@ class Respond(models.Model):
             )
         ]
 
-
+# TODO: this tag model is already made in users/models.py. I'm not deleting atm
+#       because I don't have time to troubleshoot this while I work on SQL. KW
 class Tag(models.Model):
     """
 
@@ -48,7 +49,7 @@ class Collaborator(models.Model):
     TODO: comment
     """
     owner_id = models.ForeignKey(Owner, on_delete=models.SET_NULL, null=True)
-    team_name = models.CharField(max_length=60)
+    team_name = models.CharField(max_length=60, unique=True) # TODO: is unique=True applicable here?
     tags = models.ManyToManyField(Tag)
 
     class Meta:
@@ -59,6 +60,18 @@ class Collaborator(models.Model):
             )
         ]
 
+
+"""TODO: I think creating unique collab team id's would make this easier, the below 
+        implementation would run into issues if the same owner_id had multiple teams.
+    Kyle proposes that we create a collabTag model containing
+    tag id and owner_id as a means of explictly showing the many to many relation of 
+    tags's and collaborator teams. """
+# class CollabTags(models.Model):
+#     """ Keeps track of all Collab team's related tags refers to unique tag id's 
+#         for each owner_id."
+#     owner_id = models.ForeignKey(Collaborator, on_delete=models.CASCADE) # Collaborator owner_id
+#     team_name = models.ForeignKey(Collaborator, on_delete=models.CASCADE) 
+#     tag_id = models.ForeignKey(Tag, on_delete=models.CASCADE)
 
 # TODO: make note somewhere saying that we changed how permissions for collaborators work
 class CollaboratorPermission(models.Model):
@@ -88,7 +101,7 @@ class Member(models.Model):
     """
     user_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     owner_id = models.ForeignKey(Owner, on_delete=models.SET_NULL, null=True)
-    team_name = models.ForeignKey(Collaborator, on_delete=models.CASCADE)
+    team_name = models.ForeignKey(Collaborator.team_name, on_delete=models.CASCADE)
     role = models.CharField(max_length=60)
 
     class Meta:
@@ -129,6 +142,15 @@ class Project(models.Model):
         return self.name
 
 
+"""TODO: Kyle proposes that we create a projTag model containing
+    tag id and project id's as a means of explictly showing the many to many relation of 
+    tags's and Projects. """
+# class projTags(models.Model):
+#     """ Keeps track of all Project's related tags refers to unique tag id's 
+#         for each Project id."
+#     proj_id = models.ForeignKey(Project, on_delete=models.CASCADE) # Project id
+#     tag_id = models.ForeignKey(Tag, on_delete=models.CASCADE)
+
 class Event(models.Model):
     """
     """
@@ -138,6 +160,16 @@ class Event(models.Model):
     end_date = models.DateTimeField()
     name = models.CharField(max_length=60)
     tags = models.ManyToManyField(Tag)
+
+
+"""TODO: Kyle proposes that we create a eventTag model containing
+    tag id and event id's as a means of explictly showing the many to many relation of 
+    tags's and Events. """
+# class eventTags(models.Model):
+#     """ Keeps track of all event's related tags refers to unique tag id's 
+#         for each event id."
+#     event_id = models.ForeignKey(Event, on_delete=models.CASCADE) # Event id
+#     tag_id = models.ForeignKey(Tag, on_delete=models.CASCADE)
 
 
 class Hosts(models.Model):
