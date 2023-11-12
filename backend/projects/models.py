@@ -156,6 +156,7 @@ class Event(models.Model):
     """
     event_id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
     event_type = models.CharField(max_length=60)
+    owner_id = models.ForeignKey(Organization, on_delete=models.CASCADE) # events need to be hosted by an organization
     start_date = models.DateTimeField(default=timezone.now)
     end_date = models.DateTimeField()
     name = models.CharField(max_length=60)
