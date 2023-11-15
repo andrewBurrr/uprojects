@@ -15,7 +15,7 @@ CREATE TABLE "customAccount" (
 
 
 CREATE TABLE "user_permissions" (
-    "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "id" char(32) NOT NULL PRIMARY KEY,
     "user_id" char(32) NOT NULL REFERENCES "customAccount" ("id") DEFERRABLE INITIALLY DEFERRED,
     "permission_id" integer NOT NULL REFERENCES "auth_permission" ("id") DEFERRABLE INITIALLY DEFERRED
 );
@@ -23,7 +23,7 @@ CREATE TABLE "user_permissions" (
 
 -- Create model Interest
 CREATE TABLE "Interest" (
-    "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "id" char(32) NOT NULL PRIMARY KEY,
     "interest" varchar(60) NOT NULL UNIQUE);
 
 
@@ -32,8 +32,8 @@ CREATE TABLE "owner" ("id" char(32) NOT NULL PRIMARY KEY);
 
 
 -- Create model Tag
-CREATE TABLE "Tag" (
-    "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+CREATE TABLE "Tag" (UTOINCR
+    "id" char(32) NOT NULL PRIMARY KEY,
     "tag" varchar(60) NOT NULL UNIQUE,
     CONSTRAINT UC_Tag UNIQUE ("id","tag"),
     );
@@ -73,7 +73,7 @@ CREATE TABLE "customuser" (
 
 CREATE TABLE "userInterests" (
     "user_id" char(32) NOT NULL REFERENCES "customuser" ("user_id") DEFERRABLE INITIALLY DEFERRED,
-    "interest_id" varchar(60) NOT NULL REFERENCES "Interest" ("id") DEFERRABLE INITIALLY DEFERRED
+    "interest_id" char(32) NOT NULL REFERENCES "Interest" ("id") DEFERRABLE INITIALLY DEFERRED
     CONSTRAINT UC_userInterests UNIQUE ("user_id", "interest_id")
 );
 
@@ -81,8 +81,8 @@ CREATE TABLE "userInterests" (
 -- Create model CustomAdminPermission
 --
 CREATE TABLE "adminpermission" (
-    "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
     "permission" varchar(1) NOT NULL,
-    "admin_id_id" char(32) NOT NULL REFERENCES "customadmin" ("user_id") DEFERRABLE INITIALLY DEFERRED
+    "admin_id" char(32) NOT NULL REFERENCES "customadmin" ("user_id") DEFERRABLE INITIALLY DEFERRED,
+    CONSTRAINT UC_Adminperms UNIQUE ("permission", "admin_id")
 );
 
