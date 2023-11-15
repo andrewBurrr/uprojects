@@ -21,7 +21,7 @@ class Respond(models.Model):
     admin_id = models.ForeignKey(CustomAdmin, on_delete=models.SET_NULL, null=True)
     bug_id = models.ForeignKey(BugReport, on_delete=models.CASCADE)
     comment = models.TextField()
-
+    # time_stamp = models.DateTimeField(default=timezone.now)
     class Meta:
         constraints = [
             models.UniqueConstraint(
