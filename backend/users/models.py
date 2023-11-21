@@ -7,14 +7,14 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseU
 
 from .storage import OverwriteStorage
 
-# TODO: Make sure that models create Owner_id for each user when user is created.
-#TODO: comment
 
-def image_to_path(instance, filename):
+# TODO: Make sure that models create Owner_id for each user when user is created.
+# TODO: comment
+
+def image_to_path(instance, filename, category):
     extension = filename.split('.')[-1]
-    unique_filename = f'profile.{extension}'  # TODO: Change so we're not saving all images to one folder
-    result = join('profile_images', f'{instance.id}_{unique_filename}')
-    print(result)
+    unique_filename = f'{category}.{extension}'
+    result = join(f'{category}', f'{instance.id}_{unique_filename}')
     return result
 
 
@@ -62,7 +62,7 @@ class CustomAccount(AbstractBaseUser, PermissionsMixin):
     
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
-    profile_image = models.ImageField(upload_to=image_to_path, storage=OverwriteStorage(), blank=True)
+    profile_image = models.ImageField(upload_to=lambda instance, filename: image_to_path(instance, filename, "profile_image"), storage=OverwriteStorage(), blank=True)
     about = models.TextField(max_length=1000)
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=150)
@@ -78,7 +78,8 @@ class CustomAccount(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
-    
+
+
 class Owner(models.Model):
     """
     Owner model used by django's built in ORM
@@ -93,7 +94,7 @@ class Owner(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
 
 
-class Interest(models.Model):
+class Tag(models.Model):
     """
     Interest model used by django's built in ORM
 
@@ -101,11 +102,9 @@ class Interest(models.Model):
     Interest table.
 
     Attributes:
-        interest (str): (Primary Key) Char Field containing the specified interest 
+        tag (str): (Primary Key) Char Field containing the specified interest
     """
-    # TODO: should we set the field value unique=True for this to avoid doubles 
-    #       in our interest table? 
-    interest = models.CharField(max_length=60, primary_key=True, )    
+    tag = models.CharField(max_length=60, primary_key=True, unique=True)
 
 
 class CustomUser(CustomAccount):
@@ -117,15 +116,14 @@ class CustomUser(CustomAccount):
 
     Attributes:
         owner_id (int): (Foreign Key) A custom user's assigned Owner id number.
-        interest (Any|str): TODO: How do we define this? could we say it's a 
-                            reference to a table containing a Custom User's interests?
+        tag (list(str)): tags associated with a user
     """
     # TODO: We changed the on delete behaviour to SET_NULL. If an owner get's 
-    # deleted shouldn't we cascade? because every user,organzation, project, etc
+    # deleted shouldn't we cascade? because every user,organization, project, etc
     # needs a ownerID.
-    owner_id = models.ForeignKey(Owner, on_delete=models.SET_NULL, null=True) 
-    interest = models.ManyToManyField(Interest)
-    
+    owner_id = models.ForeignKey(Owner, on_delete=models.SET_NULL, null=True)
+    tag = models.ManyToManyField(Tag)
+
 
 class CustomAdmin(CustomAccount):
     """
@@ -155,22 +153,14 @@ class CustomAdminPermission(models.Model):
         ]
 
 
-class Tag(models.Model):
-    """
-    TODO: comment
-    """
-    tag = models.CharField(max_length=60, primary_key=True)  
-
-
 class Organization(models.Model):
     """
     TODO: comment
     """
     org_id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
-    logo = models.ImageField(upload_to=image_to_path, storage=OverwriteStorage(), blank=True)
+    logo = models.ImageField(upload_to=lambda instance, filename: image_to_path(instance, filename, "logo_image"), storage=OverwriteStorage(), blank=True)  # TODO figure out params
     name = models.CharField(max_length=60)
     description = models.TextField()
+    user_owner = models.ForeignKey(Owner, on_delete=models.CASCADE)
     owner_id = models.ForeignKey(Owner, on_delete=models.SET_NULL, null=True)
     tags = models.ManyToManyField(Tag)
-
-

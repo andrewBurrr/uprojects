@@ -1,5 +1,7 @@
 from rest_framework import serializers
-from projects.models import ( Project, Tag, Collaborator)
+from projects.models import (Project, Tag, Collaborator, Follow, Event, Item,
+                             Issue, PullRequest, CodeReview, Commit, Repository,
+                             Member, DropboxSubmission, SubmissionFile, BugReport)
 from users.models import CustomUser, Interest, Organization
 
 
@@ -14,7 +16,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ['id', 'first_name', 'last_name', 'email', 'profile_image', 'start_date', 'interests']
+        fields = ['id', 'first_name', 'last_name', 'email', 'profile_image', 'about', 'start_date', 'interests']
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -63,6 +65,84 @@ class OrganizationSerializer(serializers.ModelSerializer):
         fields = ('org_id', 'logo', 'name', 'description', 'owner_id', 'tags')
 
 
+class UserFollowSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Follow
+        fields = ('user_id', 'project_id')
+
+
+class EventSerializer(serializers.ModelSerializer):
+    tags = TagSerializer(read_only=True, many=True)
+
+    class Meta:
+        model = Event
+        fields = ('event_id', 'event_type', 'start_date', 'end_date', 'name', 'tags')
+
+
+class BaseSearchSerializer(serializers.ModelSerializer):
+    query = serializers.CharField(required=False, allow_blank=True)
+    tags = serializers.ListField(child=serializers.CharField(), required=False)
+
+
+class RepositorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Repository
+        fields = ('project_id', 'repo_name', 'git_base_path')
+
+
+class ItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Item
+        fields = ('project_id', 'repo_name', 'item_id', 'item_name', 'status',
+                  'description', 'is_approved', 'due_date', 'owner_id', 'team_name')
+
+
+class IssueSerializer(ItemSerializer):
+    model = Issue
+    fields = ItemSerializer.Meta.fields + ('issue_type',)
+
+
+class PullRequestSerializer(ItemSerializer):
+    model = PullRequest
+    fields = ItemSerializer.Meta.fields + ('branch_name',)
+
+
+class CommitSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Commit
+        fields = ('id', 'commit_id')
+
+
+class CodeReviewSerializer(serializers.ModelSerializer):
+    commits = CommitSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = CodeReview
+        fields = ItemSerializer.Meta.fields + ('commits',)
+
+
+class MemberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Member
+        fields = ('user_id', 'owner_id', 'team_name', 'role')
+
+
+class DropboxSubmissionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DropboxSubmission
+        fields = ('event_id', 'collaborator', 'comment', 'submission_date')
+
+
+class SubmissionFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SubmissionFile
+        fields = ('submission', 'file')
+
+
+class BugReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BugReport
+        fields = ('bug_id', 'time_stamp', 'description', 'user_id')
 # class ProjectDetailSerializer(serializers.ModelSerializer):
 #     """
 #     """

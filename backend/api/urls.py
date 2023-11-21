@@ -21,13 +21,6 @@ A user must be able to view all projects owned by a user/organization under that
 
 """
 urlpatterns = [
-    # get User dashboard
-    path('user/<uuid:pk>', UserDetail.as_view(), name='userdetail'),
-    path('user-projects/<uuid:owner_id>', UserProjectList.as_view(), name='userprojectdetail'),
-    path('user-teams/<uuid:user_id>', UserTeamsList.as_view(), name='userteamslist'),
-    path('user-organizations/<uuid:owner_id>', UserOrganizationList.as_view(), name='userorganizationlist'),
-    # path('user-follows/<uuid:user_id>', UserFollows.as_view(), name='userfollows'),
-    # get searchbar
     # URL pattern to retrieve a specific project (provides the primary key in the url slug)
     # path('<int:pk>/', ProjectDetail.as_view(), name='detailcreate'),
     # # URL pattern for listing and creating projects
