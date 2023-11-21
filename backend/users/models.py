@@ -8,7 +8,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseU
 from .storage import OverwriteStorage
 
 # TODO: Make sure that models create Owner_id for each user when user is created.
-#TODO: comment
+# TODO: comment
 
 def image_to_path(instance, filename):
     extension = filename.split('.')[-1]
@@ -78,7 +78,8 @@ class CustomAccount(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
-    
+
+
 class Owner(models.Model):
     """
     Owner model used by django's built in ORM

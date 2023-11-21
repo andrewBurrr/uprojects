@@ -3,10 +3,25 @@ from projects.models import ( Project, Tag, Collaborator)
 from users.models import CustomUser, Interest, Organization
 
 
+"""
+What do serializers do? 
+Converts a model's data to JSON/XML format.
+
+There are two types of serializers commonly used: 
+- ModelSerializers and HyperLinkedModelSerializer.
+
+We are using Django's ModelSerializer serializers for our application.
+- It automatically generates a set of fields based on the model.
+- generates validators for the serializer such as unique_together validators
+- it includes simple default implementations of .create() and .update
+    (info from: https://www.geeksforgeeks.org/serializers-django-rest-framework/)
+
+"""
+
 class InterestSerializer(serializers.ModelSerializer):
     class Meta:
         model = Interest
-        fields = ('id', 'interest')
+        fields = ('interest')
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -20,7 +35,7 @@ class UserSerializer(serializers.ModelSerializer):
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        fields = ('id', 'tag')
+        fields = ('tag')
 
 
 class ProjectSerializer(serializers.ModelSerializer):
