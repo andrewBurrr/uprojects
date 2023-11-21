@@ -42,6 +42,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     """
         Serializer for the Project model.
         TODO update serializer and model schema to match data requirements
+        TODO How are project tags handled by this serializer? Should we consider creating a Project tag serializer?
 
         This serializer is used to convert Project model instances to JSON
         representations and vice versa. It specifies the fields to include
@@ -63,6 +64,14 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 
 class CollaboratorSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the users/models.Collaborator model.
+
+    Necessary Collaborator fields:
+    - owner_id : users/model.Owner
+    - team_name
+    - tags: users/model.Tag
+    """
     tags = TagSerializer(read_only=True, many=True)
 
     class Meta:
@@ -71,6 +80,17 @@ class CollaboratorSerializer(serializers.ModelSerializer):
 
 
 class OrganizationSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the users/models.Organization model
+
+    Necessary Organization fields:
+    - org_id
+    - logo
+    - name 
+    - description
+    - owner_id: users/models.Owner
+    - tags: Tag
+    """
     tags = TagSerializer(read_only=True, many=True)
 
     class Meta:
