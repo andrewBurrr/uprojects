@@ -5,10 +5,25 @@ from projects.models import (Project, Tag, Collaborator, Follow, Event, Item,
 from users.models import CustomUser, Interest, Organization
 
 
+"""
+What do serializers do? 
+Converts a model's data to JSON/XML format.
+
+There are two types of serializers commonly used: 
+- ModelSerializers and HyperLinkedModelSerializer.
+
+We are using Django's ModelSerializer serializers for our application.
+- It automatically generates a set of fields based on the model.
+- generates validators for the serializer such as unique_together validators
+- it includes simple default implementations of .create() and .update
+    (info from: https://www.geeksforgeeks.org/serializers-django-rest-framework/)
+
+"""
+
 class InterestSerializer(serializers.ModelSerializer):
     class Meta:
         model = Interest
-        fields = ('id', 'interest')
+        fields = ('interest')
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -22,13 +37,14 @@ class UserSerializer(serializers.ModelSerializer):
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        fields = ('id', 'tag')
+        fields = ('tag')
 
 
 class ProjectSerializer(serializers.ModelSerializer):
     """
         Serializer for the Project model.
         TODO update serializer and model schema to match data requirements
+        TODO How are project tags handled by this serializer? Should we consider creating a Project tag serializer?
 
         This serializer is used to convert Project model instances to JSON
         representations and vice versa. It specifies the fields to include
@@ -50,6 +66,14 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 
 class CollaboratorSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the users/models.Collaborator model.
+
+    Necessary Collaborator fields:
+    - owner_id : users/model.Owner
+    - team_name
+    - tags: users/model.Tag
+    """
     tags = TagSerializer(read_only=True, many=True)
 
     class Meta:
@@ -58,6 +82,17 @@ class CollaboratorSerializer(serializers.ModelSerializer):
 
 
 class OrganizationSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the users/models.Organization model
+
+    Necessary Organization fields:
+    - org_id
+    - logo
+    - name 
+    - description
+    - owner_id: users/models.Owner
+    - tags: Tag
+    """
     tags = TagSerializer(read_only=True, many=True)
 
     class Meta:
