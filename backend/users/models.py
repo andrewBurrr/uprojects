@@ -60,11 +60,11 @@ class CustomAccountManager(BaseUserManager):
 class CustomAccount(AbstractBaseUser, PermissionsMixin):
     """
     Custom Account Model using Django's AbstractBaseUser and Django's PermissionsMixin
-    
+    TODO: Form class for accepted images? could be universal for all logo's/profile images.
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
     # profile_image = models.ImageField(upload_to=lambda instance, filename: image_to_path(instance, filename, "profile_image"), storage=OverwriteStorage(), blank=True)
-    profile_image = models.ImageField(upload_to="images/profile_images/", blank=True)
+    profile_image = models.ImageField(upload_to="images/profile_images/", storage=OverwriteStorage(), blank=True)
     about = models.TextField(max_length=1000)
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=150)
@@ -161,10 +161,11 @@ class CustomAdminPermission(models.Model):
 class Organization(models.Model):
     """
     TODO: comment
+    TODO: form class for accepted logo's?
     """
     org_id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
-    #logo = models.ImageField(upload_to=lambda instance, filename: image_to_path(instance, filename, "logo_image"), storage=OverwriteStorage(), blank=True)  # TODO figure out params
-    logo = models.ImageField(upload_to="images/logo_images/", blank=True)  # TODO yolo 
+    #logo = models.ImageField(upload_to=lambda instance, filename: image_to_path(instance, filename, "logo_image"), storage=OverwriteStorage(), blank=True)  
+    logo = models.ImageField(upload_to="images/logo_images/", storage=OverwriteStorage(), blank=True)  # TODO yolo 
     name = models.CharField(max_length=60)
     description = models.TextField()
     user_owner = models.ForeignKey(Owner, related_name="user_owner", on_delete=models.CASCADE)

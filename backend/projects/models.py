@@ -24,7 +24,7 @@ class Respond(models.Model):
     bug_id = models.ForeignKey(BugReport, on_delete=models.CASCADE)
     time_stamp = models.DateTimeField(default=timezone.now)
     comment = models.TextField()
-    # time_stamp = models.DateTimeField(default=timezone.now)
+    time_stamp = models.DateTimeField(default=timezone.now)
     class Meta:
         constraints = [
             models.UniqueConstraint(
@@ -174,7 +174,7 @@ class SubmissionFile(models.Model):
     #submission = models.ForeignKey(DropboxSubmission, on_delete=models.CASCADE, to_fields=['event_id', 'collaborator'])
     submission = models.ForeignKey(DropboxSubmission, on_delete=models.CASCADE) # trusting django magic
     #file = models.FileField(upload_to=lambda instance, filename: image_to_path(instance, filename, "submission_file"), storage=OverwriteStorage(), blank=True)  # TODO figure out file paths
-    file = models.FileField(upload_to="submission/files/", blank=True)
+    file = models.FileField(upload_to="submission/files/",storage=OverwriteStorage(), blank=True)
 
 
 class PartOf(models.Model):

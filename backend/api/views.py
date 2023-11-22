@@ -2,6 +2,8 @@ from rest_framework import generics
 from rest_framework.response import Response
 from django.db.models import Q
 
+from django.contrib.contenttypes.models import ContentType
+
 from .permissions import IsOwnerOrReadOnly
 from .serializers import *
 # (UserSerializer, ProjectSerializer, TeamSerializer, OrganizationSerializer,
