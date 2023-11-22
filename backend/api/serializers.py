@@ -1,8 +1,8 @@
 from rest_framework import serializers
-from projects.models import (Project, Tag, Collaborator, Follow, Event, Item,
+from projects.models import (Project, Collaborator, Follow, Event, Item,
                              Issue, PullRequest, CodeReview, Commit, Repository,
                              Member, DropboxSubmission, SubmissionFile, BugReport)
-from users.models import CustomUser, Interest, Organization
+from users.models import CustomUser, Tag, Organization
 
 
 """
@@ -20,24 +20,18 @@ We are using Django's ModelSerializer serializers for our application.
 
 """
 
-class InterestSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Interest
-        fields = ('interest')
-
-
-class UserSerializer(serializers.ModelSerializer):
-    interests = InterestSerializer(read_only=True, many=True)
-
-    class Meta:
-        model = CustomUser
-        fields = ['id', 'first_name', 'last_name', 'email', 'profile_image', 'about', 'start_date', 'interests']
-
-
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = ('tag')
+
+
+class UserSerializer(serializers.ModelSerializer):
+    tags = TagSerializer(read_only=True, many=True)
+
+    class Meta:
+        model = CustomUser
+        fields = ['id', 'first_name', 'last_name', 'email', 'profile_image', 'about', 'start_date', 'tag']
 
 
 class ProjectSerializer(serializers.ModelSerializer):

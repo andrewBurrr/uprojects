@@ -98,13 +98,13 @@ class Owner(models.Model):
 class Tag(models.Model):
 
     """
-    Interest model used by django's built in ORM
+    Tag model used by django's built in ORM
 
     This model defines the fields and parameters that will be defined for the 
-    Interest table.
+    Tag table.
 
     Attributes:
-        tag (str): (Primary Key) Char Field containing the specified interest
+        tag (str): (Primary Key) Char Field containing the specified tag
     """
 
     tag = models.CharField(max_length=60, primary_key=True, unique=True)
