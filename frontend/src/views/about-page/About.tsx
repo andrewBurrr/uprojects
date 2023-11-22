@@ -1,11 +1,15 @@
-import { Link } from "react-router-dom";
+import { Team } from "views/about-page/Team";
+import {Typography} from "@mui/material";
+import React from "react";
+
 const About = () => {
     return (
     <div>
-    <h1>This is the about page</h1>
-    <Link to="/">Home</Link> 
-    <br></br>
-    <Link to="/register">Register</Link>
+        <Typography color="inherit" align="center" variant="h2">
+            Our Team
+        </Typography>
+        <hr/>
+        <Team/>
     </div>
     );
 }
