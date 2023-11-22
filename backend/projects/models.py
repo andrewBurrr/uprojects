@@ -24,7 +24,7 @@ class Respond(models.Model):
     bug_id = models.ForeignKey(BugReport, on_delete=models.CASCADE)
     time_stamp = models.DateTimeField(default=timezone.now)
     comment = models.TextField()
-
+    # time_stamp = models.DateTimeField(default=timezone.now)
     class Meta:
         constraints = [
             models.UniqueConstraint(
@@ -34,12 +34,13 @@ class Respond(models.Model):
         ]
 
 
+
 class Collaborator(models.Model):
     """
     TODO: comment, verify unique constraint actually works
     """
     owner_id = models.ForeignKey(Owner, on_delete=models.SET_NULL, null=True)
-    team_name = models.CharField(max_length=60)
+    team_name = models.CharField(max_length=60, unique=True) # TODO: is unique=True applicable here?
     tags = models.ManyToManyField(Tag)
 
     class Meta:
@@ -49,6 +50,8 @@ class Collaborator(models.Model):
                 name="unique_owner_team_collaborator_constraint"
             )
         ]
+
+
 
 
 # TODO: make note somewhere saying that we changed how permissions for collaborators work
@@ -119,12 +122,14 @@ class Project(models.Model):
         return self.name
 
 
+
+
 class Event(models.Model):
     """
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)  # events need to be hosted by an organization
-    type = models.CharField(max_length=60)
+    event_type = models.CharField(max_length=60)
     start_date = models.DateTimeField(default=timezone.now)
     end_date = models.DateTimeField()
     name = models.CharField(max_length=60)
@@ -152,7 +157,7 @@ class DropboxSubmission(models.Model):
     collaborator = models.ForeignKey(Collaborator, on_delete=models.CASCADE, to_fields=['owner_id', 'team_name'])
     comment = models.TextField(blank=True)
     submission_date = models.DateTimeField(auto_now_add=True)
-
+    
     class Meta:
         constraints = [
             models.UniqueConstraint(
@@ -162,9 +167,11 @@ class DropboxSubmission(models.Model):
         ]
 
 
+
 class SubmissionFile(models.Model):
     submission = models.ForeignKey(DropboxSubmission, on_delete=models.CASCADE, to_fields=['event_id', 'collaborator'])
     file = models.FileField(upload_to=lambda instance, filename: image_to_path(instance, filename, "submission_file"), storage=OverwriteStorage(), blank=True)  # TODO figure out file paths
+
 
 
 class PartOf(models.Model):
@@ -240,7 +247,9 @@ class Item(models.Model):
     description = models.TextField()
     is_approved = models.BooleanField()
     due_date = models.DateField()
+
     team = models.ForeignKey(Collaborator, on_delete=models.SET_NULL, null=True, to_fields=['owner_id', 'team_name'])
+
 
     def save(self, *args, **kwargs):
         if self._state.adding:
@@ -282,7 +291,7 @@ class Issue(Item):
     issue_type = models.CharField(max_length=60)  # could this also be a choice?
 
 
-class Commit(models.Model):
+class Commit(Item):
     """
 
     This model defines the fields and parameters that will be defined for

@@ -41,6 +41,7 @@ class CustomAccountManager(BaseUserManager):
 
         return self.create_user(email, first_name, last_name, password, **other_fields)
 
+
     def create_user(self, email, first_name, last_name, password, **other_fields):
         """
         TODO: Document
@@ -95,6 +96,7 @@ class Owner(models.Model):
 
 
 class Tag(models.Model):
+
     """
     Interest model used by django's built in ORM
 
@@ -104,7 +106,9 @@ class Tag(models.Model):
     Attributes:
         tag (str): (Primary Key) Char Field containing the specified interest
     """
+
     tag = models.CharField(max_length=60, primary_key=True, unique=True)
+
 
 
 class CustomUser(CustomAccount):
@@ -121,6 +125,7 @@ class CustomUser(CustomAccount):
     # TODO: We changed the on delete behaviour to SET_NULL. If an owner get's 
     # deleted shouldn't we cascade? because every user,organization, project, etc
     # needs a ownerID.
+
     owner_id = models.ForeignKey(Owner, on_delete=models.SET_NULL, null=True)
     tag = models.ManyToManyField(Tag)
 
@@ -164,3 +169,4 @@ class Organization(models.Model):
     user_owner = models.ForeignKey(Owner, on_delete=models.CASCADE)
     owner_id = models.ForeignKey(Owner, on_delete=models.SET_NULL, null=True)
     tags = models.ManyToManyField(Tag)
+
