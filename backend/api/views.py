@@ -3,8 +3,9 @@ from rest_framework.response import Response
 from django.db.models import Q
 
 from .permissions import IsOwnerOrReadOnly
-from .serializers import UserSerializer, ProjectSerializer, TeamSerializer, OrganizationSerializer,
-    UserFollowSerializer, EventSerializer, BaseSearchSerializer
+from .serializers import *
+# (UserSerializer, ProjectSerializer, TeamSerializer, OrganizationSerializer,
+#     UserFollowSerializer, EventSerializer, BaseSearchSerializer, RepositorySerializer, IssueSerializer)
 from users.models import CustomUser, Organization
 from projects.models import (Project, Team, Member, Follow, Event, PartOf,
                               Repository, Item, Issue, CodeReview, PullRequest, BugReport,
@@ -316,7 +317,7 @@ class EventDropBoxSubmissionList(generics.ListCreateAPIView):
 
 class DropBoxSubmissionDetail(MultipleFieldLookupMixin, generics.RetrieveUpdateDestroyAPIView):
     queryset = DropboxSubmission.objects.all()
-    serializer_class = DropBoxSubmissionSerializer
+    serializer_class = DropboxSubmissionSerializer
     permission_classes = [IsOwnerOrReadOnly]
     lookup_fields = ['event_id', 'team']
 
