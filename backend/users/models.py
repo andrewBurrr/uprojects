@@ -110,7 +110,6 @@ class Tag(models.Model):
     tag = models.CharField(max_length=60, primary_key=True, unique=True)
 
 
-
 class CustomUser(CustomAccount):
     """
     CustomUser model inheriting from the CustomAccount model.
@@ -127,7 +126,7 @@ class CustomUser(CustomAccount):
     # needs a ownerID.
 
     owner_id = models.ForeignKey(Owner, on_delete=models.SET_NULL, null=True)
-    tag = models.ManyToManyField(Tag)
+    tags = models.ManyToManyField(Tag)
 
 
 class CustomAdmin(CustomAccount):

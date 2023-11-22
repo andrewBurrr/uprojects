@@ -81,7 +81,8 @@ class Member(models.Model):
     TODO: comment, if unique constraint causes issues try team.etc
     """
     user_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    team = models.ForeignKey(Team, on_delete=models.CASCADE, to_fields=['owner_id', 'team_name'])
+    #team = models.ForeignKey(Team, on_delete=models.CASCADE, to_fields=['owner_id', 'team_name'])
+    team = models.ForeignKey(Team, on_delete=models.CASCADE) # let's assume it only retrieves unique pairs from collaborator.
     role = models.CharField(max_length=60)
 
     class Meta:
@@ -154,7 +155,8 @@ class Hosts(models.Model):
 class DropboxSubmission(models.Model):
     # TODO verify unique constraint is unique
     event_id = models.ForeignKey(Event, on_delete=models.CASCADE)
-    team = models.ForeignKey(Team, on_delete=models.CASCADE, to_fields=['owner_id', 'team_name'])
+    #collaborator = models.ForeignKey(Team, on_delete=models.CASCADE, to_fields=['owner_id', 'team_name'])
+    team = models.ForeignKey(Team, on_delete=models.CASCADE) # let's assume it only retrieves unique pairs from collaborator.
     comment = models.TextField(blank=True)
     submission_date = models.DateTimeField(auto_now_add=True)
     
@@ -169,7 +171,8 @@ class DropboxSubmission(models.Model):
 
 
 class SubmissionFile(models.Model):
-    submission = models.ForeignKey(DropboxSubmission, on_delete=models.CASCADE, to_fields=['event_id', 'team'])
+    #submission = models.ForeignKey(DropboxSubmission, on_delete=models.CASCADE, to_fields=['event_id', 'collaborator'])
+    submission = models.ForeignKey(DropboxSubmission, on_delete=models.CASCADE) # trusting django magic
     file = models.FileField(upload_to=lambda instance, filename: image_to_path(instance, filename, "submission_file"), storage=OverwriteStorage(), blank=True)  # TODO figure out file paths
 
 
@@ -180,7 +183,8 @@ class PartOf(models.Model):
 
     """
     project_id = models.ForeignKey(Project, on_delete=models.CASCADE)
-    team = models.ForeignKey(Team, on_delete=models.CASCADE, to_fields=['owner_id', 'team_name'])
+    #team = models.ForeignKey(Team, on_delete=models.CASCADE, to_fields=['owner_id', 'team_name'])
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
 
     class Meta:
         constraints = [
@@ -240,7 +244,8 @@ class Item(models.Model):
         ("PENDINGAPPROVAL", "pending approval"),
         ("COMPLETED", "completed"),
     ]
-    repository = models.ForeignKey(Repository, on_delete=models.CASCADE, to_fields=['project_id', 'repo_name'])
+    #repository = models.ForeignKey(Repository, on_delete=models.CASCADE, to_fields=['project_id', 'repo_name'])
+    repository = models.ForeignKey(Repository, on_delete=models.CASCADE) # django magic
     item_id = models.IntegerField(default=1)
     item_name = models.CharField(max_length=60)
     status = models.CharField(max_length=60, choices=STATUS, default="NOTAPPROVED")
@@ -248,8 +253,8 @@ class Item(models.Model):
     is_approved = models.BooleanField()
     due_date = models.DateField()
 
-    team = models.ForeignKey(Team, on_delete=models.SET_NULL, null=True, to_fields=['owner_id', 'team_name'])
-
+    #team = models.ForeignKey(Team, on_delete=models.SET_NULL, null=True, to_fields=['owner_id', 'team_name'])
+    team = models.ForeignKey(Team, on_delete=models.SET_NULL, null=True) #django magic
 
     def save(self, *args, **kwargs):
         if self._state.adding:

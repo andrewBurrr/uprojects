@@ -20,10 +20,22 @@ We are using Django's ModelSerializer serializers for our application.
 
 """
 
+
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = ('tag')
+
+
+class UserSerializer(serializers.ModelSerializer):
+    tags = TagSerializer(read_only=True, many=True)
+
+    # TODO: We need to figure out how to update a users tag via a django method.
+
+    # TODO: Should id be something that we present to the front end?
+    class Meta:
+        model = CustomUser
+        fields = ['id', 'first_name', 'last_name', 'email', 'profile_image', 'about', 'start_date', 'tags']
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -36,21 +48,21 @@ class UserSerializer(serializers.ModelSerializer):
 
 class ProjectSerializer(serializers.ModelSerializer):
     """
-        Serializer for the Project model.
-        TODO update serializer and model schema to match data requirements
-        TODO How are project tags handled by this serializer? Should we consider creating a Project tag serializer?
+    Serializer for the Project model.
+    TODO update serializer and model schema to match data requirements
+    TODO Figure out how updating, adding and removing project tags works.
 
-        This serializer is used to convert Project model instances to JSON
-        representations and vice versa. It specifies the fields to include
-        in the serialized output.
+    This serializer is used to convert Project model instances to JSON
+    representations and vice versa. It specifies the fields to include
+    in the serialized output.
 
-        Attributes:
-            id (int): The unique identifier for the project.
-            name (str): The name of the project.
+    Attributes:
+        id (int): The unique identifier for the project.
+        name (str): The name of the project.
 
-        Note:
-            This serializer is used in conjunction with views to provide a
-            RESTful API for managing Project instances.
+    Note:
+        This serializer is used in conjunction with views to provide a
+        RESTful API for managing Project instances.
         """
     tags = TagSerializer(read_only=True, many=True)
 
