@@ -7,14 +7,14 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseU
 
 from .storage import OverwriteStorage
 
-# TODO: Make sure that models create Owner_id for each user when user is created.
-#TODO: comment
 
-def image_to_path(instance, filename):
+# TODO: Make sure that models create Owner_id for each user when user is created.
+# TODO: comment
+
+def image_to_path(instance, filename, category):
     extension = filename.split('.')[-1]
-    unique_filename = f'profile.{extension}'  # TODO: Change so we're not saving all images to one folder
-    result = join('profile_images', f'{instance.id}_{unique_filename}')
-    print(result)
+    unique_filename = f'{category}.{extension}'
+    result = join(f'{category}', f'{instance.id}_{unique_filename}')
     return result
 
 
@@ -63,7 +63,8 @@ class CustomAccount(AbstractBaseUser, PermissionsMixin):
     
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
-    profile_image = models.ImageField(upload_to=image_to_path, storage=OverwriteStorage(), blank=True)
+    profile_image = models.ImageField(upload_to=lambda instance, filename: image_to_path(instance, filename, "profile_image"), storage=OverwriteStorage(), blank=True)
+    about = models.TextField(max_length=1000)
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=150)
     last_name = models.CharField(max_length=150)
@@ -94,9 +95,8 @@ class Owner(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
 
 
+class Tag(models.Model):
 
-
-class Interest(models.Model):
     """
     Interest model used by django's built in ORM
 
@@ -104,23 +104,11 @@ class Interest(models.Model):
     Interest table.
 
     Attributes:
-        interest (str): (Primary Key) Char Field containing the specified interest 
+        tag (str): (Primary Key) Char Field containing the specified interest
     """
-    # TODO: should we set the field value unique=True for this to avoid doubles 
-    #       in our interest table? 
-    #interest_id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
-    interest = models.CharField(max_length=60, primary_key=True, )    
 
-"""TODO: Kyle proposes that we create a userInterests model containing
-    interest id as a means of explictly showing the many to many relation of 
-    Interest's and customUser. Frankly I'd be happy if we could nuke the Interest
-    table and just have user interests use tag's with a tag id. They're essentially 
-    going to be the same thing."""
-# class userInterests(models.Model):
-#     """ Keeps track of all the users interests refers to unique interest id's 
-#         for each given interest."
-#     user_id = models.ForeignKey(CustomAccount, on_delete=models.CASCADE)
-#     interest_id = models.ForeignKey(Interest, on_delete=models.CASCADE)
+    tag = models.CharField(max_length=60, primary_key=True, unique=True)
+
 
 
 class CustomUser(CustomAccount):
@@ -132,15 +120,15 @@ class CustomUser(CustomAccount):
 
     Attributes:
         owner_id (int): (Foreign Key) A custom user's assigned Owner id number.
-        interest (Any|str): TODO: How do we define this? could we say it's a 
-                            reference to a table containing a Custom User's interests?
+        tag (list(str)): tags associated with a user
     """
     # TODO: We changed the on delete behaviour to SET_NULL. If an owner get's 
-    # deleted shouldn't we cascade? because every user,organzation, project, etc
+    # deleted shouldn't we cascade? because every user,organization, project, etc
     # needs a ownerID.
-    owner_id = models.ForeignKey(Owner, on_delete=models.SET_NULL, null=True) 
-    interest = models.ManyToManyField(Interest) # I wanna nuke this so bad :')
-    
+
+    owner_id = models.ForeignKey(Owner, on_delete=models.SET_NULL, null=True)
+    tag = models.ManyToManyField(Tag)
+
 
 class CustomAdmin(CustomAccount):
     """
@@ -170,33 +158,15 @@ class CustomAdminPermission(models.Model):
         ]
 
 
-class Tag(models.Model):
-    """
-    TODO: comment
-    """
-    #tag_id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
-    tag = models.CharField(max_length=60, primary_key=True)  
-
-
 class Organization(models.Model):
     """
     TODO: comment
     """
     org_id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
-    logo = models.ImageField(upload_to=image_to_path, storage=OverwriteStorage(), blank=True)
+    logo = models.ImageField(upload_to=lambda instance, filename: image_to_path(instance, filename, "logo_image"), storage=OverwriteStorage(), blank=True)  # TODO figure out params
     name = models.CharField(max_length=60)
     description = models.TextField()
+    user_owner = models.ForeignKey(Owner, on_delete=models.CASCADE)
     owner_id = models.ForeignKey(Owner, on_delete=models.SET_NULL, null=True)
-    user_owner = models.ForeignKey(Owner, on_delete=models.CASCADE)     
-    # Cascade delete because if an Organizations Owner get's deleted than all objects owned by that user also get deleted.
-    tag = models.ManyToManyField(Tag) # delete this if proposed changes are accepted.
+    tags = models.ManyToManyField(Tag)
 
-
-"""TODO: Kyle proposes that we create a orgTag model containing
-    tag id and org_id as a means of explictly showing the many to many relation of 
-    tags's and Organizations. """
-# class OrgTags(models.Model):
-#     """ Keeps track of all Organization's related tags refers to unique tag id's 
-#         for each Org_id."
-#     org_id = models.ForeignKey(Organization, on_delete=models.CASCADE) # Organization owner_id
-#     tag_id = models.ForeignKey(Tag, on_delete=models.CASCADE)
