@@ -23,6 +23,15 @@ Follow these steps to clone and run U-Projects using Docker:
     # Activate the virtual environment (macOS/Linux)
     source venv/bin/activate  
     ```
+    Now if this is a fresh install you will need to download your backend python dependences.
+    ```bash
+    # Install Python environment dependences after activating your venv
+    # change directory to ~/backend/ 
+    pip install -r requirements.txt
+    ``` 
+    This will install all dependencies listed in the requirements file.
+
+    
 3. **Build and Run the Docker Containers**
     To build and run the containers, we use the following command:
     ```bash

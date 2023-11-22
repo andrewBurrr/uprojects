@@ -1,11 +1,37 @@
 import uuid
 from django.db import models
-from users.models import CustomUser, Owner
-
-
+from django.utils import timezone
+from users.models import CustomAdmin, CustomUser, Organization, Owner
+# TODO: from user.models import Tag # use tag model defined in users to avoid duplicate tag db's
 # TODO: finish filling in comments for each
 
 # Create your models here.
+class BugReport(models.Model):
+    """
+    """
+    bug_id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
+    time_stamp = models.DateTimeField(default=timezone.now)
+    description = models.TextField()
+    user_id = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
+
+
+class Respond(models.Model):
+    """
+    """
+    admin_id = models.ForeignKey(CustomAdmin, on_delete=models.SET_NULL, null=True)
+    bug_id = models.ForeignKey(BugReport, on_delete=models.CASCADE)
+    comment = models.TextField()
+    # time_stamp = models.DateTimeField(default=timezone.now)
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["admin_id", "bug_id"],
+                name="unique_admin_bug_respond_constraint"
+            )
+        ]
+
+# TODO: this tag model is already made in users/models.py. I'm not deleting atm
+#       because I don't have time to troubleshoot this while I work on SQL. KW
 class Tag(models.Model):
     """
 
@@ -22,9 +48,8 @@ class Collaborator(models.Model):
     """
     TODO: comment
     """
-            
     owner_id = models.ForeignKey(Owner, on_delete=models.SET_NULL, null=True)
-    team_name = models.CharField(max_length=60)
+    team_name = models.CharField(max_length=60, unique=True) # TODO: is unique=True applicable here?
     tags = models.ManyToManyField(Tag)
 
     class Meta:
@@ -35,6 +60,18 @@ class Collaborator(models.Model):
             )
         ]
 
+
+"""TODO: I think creating unique collab team id's would make this easier, the below 
+        implementation would run into issues if the same owner_id had multiple teams.
+    Kyle proposes that we create a collabTag model containing
+    tag id and owner_id as a means of explictly showing the many to many relation of 
+    tags's and collaborator teams. """
+# class CollabTags(models.Model):
+#     """ Keeps track of all Collab team's related tags refers to unique tag id's 
+#         for each owner_id."
+#     owner_id = models.ForeignKey(Collaborator, on_delete=models.CASCADE) # Collaborator owner_id
+#     team_name = models.ForeignKey(Collaborator, on_delete=models.CASCADE) 
+#     tag_id = models.ForeignKey(Tag, on_delete=models.CASCADE)
 
 # TODO: make note somewhere saying that we changed how permissions for collaborators work
 class CollaboratorPermission(models.Model):
@@ -64,7 +101,7 @@ class Member(models.Model):
     """
     user_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     owner_id = models.ForeignKey(Owner, on_delete=models.SET_NULL, null=True)
-    team_name = models.ForeignKey(Collaborator, on_delete=models.CASCADE)
+    team_name = models.ForeignKey(Collaborator.team_name, on_delete=models.CASCADE)
     role = models.CharField(max_length=60)
 
     class Meta:
@@ -103,6 +140,90 @@ class Project(models.Model):
 
     def __str__(self):
         return self.name
+
+
+"""TODO: Kyle proposes that we create a projTag model containing
+    tag id and project id's as a means of explictly showing the many to many relation of 
+    tags's and Projects. """
+# class projTags(models.Model):
+#     """ Keeps track of all Project's related tags refers to unique tag id's 
+#         for each Project id."
+#     proj_id = models.ForeignKey(Project, on_delete=models.CASCADE) # Project id
+#     tag_id = models.ForeignKey(Tag, on_delete=models.CASCADE)
+
+class Event(models.Model):
+    """
+    """
+    event_id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
+    event_type = models.CharField(max_length=60)
+    owner_id = models.ForeignKey(Organization, on_delete=models.CASCADE) # events need to be hosted by an organization
+    start_date = models.DateTimeField(default=timezone.now)
+    end_date = models.DateTimeField()
+    name = models.CharField(max_length=60)
+    tags = models.ManyToManyField(Tag)
+
+
+"""TODO: Kyle proposes that we create a eventTag model containing
+    tag id and event id's as a means of explictly showing the many to many relation of 
+    tags's and Events. """
+# class eventTags(models.Model):
+#     """ Keeps track of all event's related tags refers to unique tag id's 
+#         for each event id."
+#     event_id = models.ForeignKey(Event, on_delete=models.CASCADE) # Event id
+#     tag_id = models.ForeignKey(Tag, on_delete=models.CASCADE)
+
+
+class Hosts(models.Model):
+    """
+    """
+    event_id = models.ForeignKey(Event, on_delete=models.CASCADE)
+    org_id = models.ForeignKey(Organization, on_delete=models.CASCADE)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["event_id", "org_id"],
+                name="unique_event_org_host_constraint"
+            )
+        ]
+
+
+class ProjectSubmission(models.Model):
+    """
+    """
+    event_id = models.ForeignKey(Event, on_delete=models.CASCADE)
+    #TODO: owner of team that submitted project
+        #same issue as file submission
+    owner_id = models.ForeignKey(Collaborator, on_delete=models.CASCADE)
+    team_name = models.ForeignKey(Collaborator, on_delete=models.CASCADE)
+    project_id = models.ForeignKey(Project, on_delete=models.CASCADE)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["event_id", "owner_id"],
+                name="unique_event_owner_project_submission_constraint"
+            )
+        ]
+
+
+class FileSubmission(models.Model):
+    """
+    """
+    event_id = models.ForeignKey(Event, on_delete=models.CASCADE)
+    #TODO: figure out how to deal with both of these using primary key and not attr we want
+    owner_id = models.ForeignKey(Collaborator, on_delete=models.CASCADE)
+    team_name = models.ForeignKey(Collaborator, on_delete=models.CASCADE)
+    file = models.FileField()
+    file_type = models.CharField(20)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["event_id", "owner_id", "team_name"],
+                name="unique_event_owner_name_file_submission_constraint"
+            )
+        ]
 
 
 class PartOf(models.Model):
@@ -178,6 +299,8 @@ class Item(models.Model):
     description = models.TextField()
     is_approved = models.BooleanField()
     due_date = models.DateField()
+    #TODO: this is the teams owner id, but it points straight to owner?
+        #there are other instances of similar problem
     owner_id = models.ForeignKey(Owner, on_delete=models.SET_NULL, null=True)
     team_name = models.ForeignKey(Collaborator, on_delete=models.SET_NULL, null=True)
 
@@ -221,7 +344,7 @@ class Issue(Item):
     issue_type = models.CharField(max_length=60)  # could this also be a choice?
 
 
-class Commit(models.Model):
+class Commit(Item):
     """
 
     This model defines the fields and parameters that will be defined for
