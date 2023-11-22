@@ -40,7 +40,7 @@ class Team(models.Model):
     TODO: comment, verify unique constraint actually works
     """
     owner_id = models.ForeignKey(Owner, on_delete=models.SET_NULL, null=True)
-    team_name = models.CharField(max_length=60, unique=True) # TODO: is unique=True applicable here?
+    team_name = models.CharField(max_length=60)
     tags = models.ManyToManyField(Tag)
 
     class Meta:
