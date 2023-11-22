@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from projects.models import (Project, Collaborator, Follow, Event, Item,
+from projects.models import (Project, Team, Follow, Event, Item,
                              Issue, PullRequest, CodeReview, Commit, Repository,
                              Member, DropboxSubmission, SubmissionFile, BugReport)
 from users.models import CustomUser, Tag, Organization
@@ -59,11 +59,11 @@ class ProjectSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'visibility', 'description', 'owner_id', 'tags')
 
 
-class CollaboratorSerializer(serializers.ModelSerializer):
+class TeamSerializer(serializers.ModelSerializer):
     """
-    Serializer for the users/models.Collaborator model.
+    Serializer for the users/models.Team model.
 
-    Necessary Collaborator fields:
+    Necessary Team fields:
     - owner_id : users/model.Owner
     - team_name
     - tags: users/model.Tag
@@ -71,7 +71,7 @@ class CollaboratorSerializer(serializers.ModelSerializer):
     tags = TagSerializer(read_only=True, many=True)
 
     class Meta:
-        model = Collaborator
+        model = Team
         fields = ('owner_id', 'team_name', 'tags')
 
 
@@ -159,7 +159,7 @@ class MemberSerializer(serializers.ModelSerializer):
 class DropboxSubmissionSerializer(serializers.ModelSerializer):
     class Meta:
         model = DropboxSubmission
-        fields = ('event_id', 'collaborator', 'comment', 'submission_date')
+        fields = ('event_id', 'team', 'comment', 'submission_date')
 
 
 class SubmissionFileSerializer(serializers.ModelSerializer):
@@ -296,31 +296,31 @@ class BugReportSerializer(serializers.ModelSerializer):
 #         fields = ('tag_name',)
 #
 #
-# class OwnerOfCollaboratorSerializer(serializers.ModelSerializer):
+# class OwnerOfTeamSerializer(serializers.ModelSerializer):
 #     """
 #     """
 #
 #     # TODO: tags?
 #     class Meta:
-#         model = Collaborator
+#         model = Team
 #         fields = ('team_name',)
 #
 #
-# class CollaboratorSerializer(serializers.ModelSerializer):
+# class TeamSerializer(serializers.ModelSerializer):
 #     """
 #     """
 #
 #     class Meta:
-#         model = Collaborator
+#         model = Team
 #         fields = ('team_name', 'owner_id', 'tags')
 #
 #
-# class CollaboratorPermissionSerializer(serializers.ModelSerializer):
+# class TeamPermissionSerializer(serializers.ModelSerializer):
 #     """
 #     """
 #
 #     class Meta:
-#         model = CollaboratorPermission
+#         model = TeamPermission
 #         fields = ('permission',)
 #
 #

@@ -3,10 +3,10 @@ from rest_framework.response import Response
 from django.db.models import Q
 
 from .permissions import IsOwnerOrReadOnly
-from .serializers import UserSerializer, ProjectSerializer, CollaboratorSerializer, OrganizationSerializer, \
+from .serializers import UserSerializer, ProjectSerializer, TeamSerializer, OrganizationSerializer,
     UserFollowSerializer, EventSerializer, BaseSearchSerializer
 from users.models import CustomUser, Organization
-from projects.models import (Project, Collaborator, Member, Follow, Event, PartOf,
+from projects.models import (Project, Team, Member, Follow, Event, PartOf,
                               Repository, Item, Issue, CodeReview, PullRequest, BugReport,
                               Hosts, DropboxSubmission, SubmissionFile)
 
@@ -42,13 +42,13 @@ class UserProjectList(generics.ListCreateAPIView):
 
 
 class UserTeamsList(generics.ListCreateAPIView):
-    serializer_class = CollaboratorSerializer
+    serializer_class = TeamSerializer
     permission_classes = [IsOwnerOrReadOnly]
     lookup_field = 'user_id'
 
     def get_queryset(self):
         user_id = self.kwargs['user_id']
-        queryset = Collaborator.objects.filter(
+        queryset = Team.objects.filter(
             team_name__in=Member.objects.filter(user_id=user_id).values('team_name'),
             owner_id__in=Member.objects.filter(user_id=user_id).values('owner_id')
         )
@@ -83,10 +83,10 @@ class SearchView(generics.ListAPIView):
             self.queryset = Project.objects.all()
             return ProjectSerializer
         elif model_name == 'team':
-            self.queryset = Collaborator.objects.all()
-            return CollaboratorSerializer
+            self.queryset = Team.objects.all()
+            return TeamSerializer
         elif model_name == 'organization':
-            self.queryset = Collaborator.objects.all()
+            self.queryset = Team.objects.all()
             return OrganizationSerializer
         elif model_name == 'event':
             self.queryset = Event.objects.all()
@@ -119,13 +119,13 @@ class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class ProjectTeamsList(generics.ListCreateAPIView):
-    serializer_class = CollaboratorSerializer
+    serializer_class = TeamSerializer
     permission_classes = [IsOwnerOrReadOnly]  # TODO use permissions fields
     lookup_field = 'project_id'
 
     def get_queryset(self):
         project_id = self.kwargs['project_id']
-        queryset = Collaborator.objects.filter(
+        queryset = Team.objects.filter(
             team_name__in=PartOf.objects.filter(user_id=project_id).values('team_name'),
             owner_id__in=PartOf.objects.filter(user_id=project_id).values('owner_id')
         )
@@ -275,12 +275,12 @@ class OrganizationEventsList(generics.ListCreateAPIView):
 
 
 class OrganizationTeamsList(generics.ListCreateAPIView):
-    serializer_class = CollaboratorSerializer
+    serializer_class = TeamSerializer
     permission_classes = [IsOwnerOrReadOnly]
 
     def get_queryset(self):
         owner_id = self.kwargs['owner_id']
-        queryset = Collaborator.objects.filter(owner_id=owner_id)
+        queryset = Team.objects.filter(owner_id=owner_id)
         return queryset
 
 
@@ -318,7 +318,7 @@ class DropBoxSubmissionDetail(MultipleFieldLookupMixin, generics.RetrieveUpdateD
     queryset = DropboxSubmission.objects.all()
     serializer_class = DropBoxSubmissionSerializer
     permission_classes = [IsOwnerOrReadOnly]
-    lookup_fields = ['event_id', 'collaborator']
+    lookup_fields = ['event_id', 'team']
 
 
 class DropBoxSubmissionFileList(generics.ListCreateAPIView):
@@ -411,62 +411,62 @@ class BugDetail(generics.RetrieveUpdateDestroyAPIView):
 #     queryset = Tag.objects.all()
 #     serializer_class = TagSerializer
 #
-# class OwnerOfCollaboratorList(generics.ListCreateAPIView):
+# class OwnerOfTeamList(generics.ListCreateAPIView):
 #     """
 #     API view for listing and creating teams that an owner is an owner of.
 #
 #     Attributes:
 #         TODO properly fetch by owner_id
-#         queryset (QuerySet): The queryset of Collaborator instances to be used for listing.
+#         queryset (QuerySet): The queryset of Team instances to be used for listing.
 #         serializer_class (Serializer): The serializer class used for
-#             serializing/deserializing Collaborator instances.
+#             serializing/deserializing Team instances.
 #
 #     Note:
 #         This view assumes that you have configured the URL pattern to map to it
 #         and that you have set the 'api_name' namespace for the URL pattern.
 #     """
-#     queryset = Collaborator.objects.all()
-#     serializer_class = OwnerOfCollaboratorSerializer
+#     queryset = Team.objects.all()
+#     serializer_class = OwnerOfTeamSerializer
 #
-# #NOTE since we still have team tags for searching, i (david) propose adding a visibility field to collaborators
-# class CollaboratorList(generics.ListCreateAPIView):
+# #NOTE since we still have team tags for searching, i (david) propose adding a visibility field to Teams
+# class TeamList(generics.ListCreateAPIView):
 #     """
 #     """
 #     #TODO: filter by tags and or owner searched for (and publicity?)
-#     queryset = Collaborator.objects.all()
-#     serializer_class = CollaboratorSerializer
+#     queryset = Team.objects.all()
+#     serializer_class = TeamSerializer
 #
-# class CollaboratorPemissionList(generics.ListCreateAPIView):
+# class TeamPemissionList(generics.ListCreateAPIView):
 #     """
 #     API view for listing and creating permissions for a team.
 #
 #     Attributes:
-#         TODO properly fetch by collaborator_id
-#         queryset (QuerySet): The queryset of CollaboratorPermission instances to be used for listing.
+#         TODO properly fetch by Team_id
+#         queryset (QuerySet): The queryset of TeamPermission instances to be used for listing.
 #         serializer_class (Serializer): The serializer class used for
-#             serializing/deserializing CollaboratorPermission instances.
+#             serializing/deserializing TeamPermission instances.
 #
 #     Note:
 #         This view assumes that you have configured the URL pattern to map to it
 #         and that you have set the 'api_name' namespace for the URL pattern.
 #     """
-#     queryset = CollaboratorPermission.objects.all()
-#     serializer_class = CollaboratorPermissionSerializer
+#     queryset = TeamPermission.objects.all()
+#     serializer_class = TeamPermissionSerializer
 #
 # #NOTE purely to delete permissions
-# class CollaboratorPemissionDetail(generics.DestroyAPIView):
+# class TeamPemissionDetail(generics.DestroyAPIView):
 #     """
 #     """
-#     #TODO: filter by collaborator and permission
-#     queryset = CollaboratorPermission.objects.all()
-#     serializer_class = CollaboratorPermissionSerializer
+#     #TODO: filter by Team and permission
+#     queryset = TeamPermission.objects.all()
+#     serializer_class = TeamPermissionSerializer
 #
 # class UserIsMemberOfList(generics.ListCreateAPIView):
 #     """
 #     """
 #     #TODO: filter by user id
 #         #gets all teams a user is a member of
-#     queryset = CollaboratorPermission.objects.all()
+#     queryset = TeamPermission.objects.all()
 #     serializer_class = UserIsMemberOfSerializer
 #
 # class MemberList(generics.ListCreateAPIView):
@@ -484,7 +484,7 @@ class BugDetail(generics.RetrieveUpdateDestroyAPIView):
 #         This view assumes that you have configured the URL pattern to map to it
 #         and that you have set the 'api_name' namespace for the URL pattern.
 #     """
-#     queryset = CollaboratorPermission.objects.all()
+#     queryset = TeamPermission.objects.all()
 #     serializer_class = MemberUserSerializer
 #
 # #NOTE purely to delete members from team
@@ -523,7 +523,7 @@ class BugDetail(generics.RetrieveUpdateDestroyAPIView):
 #         TODO properly fetch by team_name
 #             FIXME TEAM NAMES ARENT UNIQUE, THEY NEED AN OWNER AND THE OWNER
 #                     IN THIS RELATIONSHIP IS THE OWNER OF THE PROJECT
-#         TODO maybe get more info from collaborators?
+#         TODO maybe get more info from Teams?
 #         queryset (QuerySet): The queryset of PartOf instances to be used for listing.
 #         serializer_class (Serializer): The serializer class used for
 #             serializing/deserializing PartOf instances.
@@ -539,7 +539,7 @@ class BugDetail(generics.RetrieveUpdateDestroyAPIView):
 #     """
 #     """
 #     #TODO: filter by team_name
-#         #maybe get more info from collaborators?
+#         #maybe get more info from Teams?
 #     queryset = PartOf.objects.all()
 #     serializer_class = PartOfTeamSerializer
 #

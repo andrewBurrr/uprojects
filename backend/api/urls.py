@@ -5,8 +5,8 @@ from .views import UserDetail, UserProjectList, UserTeamsList, UserOrganizationL
 app_name = 'apis'
 
 # TODO Tag lookup performs query on project list/team list/etc
-# TODO collaborator view (unique by owner_id, team_name)
-# TODO collaborator permissions (might do a join on another query), show all members of a team and team permissions/settings (unique by collaborator_id, permission)
+# TODO Team view (unique by owner_id, team_name)
+# TODO Team permissions (might do a join on another query), show all members of a team and team permissions/settings (unique by Team_id, permission)
 # TODO Member (show all the members of a team), probably a read only endpoint (unique by (user_id, owner_id, team_name))
 # TODO Project (probably needs multiple views) (unique by id: Strong entity)
 # TODO PartOf Links teams to projects (unique by project_id, owner_id, team_name)

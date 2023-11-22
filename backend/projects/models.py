@@ -35,7 +35,7 @@ class Respond(models.Model):
 
 
 
-class Collaborator(models.Model):
+class Team(models.Model):
     """
     TODO: comment, verify unique constraint actually works
     """
@@ -47,15 +47,15 @@ class Collaborator(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=["owner_id", "team_name"],
-                name="unique_owner_team_collaborator_constraint"
+                name="unique_owner_team_constraint"
             )
         ]
 
 
 
 
-# TODO: make note somewhere saying that we changed how permissions for collaborators work
-class CollaboratorPermission(models.Model):
+# TODO: make note somewhere saying that we changed how permissions for Teams work
+class TeamPermission(models.Model):
     """
     TODO: comment
     """
@@ -64,14 +64,14 @@ class CollaboratorPermission(models.Model):
         ("W", "write"),
         ("X", "execute")
     ]
-    collaborator_id = models.ForeignKey(Collaborator, on_delete=models.CASCADE)
+    team_id = models.ForeignKey(Team, on_delete=models.CASCADE)
     permission = models.CharField(max_length=1, choices=PERMISSIONS, default="R")
 
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=["collaborator_id", "permission"],
-                name="unique_collaborator_permission_constraint"
+                fields=["team_id", "permission"],
+                name="unique_team_permission_constraint"
             )
         ]
 
@@ -81,7 +81,7 @@ class Member(models.Model):
     TODO: comment, if unique constraint causes issues try team.etc
     """
     user_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    team = models.ForeignKey(Collaborator, on_delete=models.CASCADE, to_fields=['owner_id', 'team_name'])
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, to_fields=['owner_id', 'team_name'])
     role = models.CharField(max_length=60)
 
     class Meta:
@@ -154,14 +154,14 @@ class Hosts(models.Model):
 class DropboxSubmission(models.Model):
     # TODO verify unique constraint is unique
     event_id = models.ForeignKey(Event, on_delete=models.CASCADE)
-    collaborator = models.ForeignKey(Collaborator, on_delete=models.CASCADE, to_fields=['owner_id', 'team_name'])
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, to_fields=['owner_id', 'team_name'])
     comment = models.TextField(blank=True)
     submission_date = models.DateTimeField(auto_now_add=True)
     
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=["event_id", "collaborator"],
+                fields=["event_id", "team"],
                 name="unique_event_owner_team_dropbox_submission_constraint"
             )
         ]
@@ -169,7 +169,7 @@ class DropboxSubmission(models.Model):
 
 
 class SubmissionFile(models.Model):
-    submission = models.ForeignKey(DropboxSubmission, on_delete=models.CASCADE, to_fields=['event_id', 'collaborator'])
+    submission = models.ForeignKey(DropboxSubmission, on_delete=models.CASCADE, to_fields=['event_id', 'team'])
     file = models.FileField(upload_to=lambda instance, filename: image_to_path(instance, filename, "submission_file"), storage=OverwriteStorage(), blank=True)  # TODO figure out file paths
 
 
@@ -180,12 +180,12 @@ class PartOf(models.Model):
 
     """
     project_id = models.ForeignKey(Project, on_delete=models.CASCADE)
-    collaborator = models.ForeignKey(Collaborator, on_delete=models.CASCADE, to_fields=['owner_id', 'team_name'])
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, to_fields=['owner_id', 'team_name'])
 
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=["project_id", "collaborator"],
+                fields=["project_id", "team"],
                 name="unique_project_owner_team_partof_constraint"
             )
         ]
@@ -248,7 +248,7 @@ class Item(models.Model):
     is_approved = models.BooleanField()
     due_date = models.DateField()
 
-    team = models.ForeignKey(Collaborator, on_delete=models.SET_NULL, null=True, to_fields=['owner_id', 'team_name'])
+    team = models.ForeignKey(Team, on_delete=models.SET_NULL, null=True, to_fields=['owner_id', 'team_name'])
 
 
     def save(self, *args, **kwargs):
