@@ -1,7 +1,7 @@
 import uuid
 from django.db import models
 from django.utils import timezone
-from users.models import CustomAdmin, CustomUser, Organization, Owner, Tag, image_to_path
+from users.models import CustomAdmin, CustomUser, Organization, Owner, Tag #, image_to_path
 from users.storage import OverwriteStorage
 
 # TODO: finish filling in comments for each
@@ -173,8 +173,8 @@ class DropboxSubmission(models.Model):
 class SubmissionFile(models.Model):
     #submission = models.ForeignKey(DropboxSubmission, on_delete=models.CASCADE, to_fields=['event_id', 'collaborator'])
     submission = models.ForeignKey(DropboxSubmission, on_delete=models.CASCADE) # trusting django magic
-    file = models.FileField(upload_to=lambda instance, filename: image_to_path(instance, filename, "submission_file"), storage=OverwriteStorage(), blank=True)  # TODO figure out file paths
-
+    #file = models.FileField(upload_to=lambda instance, filename: image_to_path(instance, filename, "submission_file"), storage=OverwriteStorage(), blank=True)  # TODO figure out file paths
+    file = models.FileField(upload_to="submission/files/", blank=True)
 
 
 class PartOf(models.Model):
