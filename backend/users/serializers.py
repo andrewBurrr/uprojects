@@ -1,3 +1,5 @@
+from abc import ABC
+
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import serializers
 from .models import CustomUser
@@ -6,12 +8,13 @@ from .models import CustomUser
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
-        token = super().get_token(user)
+        print("getting token")
+        token = super(CustomTokenObtainPairSerializer, cls).get_token(user)
 
         token['first_name'] = user.first_name
         token['last_name'] = user.last_name
 
-        profile_image = user.profile_image.url if user.profile_image else None
+        profile_image = user.profile_image.url if user.profile_image else ""
         token['profile_image'] = profile_image
 
         return token
