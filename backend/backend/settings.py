@@ -165,9 +165,9 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny',
     ],
     #commented out for ease of backend testing
-    # 'DEFAULT_AUTHENTICATION_CLASSES': (
-    #     'rest_framework_simplejwt.authentication.JWTAuthentication',
-    # ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
 }
 
 # Permissions:
