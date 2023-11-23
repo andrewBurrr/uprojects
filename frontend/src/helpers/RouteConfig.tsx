@@ -27,6 +27,15 @@ const publicRoutes: CustomRoute[] = [
             </AppLayout>,
         icon: <AboutIcon />
     },
+    {
+        title: "Dashboard",
+        path: "/dashboard",
+        element:
+            <AppLayout>
+                <Dashboard />
+            </AppLayout>,
+        icon: <AboutIcon />
+    },
 ];
 
 const authOnlyRoutes: CustomRoute[] = [
