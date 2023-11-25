@@ -123,8 +123,6 @@ class Project(models.Model):
         return self.name
 
 
-
-
 class Event(models.Model):
     """
     """

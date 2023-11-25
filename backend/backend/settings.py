@@ -164,7 +164,10 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
     ],
+<<<<<<< HEAD
     #commented out for ease of backend testing
+=======
+>>>>>>> origin/dashboard_updates
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),

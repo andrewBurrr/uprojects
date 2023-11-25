@@ -9,6 +9,8 @@ import {Register} from "views/register-page/Register";
 import {ProtectedRoute} from "helpers/ProtectedRoute";
 import {Dashboard} from "views/dashboard-page/Dashboard";
 
+import { OrgPage } from "views/org-page/OrgPage";
+
 type CustomRoute = {
     title: string;
     path: string;
@@ -33,6 +35,15 @@ const publicRoutes: CustomRoute[] = [
         element:
             <AppLayout>
                 <Dashboard />
+            </AppLayout>,
+        icon: <AboutIcon />
+    },
+    {
+        title: "OrgPage",
+        path: "/orgpage",
+        element:
+            <AppLayout>
+                <OrgPage />
             </AppLayout>,
         icon: <AboutIcon />
     },
