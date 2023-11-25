@@ -267,9 +267,10 @@ class Item(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=["repository", "item_id"],
-                name="unique_project_repository_item_key_constraint"
+                name="%(class)s_unique_project_repository_item_key_constraint"
             )
         ]
+        abstract = True
 
 
 class PullRequest(Item):
