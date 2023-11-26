@@ -116,11 +116,15 @@ When any of the models.py files are updated:
     ```bash
     python manage.py shell
     ```
-3. Then follow the :
+3. Using the custom serializer inspection function:
     ```python
-    >>> from api.serializers import * # OR a specific serializer
-    >>> serializer = ExampleSerializer()
-    >>> print(repr(serializer))
-    ExampleSerializer():
-        id = IntegerField(label='ID', read_only=True)
+    # Check all serializers
+    >>> from api.checkSerial import * # Prints out info for all serializers. 
+                                      # Produces list of problem Serializers
+    ```
+    To check individual Serializers:
+    ```python
+    # Check all serializers
+    >>> from api.checkSerial import func_test 
+    >>> func_test(ExampleSerializer)
     ```
