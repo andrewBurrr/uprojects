@@ -2,8 +2,8 @@ from rest_framework import serializers
 from projects.models import (Project, Team, Follow, Event, Hosts, PartOf, Respond,
                              Issue, PullRequest, CodeReview, Commit, Repository,
                              Member, DropboxSubmission, SubmissionFile, BugReport,
-                             Owner, Own)
-from users.models import CustomUser, Tag, Organization
+                             Owner, Own, TeamPermission)
+from users.models import CustomUser,CustomAdmin, Tag, Organization
 
 
 """
@@ -50,7 +50,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class AdminSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CustomUser
+        model = CustomAdmin
         fields = ['id', 'profile_image', 'about', 'email', 'first_name', 'last_name', 'start_date', 'admin_type']
 
 #no need for admin permissions cause who tf cares?
@@ -110,10 +110,12 @@ class TeamSerializer(serializers.ModelSerializer):
 
 
 class TeamPermissionSerializer(serializers.ModelSerializer):
-    tags = TagSerializer(read_only=True, many=True)
+    """
+    TODO: Going to need to test querries on this thing. Feels sus.
+    """
 
     class Meta:
-        model = Team
+        model = TeamPermission
         fields = ['team_id', 'permission']
 
 
@@ -186,30 +188,25 @@ class RepositorySerializer(serializers.ModelSerializer):
         fields = ['project_id', 'repo_name', 'git_base_path']
 
 
-# class ItemSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Item
-#         fields = ['project_id', 'repo_name', 'item_id', 'item_name', 'status',
-#                   'description', 'is_approved', 'due_date', 'owner_id', 'team_name']
-
-
 class IssueSerializer(serializers.ModelSerializer):
-    model = Issue
-    fields = ['project_id', 'repo_name', 'item_id', 'item_name', 'status',
-            'description', 'is_approved', 'due_date', 'owner_id', 'team_name','issue_type',]
+    class Meta:
+        model = Issue
+        fields = ['repo', 'item_id', 'item_name', 'status', 'description', 'is_approved',
+                'due_date', 'team','issue_type']
 
 
 class PullRequestSerializer(serializers.ModelSerializer):
-    model = PullRequest
-    fields = ['project_id', 'repo_name', 'item_id', 'item_name', 'status',
-            'description', 'is_approved', 'due_date', 'owner_id', 'team_name','branch_name',]
+    class Meta:
+        model = PullRequest
+        fields = ['repo', 'item_id', 'item_name', 'status', 'description', 'is_approved',
+                'due_date', 'team', 'branch_name',]
 
 
 class CommitSerializer(serializers.ModelSerializer):
     class Meta:
         model = Commit
-        fields = ['project_id', 'repo_name', 'item_id', 'item_name', 'status',
-            'description', 'is_approved', 'due_date', 'owner_id', 'team_name', 'commit_id']
+        fields = ['repo', 'item_id', 'item_name', 'status', 'description', 'is_approved',
+              'due_date', 'team', 'commit_id']
 
 
 # TODO: test for
@@ -218,8 +215,8 @@ class CodeReviewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CodeReview
-        fields = ['project_id', 'repo_name', 'item_id', 'item_name', 'status',
-            'description', 'is_approved', 'due_date', 'owner_id', 'team_name','commits']
+        fields = ['repo', 'item_id', 'item_name', 'status', 'description', 'is_approved',
+              'due_date', 'team','commits']
 
 
 """

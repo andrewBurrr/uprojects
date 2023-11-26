@@ -241,7 +241,7 @@ class Item(models.Model):
         ("COMPLETED", "completed"),
     ]
     #repository = models.ForeignKey(Repository, on_delete=models.CASCADE, to_fields=['project_id', 'repo_name'])
-    repository = models.ForeignKey(Repository, on_delete=models.CASCADE) # django magic
+    repo = models.ForeignKey(Repository, on_delete=models.CASCADE) # django magic
     item_id = models.IntegerField(default=1)
     item_name = models.CharField(max_length=60)
     status = models.CharField(max_length=60, choices=STATUS, default="NOTAPPROVED")
@@ -262,7 +262,7 @@ class Item(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=["repository", "item_id"],
+                fields=["repo", "item_id"],
                 name="%(class)s_unique_project_repository_item_key_constraint"
             )
         ]
