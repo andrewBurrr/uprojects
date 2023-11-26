@@ -24,6 +24,11 @@ We are using Django's ModelSerializer serializers for our application.
 START USERS SERIALIZERS
 """
 
+class OwnerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Owner
+        fields = ['id',]
+
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
@@ -39,8 +44,15 @@ class UserSerializer(serializers.ModelSerializer):
     # TODO: Should id be something that we present to the front end?
     class Meta:
         model = CustomUser
-        fields = ['id', 'first_name', 'last_name', 'email', 'profile_image', 'about', 'start_date', 'tags']
+        fields = ['id', 'profile_image', 'about', 'email', 'first_name', 'last_name', 'start_date', 'owner_id', 'tags']
 
+class AdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['id', 'profile_image', 'about', 'email', 'first_name', 'last_name', 'start_date', 'admin_type']
+
+#no need for admin permissions cause who tf cares?
+    #how admins update admin perms?
 
     # TODO: create owner_id with creation of Organization.
 class OrganizationSerializer(serializers.ModelSerializer):
@@ -59,7 +71,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Organization
-        fields = ['org_id', 'logo', 'name', 'description', 'owner_id', 'tags']
+        fields = ['org_id', 'logo', 'name', 'description', 'user_owner', 'owner_id', 'tags']
 
 
 """
