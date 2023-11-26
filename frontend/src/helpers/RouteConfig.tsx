@@ -10,6 +10,8 @@ import {ProtectedRoute} from "helpers/ProtectedRoute";
 import {Dashboard} from "views/dashboard-page/Dashboard";
 
 import { OrgPage } from "views/org-page/OrgPage";
+import { Teampage } from "views/team-page/Teampage";
+import { Eventpage } from "views/event-page/Eventpage";
 
 type CustomRoute = {
     title: string;
@@ -46,7 +48,23 @@ const publicRoutes: CustomRoute[] = [
                 <OrgPage />
             </AppLayout>,
         icon: <AboutIcon />
-    },
+    },   {
+        title: "EventPage",
+        path: "/eventpage",
+        element:
+            <AppLayout>
+                <Eventpage />
+            </AppLayout>,
+        icon: <AboutIcon />
+    }, {
+        title: "TeamPage",
+        path: "/teampage",
+        element:
+            <AppLayout>
+                <Teampage />
+            </AppLayout>,
+        icon: <AboutIcon />
+    }
 ];
 
 const authOnlyRoutes: CustomRoute[] = [

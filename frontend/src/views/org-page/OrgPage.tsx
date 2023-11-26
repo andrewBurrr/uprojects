@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import {useApi} from "contexts/ApiContext";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Grid, Box, Typography, Button, Avatar, CardActions, CardContent, Card } from '@mui/material';
 
+
 function tagToString(a:string[]) {
     if (a.length==0) {
         return ""
@@ -14,6 +15,10 @@ function tagToString(a:string[]) {
     }
 }
 
+function createSIU(title:string,tags:string,start:string,end:string){
+    return {title,tags,start,end}
+}
+
 function createTeam(name:string,tags:string) {
 
     return {name,tags};
@@ -24,9 +29,17 @@ const teamDetails = [
     createTeam("TeamB", tagToString(["Pyhton", "perl"])),
     createTeam("TeamC",tagToString(["Java", "C"]))
     
+]       // Andrew here are how I display the data LMK if we need to change
+
+const eventDetails = [
+    {title:"Cam",
+tags:"Cam,isc,ca",
+start:"today",
+end:"tommorow"},
+
+    createSIU("David event", "Superhandsome,man", "1969","3000" )
+    // createEvent()
 ]
-
-
 
 // The following is my card test
 const card = (
@@ -38,12 +51,18 @@ const card = (
   justifyContent="flex-end"
   alignItems="flex-start"
   spacing={1}> 
-  <Grid item xs={9} >
-  <Typography variant="h5">Team A</Typography>
+    <Grid item xs={9} container  direction="column"
+  justifyContent="flex-end"
+  alignItems="baseline">
+    <Grid item > <Typography variant="h6">Title</Typography></Grid>
+    <Grid item > <Typography variant="caption">Tags</Typography></Grid>
   </Grid>
 
-  <Grid item xs={3}>
-    <Typography variant="overline">Tags</Typography>
+  <Grid item xs={3} container  direction="column"
+  justifyContent="flex-end"
+  alignItems="baseline">
+    <Grid item > <Typography>Start</Typography></Grid>
+    <Grid item > <Typography>End</Typography></Grid>
   </Grid>
 
   </Grid>
@@ -93,14 +112,45 @@ const OrgPage = () => {
                     </Typography>
                     
                     <Grid container >
-                        <Grid   width={0.5}>
+                        <Grid   width={0.48} marginRight={1} >
                             <Typography variant="h5" >Events</Typography>
-                            <Typography variant="body1" paragraph>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla quis lorem ut libero malesuada feugiat.
-                    </Typography>
+                        <Card variant="outlined">{card}</Card>
+                        <Card variant="outlined">{card}</Card>
+                        {eventDetails.map(   (det) => (
+                            <Card>
+                                           <React.Fragment>
+                                           <CardContent>
+                                           <Grid
+                                       container
+                                       direction="row"
+                                       justifyContent="flex-end"
+                                       alignItems="flex-start"
+                                       spacing={1}> 
+                                         <Grid item xs={9} container  direction="column"
+                                       justifyContent="flex-end"
+                                       alignItems="baseline">
+                                         <Grid item > <Typography variant="h6">{det.title}</Typography></Grid>
+                                         <Grid item > <Typography variant="caption">{det.tags}</Typography></Grid>
+                                       </Grid>
+                                     
+                                       <Grid item xs={3} container  direction="column"
+                                       justifyContent="flex-end"
+                                       alignItems="baseline">
+                                         <Grid item > <Typography>{det.start}</Typography></Grid>
+                                         <Grid item > <Typography>{det.end}</Typography></Grid>
+                                       </Grid>
+                                     
+                                       </Grid>
+                                            
+                                           </CardContent>
+                                        
+                                         </React.Fragment>
+                                         </Card>
+
+                        )  )}
                            
                         </Grid>
-                        <Grid  width={0.5} paddingBottom={1}>
+                        <Grid  width={0.48} paddingBottom={1}>
                             <Typography variant="h5" >Teams</Typography>
                         
                            {teamDetails.map((det)=>(
@@ -113,7 +163,7 @@ const OrgPage = () => {
                                 justifyContent="flex-end"
                                 alignItems="flex-start"
                                 > 
-                                <Grid item xs={9} >
+                                <Grid item xs={9} textAlign={"left"} >
                                 <Typography variant="h5">{det.name}</Typography>
                                 </Grid>
                               
