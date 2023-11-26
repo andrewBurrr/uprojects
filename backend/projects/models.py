@@ -128,7 +128,7 @@ class Project(models.Model):
 class Event(models.Model):
     """
     """
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
+    event_id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)  # events need to be hosted by an organization
     event_type = models.CharField(max_length=60)
     start_date = models.DateTimeField(default=timezone.now)

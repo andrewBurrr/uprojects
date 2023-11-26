@@ -38,6 +38,17 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'first_name', 'last_name', 'email', 'profile_image', 'about', 'start_date', 'tags']
 
 
+<<<<<<< Updated upstream
+=======
+# class UserSerializer(serializers.ModelSerializer):
+#     tags = TagSerializer(read_only=True, many=True)
+
+#     class Meta:
+#         model = CustomUser
+#         fields = ['id', 'first_name', 'last_name', 'email', 'profile_image', 'about', 'start_date', 'tag']
+
+
+>>>>>>> Stashed changes
 class ProjectSerializer(serializers.ModelSerializer):
     """
     Serializer for the Project model.
@@ -78,7 +89,7 @@ class TeamSerializer(serializers.ModelSerializer):
         model = Team
         fields = ['owner_id', 'team_name', 'tags']
 
-
+    # TODO: create owner_id with creation of Organization.
 class OrganizationSerializer(serializers.ModelSerializer):
     """
     Serializer for the users/models.Organization model
@@ -111,11 +122,13 @@ class EventSerializer(serializers.ModelSerializer):
         model = Event
         fields = ['event_id', 'event_type', 'start_date', 'end_date', 'name', 'tags']
 
-
-class BaseSearchSerializer(serializers.ModelSerializer):
-    query = serializers.CharField(required=False, allow_blank=True)
-    tags = serializers.ListField(child=serializers.CharField(), required=False)
-
+# TODO: This doesn't work. Will will handle querries in views.
+# class BaseSearchSerializer(serializers.ModelSerializer):
+#     query = serializers.CharField(required=False, allow_blank=True)
+#     tags = serializers.ListField(child=serializers.CharField(), required=False)
+    
+#     class meta:
+#         model = Tag
 
 class RepositorySerializer(serializers.ModelSerializer):
     class Meta:
