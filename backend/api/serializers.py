@@ -38,17 +38,6 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'first_name', 'last_name', 'email', 'profile_image', 'about', 'start_date', 'tags']
 
 
-<<<<<<< Updated upstream
-=======
-# class UserSerializer(serializers.ModelSerializer):
-#     tags = TagSerializer(read_only=True, many=True)
-
-#     class Meta:
-#         model = CustomUser
-#         fields = ['id', 'first_name', 'last_name', 'email', 'profile_image', 'about', 'start_date', 'tag']
-
-
->>>>>>> Stashed changes
 class ProjectSerializer(serializers.ModelSerializer):
     """
     Serializer for the Project model.
