@@ -20,6 +20,10 @@ We are using Django's ModelSerializer serializers for our application.
 
 """
 
+"""
+START USERS SERIALIZERS
+"""
+
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
@@ -36,6 +40,73 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['id', 'first_name', 'last_name', 'email', 'profile_image', 'about', 'start_date', 'tags']
+
+
+    # TODO: create owner_id with creation of Organization.
+class OrganizationSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the users/models.Organization model
+
+    Necessary Organization fields:
+    - org_id
+    - logo
+    - name 
+    - description
+    - owner_id: users/models.Owner
+    - tags: Tag
+    """
+    tags = TagSerializer(read_only=True, many=True)
+
+    class Meta:
+        model = Organization
+        fields = ['org_id', 'logo', 'name', 'description', 'owner_id', 'tags']
+
+
+"""
+END USERS SERIALIZERS
+START PROJECT SERIALIZERS
+"""
+
+class BugReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BugReport
+        fields = ['bug_id', 'time_stamp', 'description', 'user_id']
+
+
+class RespondSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Respond
+        fields = ['admin_id', 'bug_id', 'time_stamp', 'comment']
+
+
+class TeamSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the users/models.Team model.
+
+    Necessary Team fields:
+    - owner_id : users/model.Owner
+    - team_name
+    - tags: users/model.Tag
+    """
+    tags = TagSerializer(read_only=True, many=True)
+
+    class Meta:
+        model = Team
+        fields = ['owner_id', 'team_name', 'tags']
+
+
+class TeamPermissionSerializer(serializers.ModelSerializer):
+    tags = TagSerializer(read_only=True, many=True)
+
+    class Meta:
+        model = Team
+        fields = ['team_id', 'permission']
+
+
+class MemberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Member
+        fields = ['user_id', 'team', 'role']
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -63,53 +134,36 @@ class ProjectSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'visibility', 'description', 'owner_id', 'tags']
 
 
-class TeamSerializer(serializers.ModelSerializer):
-    """
-    Serializer for the users/models.Team model.
-
-    Necessary Team fields:
-    - owner_id : users/model.Owner
-    - team_name
-    - tags: users/model.Tag
-    """
-    tags = TagSerializer(read_only=True, many=True)
-
-    class Meta:
-        model = Team
-        fields = ['owner_id', 'team_name', 'tags']
-
-    # TODO: create owner_id with creation of Organization.
-class OrganizationSerializer(serializers.ModelSerializer):
-    """
-    Serializer for the users/models.Organization model
-
-    Necessary Organization fields:
-    - org_id
-    - logo
-    - name 
-    - description
-    - owner_id: users/models.Owner
-    - tags: Tag
-    """
-    tags = TagSerializer(read_only=True, many=True)
-
-    class Meta:
-        model = Organization
-        fields = ['org_id', 'logo', 'name', 'description', 'owner_id', 'tags']
-
-
-class UserFollowSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Follow
-        fields = ['user_id', 'project_id']
-
-
 class EventSerializer(serializers.ModelSerializer):
     tags = TagSerializer(read_only=True, many=True)
 
     class Meta:
         model = Event
-        fields = ['event_id', 'event_type', 'start_date', 'end_date', 'name', 'tags']
+        fields = ['event_id', 'organization', 'event_type', 'start_date', 'end_date', 'name', 'tags']
+
+
+class HostsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Hosts
+        fields = ['event_id', 'org_id']
+
+
+class DropboxSubmissionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DropboxSubmission
+        fields = ['event_id', 'team', 'comment', 'submission_date']
+
+
+class SubmissionFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SubmissionFile
+        fields = ['submission', 'file']
+
+
+class PartOfSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PartOf
+        fields = ['project_id', 'team']
 
 
 class RepositorySerializer(serializers.ModelSerializer):
@@ -152,26 +206,22 @@ class CodeReviewSerializer(serializers.ModelSerializer):
         fields = ItemSerializer.Meta.fields + ['commits',]
 
 
-class MemberSerializer(serializers.ModelSerializer):
+"""
+ITEM SERIALIZERS END
+"""
+
+class UserFollowSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Member
-        fields = ['user_id', 'owner_id', 'team_name', 'role']
+        model = Follow
+        fields = ['user_id', 'project_id']
 
 
-class DropboxSubmissionSerializer(serializers.ModelSerializer):
+class OwnSerializer(serializers.ModelSerializer):
     class Meta:
-        model = DropboxSubmission
-        fields = ['event_id', 'team', 'comment', 'submission_date']
+        model = Own
+        fields = ['owner_id', 'project_id']
 
 
-class SubmissionFileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SubmissionFile
-        fields = ['submission', 'file']
-
-
-class BugReportSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = BugReport
-        fields = ['bug_id', 'time_stamp', 'description', 'user_id']
-
+"""
+END PROJECT SERIALIZERS
+"""

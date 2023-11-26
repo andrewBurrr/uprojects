@@ -24,7 +24,6 @@ class Respond(models.Model):
     bug_id = models.ForeignKey(BugReport, on_delete=models.CASCADE)
     time_stamp = models.DateTimeField(default=timezone.now)
     comment = models.TextField()
-    time_stamp = models.DateTimeField(default=timezone.now)
     class Meta:
         constraints = [
             models.UniqueConstraint(
@@ -50,8 +49,6 @@ class Team(models.Model):
                 name="unique_owner_team_constraint"
             )
         ]
-
-
 
 
 # TODO: make note somewhere saying that we changed how permissions for Teams work
@@ -121,8 +118,6 @@ class Project(models.Model):
 
     def __str__(self):
         return self.name
-
-
 
 
 class Event(models.Model):
