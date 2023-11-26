@@ -109,3 +109,18 @@ When any of the models.py files are updated:
     ```bash
     python manage.py runserver
     ```
+
+## How to inspect Serializer relationships (Backend)
+1.  Make migrations as above. 
+2.  Open the Django shell
+    ```bash
+    python manage.py shell
+    ```
+3. Then follow the :
+    ```python
+    >>> from api.serializers import * # OR a specific serializer
+    >>> serializer = ExampleSerializer()
+    >>> print(repr(serializer))
+    ExampleSerializer():
+        id = IntegerField(label='ID', read_only=True)
+    ```

@@ -1,7 +1,8 @@
 from rest_framework import serializers
-from projects.models import (Project, Team, Follow, Event, Item,
+from projects.models import (Project, Team, Follow, Event, Hosts, PartOf, Respond,
                              Issue, PullRequest, CodeReview, Commit, Repository,
-                             Member, DropboxSubmission, SubmissionFile, BugReport)
+                             Member, DropboxSubmission, SubmissionFile, BugReport,
+                             Owner, Own)
 from users.models import CustomUser, Tag, Organization
 
 
@@ -45,6 +46,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['id', 'profile_image', 'about', 'email', 'first_name', 'last_name', 'start_date', 'owner_id', 'tags']
+
 
 class AdminSerializer(serializers.ModelSerializer):
     class Meta:
@@ -143,7 +145,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
-        fields = ['id', 'name', 'visibility', 'description', 'owner_id', 'tags']
+        fields = ['project_id', 'name', 'visibility', 'description', 'owner_id', 'tags']
 
 
 class EventSerializer(serializers.ModelSerializer):
@@ -206,7 +208,8 @@ class PullRequestSerializer(serializers.ModelSerializer):
 class CommitSerializer(serializers.ModelSerializer):
     class Meta:
         model = Commit
-        fields = ['id', 'commit_id']
+        fields = ['project_id', 'repo_name', 'item_id', 'item_name', 'status',
+            'description', 'is_approved', 'due_date', 'owner_id', 'team_name', 'commit_id']
 
 
 # TODO: test for
@@ -215,7 +218,8 @@ class CodeReviewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CodeReview
-        fields = ItemSerializer.Meta.fields + ['commits',]
+        fields = ['project_id', 'repo_name', 'item_id', 'item_name', 'status',
+            'description', 'is_approved', 'due_date', 'owner_id', 'team_name','commits']
 
 
 """

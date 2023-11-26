@@ -3,6 +3,7 @@ from django.db import models
 from django.utils import timezone
 from users.models import CustomAdmin, CustomUser, Organization, Owner, Tag #, image_to_path
 from users.storage import OverwriteStorage
+from datetime import date
 
 # TODO: finish filling in comments for each
 
@@ -99,7 +100,7 @@ class Project(models.Model):
     the projects table
 
     Attributes:
-        id (int): implicitly defined by django models that dont specify a pk (primary key)
+        project_id (int): implicitly defined by django models that dont specify a pk (primary key)
         name (str): The text field name for the project (will likely be changed or removed later)
         visibility (str): The text field containing the projects visibility.
         description (str): The text field containing the projects description.
@@ -109,7 +110,7 @@ class Project(models.Model):
         ("PUBLIC", "public"),
         ("PRIVATE", "private"),
     ]
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
+    project_id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
     name = models.CharField(max_length=60)
     visibility = models.CharField(max_length=60, choices=VISIBILITY, default="PRIVATE")
     description = models.TextField()
@@ -244,9 +245,9 @@ class Item(models.Model):
     item_id = models.IntegerField(default=1)
     item_name = models.CharField(max_length=60)
     status = models.CharField(max_length=60, choices=STATUS, default="NOTAPPROVED")
-    description = models.TextField()
+    description = models.TextField(default="")
     is_approved = models.BooleanField()
-    due_date = models.DateField()
+    due_date = models.DateField(default=date.today)
 
     #team = models.ForeignKey(Team, on_delete=models.SET_NULL, null=True, to_fields=['owner_id', 'team_name'])
     team = models.ForeignKey(Team, on_delete=models.SET_NULL, null=True) #django magic
