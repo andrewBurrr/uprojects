@@ -24,7 +24,7 @@ We are using Django's ModelSerializer serializers for our application.
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        fields = ('tag')
+        fields = ['tag',]
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -36,14 +36,6 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['id', 'first_name', 'last_name', 'email', 'profile_image', 'about', 'start_date', 'tags']
-
-
-class UserSerializer(serializers.ModelSerializer):
-    tags = TagSerializer(read_only=True, many=True)
-
-    class Meta:
-        model = CustomUser
-        fields = ['id', 'first_name', 'last_name', 'email', 'profile_image', 'about', 'start_date', 'tag']
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -68,7 +60,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
-        fields = ('id', 'name', 'visibility', 'description', 'owner_id', 'tags')
+        fields = ['id', 'name', 'visibility', 'description', 'owner_id', 'tags']
 
 
 class TeamSerializer(serializers.ModelSerializer):
@@ -84,7 +76,7 @@ class TeamSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Team
-        fields = ('owner_id', 'team_name', 'tags')
+        fields = ['owner_id', 'team_name', 'tags']
 
 
 class OrganizationSerializer(serializers.ModelSerializer):
@@ -103,13 +95,13 @@ class OrganizationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Organization
-        fields = ('org_id', 'logo', 'name', 'description', 'owner_id', 'tags')
+        fields = ['org_id', 'logo', 'name', 'description', 'owner_id', 'tags']
 
 
 class UserFollowSerializer(serializers.ModelSerializer):
     class Meta:
         model = Follow
-        fields = ('user_id', 'project_id')
+        fields = ['user_id', 'project_id']
 
 
 class EventSerializer(serializers.ModelSerializer):
@@ -117,7 +109,7 @@ class EventSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Event
-        fields = ('event_id', 'event_type', 'start_date', 'end_date', 'name', 'tags')
+        fields = ['event_id', 'event_type', 'start_date', 'end_date', 'name', 'tags']
 
 
 class BaseSearchSerializer(serializers.ModelSerializer):
@@ -128,30 +120,30 @@ class BaseSearchSerializer(serializers.ModelSerializer):
 class RepositorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Repository
-        fields = ('project_id', 'repo_name', 'git_base_path')
+        fields = ['project_id', 'repo_name', 'git_base_path']
 
 
 class ItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = Item
-        fields = ('project_id', 'repo_name', 'item_id', 'item_name', 'status',
-                  'description', 'is_approved', 'due_date', 'owner_id', 'team_name')
+        fields = ['project_id', 'repo_name', 'item_id', 'item_name', 'status',
+                  'description', 'is_approved', 'due_date', 'owner_id', 'team_name']
 
 
 class IssueSerializer(ItemSerializer):
     model = Issue
-    fields = ItemSerializer.Meta.fields + ('issue_type',)
+    fields = ItemSerializer.Meta.fields + ['issue_type',]
 
 
 class PullRequestSerializer(ItemSerializer):
     model = PullRequest
-    fields = ItemSerializer.Meta.fields + ('branch_name',)
+    fields = ItemSerializer.Meta.fields + ['branch_name',]
 
 
 class CommitSerializer(serializers.ModelSerializer):
     class Meta:
         model = Commit
-        fields = ('id', 'commit_id')
+        fields = ['id', 'commit_id']
 
 
 class CodeReviewSerializer(serializers.ModelSerializer):
@@ -159,29 +151,29 @@ class CodeReviewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CodeReview
-        fields = ItemSerializer.Meta.fields + ('commits',)
+        fields = ItemSerializer.Meta.fields + ['commits',]
 
 
 class MemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = Member
-        fields = ('user_id', 'owner_id', 'team_name', 'role')
+        fields = ['user_id', 'owner_id', 'team_name', 'role']
 
 
 class DropboxSubmissionSerializer(serializers.ModelSerializer):
     class Meta:
         model = DropboxSubmission
-        fields = ('event_id', 'team', 'comment', 'submission_date')
+        fields = ['event_id', 'team', 'comment', 'submission_date']
 
 
 class SubmissionFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = SubmissionFile
-        fields = ('submission', 'file')
+        fields = ['submission', 'file']
 
 
 class BugReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = BugReport
-        fields = ('bug_id', 'time_stamp', 'description', 'user_id')
+        fields = ['bug_id', 'time_stamp', 'description', 'user_id']
 
