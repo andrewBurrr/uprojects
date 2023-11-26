@@ -1,8 +1,8 @@
 from rest_framework import serializers
-from projects.models import (Project, Team, Follow, Event, Item,
+from projects.models import (Hosts, Own, PartOf, Project, Respond, Team, Follow, Event,
                              Issue, PullRequest, CodeReview, Commit, Repository,
                              Member, DropboxSubmission, SubmissionFile, BugReport)
-from users.models import CustomUser, Tag, Organization
+from users.models import CustomUser, Owner, Tag, Organization
 
 
 """
@@ -217,10 +217,6 @@ class CodeReviewSerializer(serializers.ModelSerializer):
         model = CodeReview
         fields = ItemSerializer.Meta.fields + ['commits',]
 
-
-"""
-ITEM SERIALIZERS END
-"""
 
 class UserFollowSerializer(serializers.ModelSerializer):
     class Meta:
