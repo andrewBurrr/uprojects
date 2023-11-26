@@ -111,13 +111,6 @@ class EventSerializer(serializers.ModelSerializer):
         model = Event
         fields = ['event_id', 'event_type', 'start_date', 'end_date', 'name', 'tags']
 
-# TODO: This doesn't work. Will will handle querries in views.
-# class BaseSearchSerializer(serializers.ModelSerializer):
-#     query = serializers.CharField(required=False, allow_blank=True)
-#     tags = serializers.ListField(child=serializers.CharField(), required=False)
-    
-#     class meta:
-#         model = Tag
 
 class RepositorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -125,21 +118,23 @@ class RepositorySerializer(serializers.ModelSerializer):
         fields = ['project_id', 'repo_name', 'git_base_path']
 
 
-class ItemSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Item
-        fields = ['project_id', 'repo_name', 'item_id', 'item_name', 'status',
-                  'description', 'is_approved', 'due_date', 'owner_id', 'team_name']
+# class ItemSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Item
+#         fields = ['project_id', 'repo_name', 'item_id', 'item_name', 'status',
+#                   'description', 'is_approved', 'due_date', 'owner_id', 'team_name']
 
 
-class IssueSerializer(ItemSerializer):
+class IssueSerializer(serializers.ModelSerializer):
     model = Issue
-    fields = ItemSerializer.Meta.fields + ['issue_type',]
+    fields = ['project_id', 'repo_name', 'item_id', 'item_name', 'status',
+            'description', 'is_approved', 'due_date', 'owner_id', 'team_name','issue_type',]
 
 
-class PullRequestSerializer(ItemSerializer):
+class PullRequestSerializer(serializers.ModelSerializer):
     model = PullRequest
-    fields = ItemSerializer.Meta.fields + ['branch_name',]
+    fields = ['project_id', 'repo_name', 'item_id', 'item_name', 'status',
+            'description', 'is_approved', 'due_date', 'owner_id', 'team_name','branch_name',]
 
 
 class CommitSerializer(serializers.ModelSerializer):
@@ -148,6 +143,7 @@ class CommitSerializer(serializers.ModelSerializer):
         fields = ['id', 'commit_id']
 
 
+# TODO: test for
 class CodeReviewSerializer(serializers.ModelSerializer):
     commits = CommitSerializer(many=True, read_only=True)
 
