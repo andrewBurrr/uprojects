@@ -9,12 +9,24 @@ import {
   
   CardContent,
   Card,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  IconButton,
+  TextField,
+  Checkbox,
+  FormControlLabel,
+  DialogActions,
+  Stack,
 } from "@mui/material";
 import { Margin, RampLeft } from "@mui/icons-material";
 import StarIcon from '@mui/icons-material/Star';
+import CloseIcon from "@mui/icons-material/Close"
 
 const leaderName = "Billy"
 const leaderImg= "path/to/avatar.jpg"
+
 
 function createCard(name:string,path:string) {
     return {name,path}
@@ -63,6 +75,14 @@ function MakeBasicCard(name:string,picturePath:string) {
                 <Typography variant="h5"> {name}</Typography>
             </Grid>
 
+            <Grid item
+  container
+  direction="row"
+  justifyContent="flex-end"
+  alignItems="flex-end"
+> 
+<Grid item> <Button>Remove</Button></Grid>
+</Grid>
 
         </Grid>
       </CardContent>
@@ -71,6 +91,19 @@ function MakeBasicCard(name:string,picturePath:string) {
 }
 
 const Teampage = () => {
+// This is the start of the callbacks
+  const [open,openchange]=useState(false);
+  const functionopenpopup=()=>{
+      openchange(true);
+  }
+  const closepopup=()=>{
+      openchange(false);
+  }
+  // This is the end of the callbacks
+  const [text, setText] = React.useState("")
+  const [value, setValue] = React.useState(""); // we may not need 'React' here
+  // Other callbacks
+
   return (
     <Box>
       <Grid
@@ -101,11 +134,34 @@ const Teampage = () => {
         
         </Grid>
       </Grid>
-     <Grid container 
-     justifyContent="flex-end"
-     alignItems="flex-start">
-            <Grid item> Okay so we have item now!</Grid>
-
+     <Grid   container
+  direction="row"
+  justifyContent="center"
+  alignItems="flex-end">
+            <Grid item marginRight={5}> <Typography variant="h4">Add member</Typography></Grid>
+            <Grid item> 
+              <Button variant="contained" href="#contained-buttons" onClick={functionopenpopup}>
+                Add
+              </Button>
+              <Dialog 
+            // fullScreen 
+            open={open} onClose={closepopup} fullWidth maxWidth="sm">
+                <DialogTitle>Add member  <IconButton onClick={closepopup} style={{float:'right'}}><CloseIcon color="primary"></CloseIcon></IconButton>  </DialogTitle>
+                <DialogContent>
+                    {/* <DialogContentText>Do you want remove this user?</DialogContentText> */}
+                    <Stack spacing={2} margin={2}>
+                      <TextField variant="outlined" label="email" onChange={(event) => setValue(event.target.value)} value={value}></TextField>
+                    
+                      <Button color="primary" variant="contained" onClick={(event) => setValue("")} value={""} >Submit</Button> 
+                      {/* We need to add a method here that submits this to the DB, I will need some help with this*/}
+                    </Stack>
+                </DialogContent>
+                <DialogActions>
+                {/* <Button color="success" variant="contained">Yes</Button>
+                    <Button onClick={closepopup} color="error" variant="contained">Close</Button> */}
+                </DialogActions>
+            </Dialog>
+              </Grid>
      </Grid>
     </Box>
   );
