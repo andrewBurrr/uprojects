@@ -89,41 +89,41 @@ class UserFollowList(MultipleFieldLookupMixin, generics.ListCreateAPIView):
         return Follow.objects.all()
 
 
-# search
-class SearchView(generics.ListAPIView):
-    serializer_class = None
+# # search
+# class SearchView(generics.ListAPIView):
+#     serializer_class = None
 
-    def get_serializer_class(self):
-        model_name = self.request.query_params.get('model')
-        if model_name == 'project':
-            self.queryset = Project.objects.all()
-            return ProjectSerializer
-        elif model_name == 'team':
-            self.queryset = Team.objects.all()
-            return TeamSerializer
-        elif model_name == 'organization':
-            self.queryset = Team.objects.all()
-            return OrganizationSerializer
-        elif model_name == 'event':
-            self.queryset = Event.objects.all()
-            return EventSerializer
-        elif model_name == 'user':
-            self.queryset = Event.objects.all()
-            return UserSerializer
-        return BaseSearchSerializer
+#     def get_serializer_class(self):
+#         model_name = self.request.query_params.get('model')
+#         if model_name == 'project':
+#             self.queryset = Project.objects.all()
+#             return ProjectSerializer
+#         elif model_name == 'team':
+#             self.queryset = Team.objects.all()
+#             return TeamSerializer
+#         elif model_name == 'organization':
+#             self.queryset = Team.objects.all()
+#             return OrganizationSerializer
+#         elif model_name == 'event':
+#             self.queryset = Event.objects.all()
+#             return EventSerializer
+#         elif model_name == 'user':
+#             self.queryset = Event.objects.all()
+#             return UserSerializer
+#         return BaseSearchSerializer
 
-    def get_queryset(self):
-        search_query = self.request.query_params.get('query', '')
-        tags = self.request.query_params.getlist('tags', [])
+#     def get_queryset(self):
+#         search_query = self.request.query_params.get('query', '')
+#         tags = self.request.query_params.getlist('tags', [])
 
-        queryset = self.queryset.filter(
-            Q(name__icontains=search_query) |
-            Q(description__icontains=search_query)
-        )
+#         queryset = self.queryset.filter(
+#             Q(name__icontains=search_query) |
+#             Q(description__icontains=search_query)
+#         )
 
-        if tags:
-            queryset.filter(tags__overlap=tags)
-        return queryset
+#         if tags:
+#             queryset.filter(tags__overlap=tags)
+#         return queryset
 
 # project
 
