@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from projects.models import (Hosts, Own, PartOf, Project, Respond, Team, Follow, Event,
                              Issue, PullRequest, CodeReview, Commit, Repository,
-                             Member, DropboxSubmission, SubmissionFile, BugReport)
+                             Member, DropboxSubmission, SubmissionFile, BugReport, TeamPermission)
 from users.models import CustomUser, Owner, Tag, Organization
 
 

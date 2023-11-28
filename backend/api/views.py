@@ -28,12 +28,18 @@ class MultipleFieldLookupMixin:
 
 
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
+    """
+    View to get a single user by user id.
+    """
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsOwnerOrReadOnly]
 
 
 class UserProjectList(generics.ListCreateAPIView):
+    """
+    View to get a list of public projects by owner id. 
+    """
     serializer_class = ProjectSerializer
     permission_classes = [IsOwnerOrReadOnly]
     lookup_field = 'owner_id'
@@ -45,6 +51,9 @@ class UserProjectList(generics.ListCreateAPIView):
 
 
 class UserTeamsList(generics.ListCreateAPIView):
+    """
+    TODO: this serializer is poorly named. should be member related
+    """
     serializer_class = TeamSerializer
     permission_classes = [IsOwnerOrReadOnly]
     lookup_field = 'user_id'
@@ -59,6 +68,10 @@ class UserTeamsList(generics.ListCreateAPIView):
 
 
 class UserOrganizationList(generics.ListCreateAPIView):
+    """
+    View to get a list of organizations by owner id.
+    FIXME: im not actually sure how this works
+    """
     serializer_class = OrganizationSerializer
     permission_classes = [IsOwnerOrReadOnly]
 
