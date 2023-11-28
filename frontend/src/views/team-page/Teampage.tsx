@@ -100,7 +100,7 @@ const Teampage = () => {
       openchange(false);
   }
   // This is the end of the callbacks
-  const [text, setText] = React.useState("")
+  
   const [value, setValue] = React.useState(""); // we may not need 'React' here
   // Other callbacks
 

@@ -2,7 +2,9 @@ import React, {useEffect, useState} from "react";
 import {useApi} from "contexts/ApiContext";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Grid, Box, Typography, Button, Avatar, CardActions, CardContent, Card } from '@mui/material';
 
-
+// 1. Get an idea of what things will look like
+// 2. Do all of the things you know are good
+// 3. Work on complicated things!
 
 const Eventpage = () => {
 return <h1>Hello event</h1>

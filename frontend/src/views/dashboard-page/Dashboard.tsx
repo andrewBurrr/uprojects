@@ -7,9 +7,11 @@ import {
     Typography,
     Box,
     Grid,
-    Chip, Link as MuiLink
+    Chip, Link as MuiLink, Dialog, DialogTitle, DialogContent, IconButton, FormControlLabel, Checkbox, DialogActions, TextField, Stack
 } from "@mui/material";
 import {Link} from "react-router-dom";
+import SettingsIcon from '@mui/icons-material/Settings';
+import CloseIcon from "@mui/icons-material/Close"
 
 // The following creates an array for the project
 function createProjInfo(
@@ -34,6 +36,16 @@ function tagToString(a:string[]) {
 }
 
 const Dashboard = () => { // This is the start of the function
+    // here is where we do the report bug stuff
+    const [open,openchange]=useState(false);
+    const functionopenpopup=()=>{
+        openchange(true);
+    }
+    const closepopup=()=>{
+        openchange(false);
+    }
+    const [value, setValue] = React.useState(""); // we may not need 'React' here
+    // This is the end of the report bug stuff
 
 
     const testTable = [
@@ -198,8 +210,38 @@ const Dashboard = () => { // This is the start of the function
 
                 </Grid>
             </Grid>
+            <Grid item   container
+                direction="row"
+                justifyContent="flex-end"
+                alignItems="flex-start">
+                    
+                    <Button variant="outlined" startIcon={<SettingsIcon />} onClick={functionopenpopup} >
+  Report Bug
+</Button>
+
+<Dialog 
+            // fullScreen 
+            open={open} onClose={closepopup} fullWidth maxWidth="sm">
+                <DialogTitle>Report Bug <IconButton onClick={closepopup} style={{float:'right'}}><CloseIcon color="primary"></CloseIcon></IconButton>  </DialogTitle>
+                <DialogContent>
+                    {/* <DialogContentText>Do you want remove this user?</DialogContentText> */}
+                    <Stack spacing={2} margin={2}>
+                      <TextField variant="outlined" label="Description" fullWidth    multiline
+          rows={4} onChange={(event) => setValue(event.target.value)} value={value}></TextField>
+               
+                   
+                      <Button color="primary" variant="contained" onClick={(event) => {setValue("");
+                   alert('Thank you, your response was recorded'); closepopup() }} value={""}>Submit</Button>
+                    </Stack>
+                </DialogContent>
+                <DialogActions>
+                {/* <Button color="success" variant="contained">Yes</Button>
+                    <Button onClick={closepopup} color="error" variant="contained">Close</Button> */}
+                </DialogActions>
+            </Dialog>
+</Grid>
         </Box>
       );
 }
-
+// This last part is where we are doing the report bug
 export { Dashboard };
