@@ -5,8 +5,8 @@ from .views import UserDetail, UserProjectList, UserTeamsList, UserOrganizationL
 app_name = 'apis'
 
 # TODO Tag lookup performs query on project list/team list/etc
-# TODO collaborator view (unique by owner_id, team_name)
-# TODO collaborator permissions (might do a join on another query), show all members of a team and team permissions/settings (unique by collaborator_id, permission)
+# TODO Team view (unique by owner_id, team_name)
+# TODO Team permissions (might do a join on another query), show all members of a team and team permissions/settings (unique by Team_id, permission)
 # TODO Member (show all the members of a team), probably a read only endpoint (unique by (user_id, owner_id, team_name))
 # TODO Project (probably needs multiple views) (unique by id: Strong entity)
 # TODO PartOf Links teams to projects (unique by project_id, owner_id, team_name)
@@ -21,6 +21,14 @@ A user must be able to view all projects owned by a user/organization under that
 
 """
 urlpatterns = [
+    # get User dashboard
+    path('user/<uuid:id>', UserDetail.as_view(), name='userdetail'),
+    path('user-projects/<uuid:owner_id>', UserProjectList.as_view(), name='userprojectdetail'),
+    path('user-teams/<uuid:user_id>', UserTeamsList.as_view(), name='userteamslist'),
+    path('user-organizations/<uuid:owner_id>', UserOrganizationList.as_view(), name='userorganizationlist'),
+    # path('user-follows/<uuid:user_id>', UserFollows.as_view(), name='userfollows'),
+    # get searchbar
+    
     # URL pattern to retrieve a specific project (provides the primary key in the url slug)
     # path('<int:pk>/', ProjectDetail.as_view(), name='detailcreate'),
     # # URL pattern for listing and creating projects

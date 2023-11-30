@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import (CustomUser, Owner, Interest, CustomAccount, CustomAdmin, CustomAdminPermission,
+from .models import (CustomUser, Owner, CustomAccount, CustomAdmin, CustomAdminPermission,
                      Tag, Organization)
 from django.contrib.auth.admin import UserAdmin
 from django.forms import Textarea
@@ -59,24 +59,6 @@ class OwnerAdmin(admin.ModelAdmin):
         """
     model = Owner
     list_display = ("id",)
-
-
-class InterestAdmin(admin.ModelAdmin):
-    """
-        Admin Definition for managing our Interest models
-
-        This class extends the `admin.ModelAdmin` class provided by
-        Django as a means of providing the builtin admin with the ability
-        to modify the Interest table in the Database.
-
-        Attributes:
-            model Interest: Specified Interest model
-            list_display (tuple): The list display of an Interest model is used to 
-            instruct the admin site on how to display objects within the admin site
-        """
-    model = Interest
-    list_display = ("interest",)
-
 
 # class CustomUserAdmin(admin.ModelAdmin):
 #     model = CustomUser
@@ -142,7 +124,6 @@ class OrganizationAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Owner, OwnerAdmin)
-admin.site.register(Interest, InterestAdmin)
 admin.site.register(CustomUser, AccountAdminConfig)
 admin.site.register(CustomAdmin, AccountAdminConfig)
 admin.site.register(CustomAdminPermission, CustomAdminPermissionAdmin)
