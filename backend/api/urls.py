@@ -22,7 +22,7 @@ A user must be able to view all projects owned by a user/organization under that
 """
 urlpatterns = [
     # get User dashboard
-    path('user/<uuid:pk>', UserDetail.as_view(), name='userdetail'),
+    path('user/<uuid:id>', UserDetail.as_view(), name='userdetail'),
     path('user-projects/<uuid:owner_id>', UserProjectList.as_view(), name='userprojectdetail'),
     path('user-teams/<uuid:user_id>', UserTeamsList.as_view(), name='userteamslist'),
     path('user-organizations/<uuid:owner_id>', UserOrganizationList.as_view(), name='userorganizationlist'),

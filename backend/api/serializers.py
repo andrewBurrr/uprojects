@@ -1,9 +1,8 @@
 from rest_framework import serializers
-from projects.models import (Project, Team, Follow, Event, Hosts, PartOf, Respond,
+from projects.models import (Hosts, Own, PartOf, Project, Respond, Team, Follow, Event,
                              Issue, PullRequest, CodeReview, Commit, Repository,
-                             Member, DropboxSubmission, SubmissionFile, BugReport,
-                             Owner, Own, TeamPermission)
-from users.models import CustomUser,CustomAdmin, Tag, Organization
+                             Member, DropboxSubmission, SubmissionFile, BugReport, TeamPermission)
+from users.models import CustomUser, Owner, Tag, Organization, CustomAdmin
 
 
 """
@@ -218,10 +217,6 @@ class CodeReviewSerializer(serializers.ModelSerializer):
         fields = ['repo', 'item_id', 'item_name', 'status', 'description', 'is_approved',
               'due_date', 'team','commits']
 
-
-"""
-ITEM SERIALIZERS END
-"""
 
 class UserFollowSerializer(serializers.ModelSerializer):
     class Meta:
