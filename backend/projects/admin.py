@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from .models import (
-    Team, TeamPermission,
+    Tag, Collaborator, CollaboratorPermission,
     Member, Project, PartOf, Repository,
     PullRequest, Issue, Commit, CodeReview,
     Follow, Own
@@ -23,8 +23,10 @@ class ProjectAdmin(admin.ModelAdmin):
     """
     list_display = ('id', 'name')
 
-admin.site.register(Team)
-admin.site.register(TeamPermission)
+
+admin.site.register(Tag)
+admin.site.register(Collaborator)
+admin.site.register(CollaboratorPermission)
 admin.site.register(Member)
 admin.site.register(Project)
 admin.site.register(PartOf)

@@ -1,9 +1,8 @@
 import uuid
 from django.db import models
 from django.utils import timezone
-from users.models import CustomAdmin, CustomUser, Organization, Owner, Tag #, image_to_path
+from users.models import CustomAdmin, CustomUser, Organization, Owner, Tag, image_to_path
 from users.storage import OverwriteStorage
-from datetime import date
 
 # TODO: finish filling in comments for each
 
@@ -25,6 +24,7 @@ class Respond(models.Model):
     bug_id = models.ForeignKey(BugReport, on_delete=models.CASCADE)
     time_stamp = models.DateTimeField(default=timezone.now)
     comment = models.TextField()
+    # time_stamp = models.DateTimeField(default=timezone.now)
     class Meta:
         constraints = [
             models.UniqueConstraint(
@@ -35,25 +35,27 @@ class Respond(models.Model):
 
 
 
-class Team(models.Model):
+class Collaborator(models.Model):
     """
     TODO: comment, verify unique constraint actually works
     """
     owner_id = models.ForeignKey(Owner, on_delete=models.SET_NULL, null=True)
-    team_name = models.CharField(max_length=60)
+    team_name = models.CharField(max_length=60, unique=True) # TODO: is unique=True applicable here?
     tags = models.ManyToManyField(Tag)
 
     class Meta:
         constraints = [
             models.UniqueConstraint(
                 fields=["owner_id", "team_name"],
-                name="unique_owner_team_constraint"
+                name="unique_owner_team_collaborator_constraint"
             )
         ]
 
 
-# TODO: make note somewhere saying that we changed how permissions for Teams work
-class TeamPermission(models.Model):
+
+
+# TODO: make note somewhere saying that we changed how permissions for collaborators work
+class CollaboratorPermission(models.Model):
     """
     TODO: comment
     """
@@ -62,14 +64,14 @@ class TeamPermission(models.Model):
         ("W", "write"),
         ("X", "execute")
     ]
-    team_id = models.ForeignKey(Team, on_delete=models.CASCADE)
+    collaborator_id = models.ForeignKey(Collaborator, on_delete=models.CASCADE)
     permission = models.CharField(max_length=1, choices=PERMISSIONS, default="R")
 
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=["team_id", "permission"],
-                name="unique_team_permission_constraint"
+                fields=["collaborator_id", "permission"],
+                name="unique_collaborator_permission_constraint"
             )
         ]
 
@@ -79,8 +81,7 @@ class Member(models.Model):
     TODO: comment, if unique constraint causes issues try team.etc
     """
     user_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    #team = models.ForeignKey(Team, on_delete=models.CASCADE, to_fields=['owner_id', 'team_name'])
-    team = models.ForeignKey(Team, on_delete=models.CASCADE) # let's assume it only retrieves unique pairs from collaborator.
+    team = models.ForeignKey(Collaborator, on_delete=models.CASCADE, to_fields=['owner_id', 'team_name'])
     role = models.CharField(max_length=60)
 
     class Meta:
@@ -100,7 +101,7 @@ class Project(models.Model):
     the projects table
 
     Attributes:
-        project_id (int): implicitly defined by django models that dont specify a pk (primary key)
+        id (int): implicitly defined by django models that dont specify a pk (primary key)
         name (str): The text field name for the project (will likely be changed or removed later)
         visibility (str): The text field containing the projects visibility.
         description (str): The text field containing the projects description.
@@ -110,7 +111,7 @@ class Project(models.Model):
         ("PUBLIC", "public"),
         ("PRIVATE", "private"),
     ]
-    project_id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
     name = models.CharField(max_length=60)
     visibility = models.CharField(max_length=60, choices=VISIBILITY, default="PRIVATE")
     description = models.TextField()
@@ -121,10 +122,12 @@ class Project(models.Model):
         return self.name
 
 
+
+
 class Event(models.Model):
     """
     """
-    event_id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)  # events need to be hosted by an organization
     event_type = models.CharField(max_length=60)
     start_date = models.DateTimeField(default=timezone.now)
@@ -151,15 +154,14 @@ class Hosts(models.Model):
 class DropboxSubmission(models.Model):
     # TODO verify unique constraint is unique
     event_id = models.ForeignKey(Event, on_delete=models.CASCADE)
-    #collaborator = models.ForeignKey(Team, on_delete=models.CASCADE, to_fields=['owner_id', 'team_name'])
-    team = models.ForeignKey(Team, on_delete=models.CASCADE) # let's assume it only retrieves unique pairs from collaborator.
+    collaborator = models.ForeignKey(Collaborator, on_delete=models.CASCADE, to_fields=['owner_id', 'team_name'])
     comment = models.TextField(blank=True)
     submission_date = models.DateTimeField(auto_now_add=True)
     
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=["event_id", "team"],
+                fields=["event_id", "collaborator"],
                 name="unique_event_owner_team_dropbox_submission_constraint"
             )
         ]
@@ -167,10 +169,9 @@ class DropboxSubmission(models.Model):
 
 
 class SubmissionFile(models.Model):
-    #submission = models.ForeignKey(DropboxSubmission, on_delete=models.CASCADE, to_fields=['event_id', 'collaborator'])
-    submission = models.ForeignKey(DropboxSubmission, on_delete=models.CASCADE) # trusting django magic
-    #file = models.FileField(upload_to=lambda instance, filename: image_to_path(instance, filename, "submission_file"), storage=OverwriteStorage(), blank=True)  # TODO figure out file paths
-    file = models.FileField(upload_to="submission/files/",storage=OverwriteStorage(), blank=True)
+    submission = models.ForeignKey(DropboxSubmission, on_delete=models.CASCADE, to_fields=['event_id', 'collaborator'])
+    file = models.FileField(upload_to=lambda instance, filename: image_to_path(instance, filename, "submission_file"), storage=OverwriteStorage(), blank=True)  # TODO figure out file paths
+
 
 
 class PartOf(models.Model):
@@ -179,13 +180,12 @@ class PartOf(models.Model):
 
     """
     project_id = models.ForeignKey(Project, on_delete=models.CASCADE)
-    #team = models.ForeignKey(Team, on_delete=models.CASCADE, to_fields=['owner_id', 'team_name'])
-    team = models.ForeignKey(Team, on_delete=models.CASCADE)
+    collaborator = models.ForeignKey(Collaborator, on_delete=models.CASCADE, to_fields=['owner_id', 'team_name'])
 
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=["project_id", "team"],
+                fields=["project_id", "collaborator"],
                 name="unique_project_owner_team_partof_constraint"
             )
         ]
@@ -240,17 +240,16 @@ class Item(models.Model):
         ("PENDINGAPPROVAL", "pending approval"),
         ("COMPLETED", "completed"),
     ]
-    #repository = models.ForeignKey(Repository, on_delete=models.CASCADE, to_fields=['project_id', 'repo_name'])
-    repo = models.ForeignKey(Repository, on_delete=models.CASCADE) # django magic
+    repository = models.ForeignKey(Repository, on_delete=models.CASCADE, to_fields=['project_id', 'repo_name'])
     item_id = models.IntegerField(default=1)
     item_name = models.CharField(max_length=60)
     status = models.CharField(max_length=60, choices=STATUS, default="NOTAPPROVED")
-    description = models.TextField(default="")
+    description = models.TextField()
     is_approved = models.BooleanField()
-    due_date = models.DateField(default=date.today)
+    due_date = models.DateField()
 
-    #team = models.ForeignKey(Team, on_delete=models.SET_NULL, null=True, to_fields=['owner_id', 'team_name'])
-    team = models.ForeignKey(Team, on_delete=models.SET_NULL, null=True) #django magic
+    team = models.ForeignKey(Collaborator, on_delete=models.SET_NULL, null=True, to_fields=['owner_id', 'team_name'])
+
 
     def save(self, *args, **kwargs):
         if self._state.adding:
@@ -262,11 +261,10 @@ class Item(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=["repo", "item_id"],
-                name="%(class)s_unique_project_repository_item_key_constraint"
+                fields=["repository", "item_id"],
+                name="unique_project_repository_item_key_constraint"
             )
         ]
-        abstract = True
 
 
 class PullRequest(Item):
