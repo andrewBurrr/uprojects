@@ -109,3 +109,22 @@ When any of the models.py files are updated:
     ```bash
     python manage.py runserver
     ```
+
+## How to inspect Serializer relationships (Backend)
+1.  Make migrations as above. 
+2.  Open the Django shell
+    ```bash
+    python manage.py shell
+    ```
+3. Using the custom serializer inspection function:
+    ```python
+    # Check all serializers
+    >>> from api.checkSerial import * # Prints out info for all serializers. 
+                                      # Produces list of problem Serializers
+    ```
+    To check individual Serializers:
+    ```python
+    # Check all serializers
+    >>> from api.checkSerial import func_test 
+    >>> func_test(ExampleSerializer)
+    ```

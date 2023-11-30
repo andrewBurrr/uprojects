@@ -21,7 +21,7 @@ import rest_framework.schemas.coreapi
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env(
-    SECRET_KEY=(str,),
+    SECRET_KEY=(str, ""),
     DEBUG=(bool, False),
     DJANGO_ALLOWED_HOSTS=(str, ""),
     SQL_ENGINE=(str, "django.db.backends.sqlite3"),
