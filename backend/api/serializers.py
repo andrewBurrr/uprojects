@@ -30,17 +30,10 @@ class OwnerSerializer(serializers.ModelSerializer):
         fields = ['id',]
 
 
-class OwnerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Owner
-        fields = ['id']
-
-
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = ['tag',]
-        fields = ['tag']
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -117,8 +110,9 @@ class TeamPermissionSerializer(serializers.ModelSerializer):
         model = TeamPermission
         fields = ['team_id', 'permission']
 
-
+#FIXME: This serializer might be broken. Need to test it.
 class MemberSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Member
         fields = ['user_id', 'team', 'role']
@@ -126,20 +120,11 @@ class MemberSerializer(serializers.ModelSerializer):
         fields = ['owner_id', 'team_name', 'tags']
 
 
-class TeamPermissionSerializer(serializers.ModelSerializer):
-    """
-    TODO: Going to need to test querries on this thing. Feels sus.
-    """
-
-    class Meta:
-        model = TeamPermission
-        fields = ['team_id', 'permission']
-
-
-class MemberSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Member
-        fields = ['user_id', 'team', 'role']
+#TODO: Figure out if we need this serializer or the other one.
+# class MemberSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Member
+#         fields = ['user_id', 'team', 'role']
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -197,28 +182,6 @@ class PartOfSerializer(serializers.ModelSerializer):
     class Meta:
         model = PartOf
         fields = ['project_id', 'team']
-class HostsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Hosts
-        fields = ['event_id', 'org_id']
-
-
-class DropboxSubmissionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DropboxSubmission
-        fields = ['event_id', 'team', 'comment', 'submission_date']
-
-
-class SubmissionFileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SubmissionFile
-        fields = ['submission', 'file']
-
-
-class PartOfSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PartOf
-        fields = ['project_id', 'team']
 
 
 class RepositorySerializer(serializers.ModelSerializer):
@@ -228,7 +191,6 @@ class RepositorySerializer(serializers.ModelSerializer):
         fields = ['project_id', 'repo_name', 'git_base_path']
 
 
-class IssueSerializer(serializers.ModelSerializer):
 class IssueSerializer(serializers.ModelSerializer):
     class Meta:
         model = Issue
@@ -244,11 +206,6 @@ class PullRequestSerializer(serializers.ModelSerializer):
         model = PullRequest
         fields = ['repo', 'item_id', 'item_name', 'status', 'description', 'is_approved',
                 'due_date', 'team', 'branch_name',]
-class PullRequestSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PullRequest
-        fields = ['repo', 'item_id', 'item_name', 'status', 'description', 'is_approved',
-                  'due_date', 'team', 'branch_name']
 
 
 class CommitSerializer(serializers.ModelSerializer):
@@ -256,12 +213,8 @@ class CommitSerializer(serializers.ModelSerializer):
         model = Commit
         fields = ['repo', 'item_id', 'item_name', 'status', 'description', 'is_approved',
               'due_date', 'team', 'commit_id']
-        fields = ['repo', 'item_id', 'item_name', 'status', 'description', 'is_approved',
-                  'due_date', 'team', 'commit_id']
 
 
-# TODO: test for
-# TODO: test for
 class CodeReviewSerializer(serializers.ModelSerializer):
     commits = CommitSerializer(many=True, read_only=True)
 
@@ -269,15 +222,10 @@ class CodeReviewSerializer(serializers.ModelSerializer):
         model = CodeReview
         fields = ['repo', 'item_id', 'item_name', 'status', 'description', 'is_approved',
               'due_date', 'team','commits']
-        fields = ['repo', 'item_id', 'item_name', 'status', 'description', 'is_approved',
-              'due_date', 'team','commits']
 
 
-class UserFollowSerializer(serializers.ModelSerializer):
 class UserFollowSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Follow
-        fields = ['user_id', 'project_id']
         model = Follow
         fields = ['user_id', 'project_id']
 
