@@ -112,7 +112,7 @@ const Header: React.FC = () => {
                             <Box sx={{ flexGrow: 0 }}>
                                 <Tooltip title="Open settings">
                                     <IconButton onClick={handleUserMenuClick} sx={{ p: 0 }}>
-                                        <Avatar alt={`${user.first_name} ${user.last_name}`} src={user.profile_image} />
+                                        <Avatar alt={`${user?.first_name} ${user?.last_name}`} src={user?.profile_image} />
                                     </IconButton>
                                 </Tooltip>
                                 <Menu
@@ -150,7 +150,7 @@ const Header: React.FC = () => {
                                     transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                                     anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
                                 >
-                                    <MenuItem onClick={handleClose}>
+                                    <MenuItem onClick={() => navigate(`/user/${user?.user_id}`)}>
                                         <Avatar /> Profile
                                     </MenuItem>
                                     <Divider />

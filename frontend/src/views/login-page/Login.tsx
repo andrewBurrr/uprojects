@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from "react";
+import React, {ChangeEvent, useEffect, useState} from "react";
 import { Link as RouterLink } from 'react-router-dom';
 import { useAuth } from "contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -11,7 +11,7 @@ import { Paper, Grid, Box, Link, Avatar, Typography } from "@mui/material";
 
 
 const Login = () => {
-    const { login } = useAuth();
+    const { login, user } = useAuth();
     const navigate = useNavigate();
     const [formData, setFormData] = useState({ email: '', password: '' });
     const [errors, setErrors] = useState({ email: '', password: ''});
@@ -31,7 +31,6 @@ const Login = () => {
         if (Object.values(errors).every((error) => error === '')) {
             try {
                 await login(formData.email, formData.password);
-                navigate("/");
             } catch (error) {
                 setErrors({
                     email: 'Invalid credentials',
@@ -40,6 +39,14 @@ const Login = () => {
             }
         }
     }
+
+    useEffect(() => {
+        console.log("updating user values");
+        console.log(user);
+        if (user?.user_id) {
+            navigate(`user/${user.user_id}`);
+        }
+    }, [user]);
 
     return (
         <FormGridContainer container>

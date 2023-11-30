@@ -2,28 +2,31 @@ import React, {useState, useEffect, useContext, ReactNode} from "react";
 import jwtDecode from "jwt-decode";
 import { useApi } from "contexts/ApiContext";
 
-interface User {
+type User = {
+    user_id: string;
     first_name: string;
     last_name: string;
     profile_image: string;
-}
+} | null;
 
 interface AuthProviderProps {
     children: ReactNode;
 }
 
-const initialUser: User = {
-    first_name: '',
-    last_name: '',
-    profile_image: '',
-};
+interface AuthContextProps {
+    user: User;
+    isAuthenticated: boolean;
+    login: (email: string, password: string) => Promise<void>;
+    logout: () => Promise<void>;
+    register: (email: string, first_name: string, last_name: string, password: string) => Promise<void>;
+}
 
-const AuthContext = React.createContext({
-    user: initialUser,
+const AuthContext = React.createContext<AuthContextProps>({
+    user: null,
     isAuthenticated: false,
-    login: (email: string, password: string) => {},
-    logout: () => {},
-    register: (email: string, first_name: string, last_name: string, password: string) => {}
+    login: async (email: string, password: string) => {},
+    logout: async () => {},
+    register: async (email: string, first_name: string, last_name: string, password: string) => {}
 });
 
 const useAuth = () => {
@@ -32,25 +35,46 @@ const useAuth = () => {
 
 
 const AuthProvider: React.FC<AuthProviderProps> = ({ children }: AuthProviderProps) => {
-    const [user, setUser] = useState(initialUser);
+    const [user, setUser] = useState<User>(null);
     const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem("access_token") !== null);
     const { api } = useApi();
 
     useEffect(() => {
-        if (isAuthenticated) {
-            const token = localStorage.getItem('access_token');
-            if (token) {
-                const decodedToken: User = jwtDecode(token);
-                setUser({
-                    first_name: decodedToken.first_name,
-                    last_name: decodedToken.last_name,
-                    profile_image: `${process.env.REACT_APP_BASE_URL}${decodedToken.profile_image}`,
-                });
+        const checkIsAuthenticated = () => {
+            const status = localStorage.getItem('access_token');
+            if (status) {
+                setIsAuthenticated(true);
+            } else {
+                setIsAuthenticated(false);
             }
-        } else {
-            setUser(initialUser);
         }
-    }, [isAuthenticated, user.profile_image]);
+        window.addEventListener('storage', checkIsAuthenticated);
+
+        return () => {
+            window.removeEventListener('storage', checkIsAuthenticated);
+        }
+    }, []);
+
+    useEffect(() => {
+        const decodeToken = () => {
+            if (isAuthenticated) {
+                const token = localStorage.getItem('access_token');
+                if (token) {
+                    let user_id: string, first_name: string, last_name: string, profile_image: string;
+                    ({user_id, first_name, last_name, profile_image} = jwtDecode(token));
+                    setUser({
+                        user_id: user_id,
+                        first_name: first_name,
+                        last_name: last_name,
+                        profile_image: `${process.env.REACT_APP_BASE_URL}${profile_image}`,
+                    });
+                }
+            } else {
+                setUser(null);
+            }
+        };
+        decodeToken();
+    }, [isAuthenticated]);
 
     const login = async (email: string, password: string) => {
         try {
@@ -73,22 +97,6 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }: AuthProviderPro
             throw error;
         }
     }
-
-    useEffect(() => {
-        const checkIsAuthenticated = () => {
-            const status = localStorage.getItem('access_token');
-            if (status) {
-                setIsAuthenticated(true);
-            } else {
-                setIsAuthenticated(false);
-            }
-        }
-        window.addEventListener('storage', checkIsAuthenticated);
-
-        return () => {
-            window.removeEventListener('storage', checkIsAuthenticated);
-        }
-    }, []);
 
     return(
         <AuthContext.Provider value={{ user, isAuthenticated, login, logout, register }}>

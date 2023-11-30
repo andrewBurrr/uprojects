@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from projects.models import (Hosts, Own, PartOf, Project, Respond, Team, Follow, Event,
+from projects.models import (Hosts, Own, PartOf, Project, BugResponse, Team, Follow, Event,
                              Issue, PullRequest, CodeReview, Commit, Repository,
                              Member, DropboxSubmission, SubmissionFile, BugReport, TeamPermission)
 from users.models import CustomUser, Owner, Tag, Organization, CustomAdmin
@@ -30,18 +30,22 @@ class OwnerSerializer(serializers.ModelSerializer):
         fields = ['id',]
 
 
+class OwnerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Owner
+        fields = ['id']
+
+
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = ['tag',]
+        fields = ['tag']
 
 
 class UserSerializer(serializers.ModelSerializer):
     tags = TagSerializer(read_only=True, many=True)
 
-    # TODO: We need to figure out how to update a users tag via a django method.
-
-    # TODO: Should id be something that we present to the front end?
     class Meta:
         model = CustomUser
         fields = ['id', 'profile_image', 'about', 'email', 'first_name', 'last_name', 'start_date', 'owner_id', 'tags']
@@ -80,15 +84,11 @@ END USERS SERIALIZERS
 START PROJECT SERIALIZERS
 """
 
-class BugReportSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = BugReport
-        fields = ['bug_id', 'time_stamp', 'description', 'user_id']
 
 
-class RespondSerializer(serializers.ModelSerializer):
+class BugResponseSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Respond
+        model = BugResponse
         fields = ['admin_id', 'bug_id', 'time_stamp', 'comment']
 
 
@@ -104,6 +104,24 @@ class TeamSerializer(serializers.ModelSerializer):
     tags = TagSerializer(read_only=True, many=True)
 
     class Meta:
+        model = Team
+        fields = ['owner_id', 'team_name', 'tags']
+
+
+class TeamPermissionSerializer(serializers.ModelSerializer):
+    """
+    TODO: Going to need to test querries on this thing. Feels sus.
+    """
+
+    class Meta:
+        model = TeamPermission
+        fields = ['team_id', 'permission']
+
+
+class MemberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Member
+        fields = ['user_id', 'team', 'role']
         model = Team
         fields = ['owner_id', 'team_name', 'tags']
 
@@ -179,19 +197,46 @@ class PartOfSerializer(serializers.ModelSerializer):
     class Meta:
         model = PartOf
         fields = ['project_id', 'team']
+class HostsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Hosts
+        fields = ['event_id', 'org_id']
+
+
+class DropboxSubmissionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DropboxSubmission
+        fields = ['event_id', 'team', 'comment', 'submission_date']
+
+
+class SubmissionFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SubmissionFile
+        fields = ['submission', 'file']
+
+
+class PartOfSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PartOf
+        fields = ['project_id', 'team']
 
 
 class RepositorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Repository
         fields = ['project_id', 'repo_name', 'git_base_path']
+        fields = ['project_id', 'repo_name', 'git_base_path']
 
 
+class IssueSerializer(serializers.ModelSerializer):
 class IssueSerializer(serializers.ModelSerializer):
     class Meta:
         model = Issue
         fields = ['repo', 'item_id', 'item_name', 'status', 'description', 'is_approved',
                 'due_date', 'team','issue_type']
+        model = Issue
+        fields = ['repo', 'item_id', 'item_name', 'status', 'description', 'is_approved',
+                  'due_date', 'team', 'issue_type']
 
 
 class PullRequestSerializer(serializers.ModelSerializer):
@@ -199,6 +244,11 @@ class PullRequestSerializer(serializers.ModelSerializer):
         model = PullRequest
         fields = ['repo', 'item_id', 'item_name', 'status', 'description', 'is_approved',
                 'due_date', 'team', 'branch_name',]
+class PullRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PullRequest
+        fields = ['repo', 'item_id', 'item_name', 'status', 'description', 'is_approved',
+                  'due_date', 'team', 'branch_name']
 
 
 class CommitSerializer(serializers.ModelSerializer):
@@ -206,8 +256,11 @@ class CommitSerializer(serializers.ModelSerializer):
         model = Commit
         fields = ['repo', 'item_id', 'item_name', 'status', 'description', 'is_approved',
               'due_date', 'team', 'commit_id']
+        fields = ['repo', 'item_id', 'item_name', 'status', 'description', 'is_approved',
+                  'due_date', 'team', 'commit_id']
 
 
+# TODO: test for
 # TODO: test for
 class CodeReviewSerializer(serializers.ModelSerializer):
     commits = CommitSerializer(many=True, read_only=True)
@@ -216,10 +269,15 @@ class CodeReviewSerializer(serializers.ModelSerializer):
         model = CodeReview
         fields = ['repo', 'item_id', 'item_name', 'status', 'description', 'is_approved',
               'due_date', 'team','commits']
+        fields = ['repo', 'item_id', 'item_name', 'status', 'description', 'is_approved',
+              'due_date', 'team','commits']
 
 
 class UserFollowSerializer(serializers.ModelSerializer):
+class UserFollowSerializer(serializers.ModelSerializer):
     class Meta:
+        model = Follow
+        fields = ['user_id', 'project_id']
         model = Follow
         fields = ['user_id', 'project_id']
 
@@ -228,7 +286,6 @@ class OwnSerializer(serializers.ModelSerializer):
     class Meta:
         model = Own
         fields = ['owner_id', 'project_id']
-
 
 """
 END PROJECT SERIALIZERS

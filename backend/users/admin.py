@@ -120,10 +120,11 @@ class OrganizationAdmin(admin.ModelAdmin):
     """
 
     model = Organization
-    list_display = ("org_id", "name", "owner_id",)
+    list_display = ("id", "name", "owner_id",)
 
 
 admin.site.register(Owner, OwnerAdmin)
+admin.site.register(CustomAccount, AccountAdminConfig)
 admin.site.register(CustomUser, AccountAdminConfig)
 admin.site.register(CustomAdmin, AccountAdminConfig)
 admin.site.register(CustomAdminPermission, CustomAdminPermissionAdmin)

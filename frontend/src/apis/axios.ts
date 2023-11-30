@@ -2,6 +2,13 @@ import axios, {AxiosInstance} from 'axios';
 import Cookies from "js-cookie";
 import jwtDecode from "jwt-decode";
 
+type User = {
+    user_id: string;
+    first_name: string;
+    last_name: string;
+    profile_image: string;
+};
+
 /**
  * API class for making HTTP requests
  */
@@ -65,7 +72,7 @@ class API {
      * @param  {string} password - The password of the user
      * @returns {Promise<void>} - A Promise that resolves when the login is successful.
      */
-    login = async (email: string, password: string): Promise<void> => {
+    login = async (email: string, password: string): Promise<User> => {
         try {
             const response = await this.axiosInstance.post('/users/login/', {
                 email: email,
@@ -74,7 +81,7 @@ class API {
             const { access, refresh } = response.data;
             localStorage.setItem('access_token', access);
             localStorage.setItem('refresh_token', refresh);
-            return jwtDecode(response.data.access);
+            return jwtDecode(response.data.access) as User;
         } catch (error) {
             throw error;
         }

@@ -32,13 +32,13 @@ const publicRoutes: CustomRoute[] = [
 const authOnlyRoutes: CustomRoute[] = [
     {
         title: "Dashboard",
-        path: "/",
+        path: "/user/:user_id",
         element: <ProtectedRoute />,
         icon: <DashboardIcon />,
         children: [
             {
                 title: "Dashboard",
-                path: "/",
+                path: "/user/:user_id",
                 element:
                     <AppLayout>
                         <Dashboard />
