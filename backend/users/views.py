@@ -21,7 +21,7 @@ class CustomUserRegister(generics.CreateAPIView):
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
-    permission_classes = [AllowAny]
+    # permission_classes = [AllowAny]
     serializer_class = CustomTokenObtainPairSerializer
 
 

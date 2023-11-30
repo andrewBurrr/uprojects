@@ -23,6 +23,7 @@ class ProjectAdmin(admin.ModelAdmin):
     """
     list_display = ('id', 'name')
 
+
 admin.site.register(Team)
 admin.site.register(TeamPermission)
 admin.site.register(Member)

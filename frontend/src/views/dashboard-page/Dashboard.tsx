@@ -9,76 +9,108 @@ import {
     Grid,
     Chip, Link as MuiLink
 } from "@mui/material";
-import {Link} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 
-// The following creates an array for the project
-function createProjInfo(
-    title:string,
-    description:string,
-    tags:string
-
-    ) {
-    return {title, description, tags}
+interface User {
+    id: string;
+    profile_image: string; // Assuming the image path is stored as a string
+    about: string;
+    email: string;
+    first_name: string;
+    last_name: string;
+    start_date: string; // Assuming the date is stored as a string
+    is_staff: boolean;
+    is_active: boolean;
+    owner_id?: string;
+    tags?: string[];
 }
 
-function tagToString(a:string[]) {
-    if (a.length==0) {
-        return ""
-    } else if (a.length==1) {
-        return a[0]
-    } else if (a.length==2){
-        return `${a[0]},${a[1]}`
-    } else {
-        return `${a[0]},${a[1]},${a[2]}`
-    }
+interface Project {
+    id: string;
+    name: string;
+    visibility: string;
+    description: string;
+    owner_id: string;
+    tags: string[];
+}
+
+interface Team {
+    owner_id: string;
+    team_name: string;
+    tags: string[];
+}
+
+interface Org {
+    org_id: string;
+    logo: string;
+    name: string;
+    description: string;
+    user_owner: string;
+    owner_id: string;
+    tags: string[];
 }
 
 const Dashboard = () => { // This is the start of the function
+    const { user_id } = useParams<{ user_id: string }>();
+    const { api } = useApi();
+    const [user, setUser] = useState<User>();
+    const [projects, setProjects] = useState<Project[]>();
+    const [teams, setTeams] = useState<Team[]>();
+    const [orgs, setOrgs] = useState<Org[]>();
 
+    const fetchUser = async () => {
+        try {
+            // Fetch the user
+            const response = await api.getData<User>(`/user/${user_id}`);
+            console.log("user:", response);
+            setUser(response);
+        } catch (error) {
+            console.error('Error fetching user data: ', error);
+        }
+    };
 
-    const testTable = [
-        createProjInfo("Minecraft1", "This is my new world", tagToString(["java","Python","C"])),
-        createProjInfo("Minecraft1", "This is my new world", "TAG"),
-        createProjInfo("Minecraft1", "This is my new world", "")
+    const fetchUserProjects = async () => {
+        try {
+            const response = await api.getData<Project[]>(`/user-projects/${user?.owner_id}`);
+            console.log("user:", response);
+            setProjects(response);
+        } catch (error) {
+            console.error('Error fetching user projects: ', error);
+        }
+    }
 
-    ]
+    const fetchUserTeams = async () => {
+        try {
+            console.log("user = ", user);
+            const response = await api.getData<Team[]>(`/user-teams/${user?.id}`);
+            console.log("user:", response);
+            setTeams(response);
+        } catch (error) {
+            console.error('Error fetching user teams: ', error);
+        }
+    }
 
-    const projects = [
-        {
-            name: 'my project',
-            visibility: 'public',
-            description: 'welcome to my new project',
-            tags: ['python', 'java'],
-        },
-        {
-            name: 'awesome app',
-            visibility: 'private',
-            description: 'building an amazing application',
-            tags: ['react', 'node.js', 'mongodb'],
-        },
-        {
-            name: 'coding challenge',
-            visibility: 'public',
-            description: 'solving coding problems and improving skills',
-            tags: ['javascript', 'algorithms', 'data structures'],
-        },
-        {
-            name: 'portfolio website',
-            visibility: 'private',
-            description: 'creating a personal portfolio to showcase projects',
-            tags: ['html', 'css', 'react'],
-        },
-    ];
+    const fetchUserOrgs = async () => {
+            try {
+                const response = await api.getData<Org[]>(`/user-orgs/${user?.owner_id}`);
+                console.log("user:", response);
+                setOrgs(response);
+            } catch (error) {
+                console.error('Error fetching user orgs: ', error);
+            }
+        }
 
-    const teams = [
-        {name: 'Good Team',},
-        {name: 'Dynamic Dream',},
-    ];
+    useEffect(() => {
+        // Fetch the user
+        fetchUser();
+        // Fetch the users projects
+        fetchUserProjects();
+        // Fetch the user's teams
+        fetchUserTeams();
+        // Fetch the user's orgs
+        fetchUserOrgs();
 
-    const orgs = [
-        {name: 'University of Calgary',},
-        {name: 'Some Guys'},
-    ];
+    }, []);
 
     return (
         <Box>
@@ -88,12 +120,12 @@ const Dashboard = () => { // This is the start of the function
                         <Grid item>
                             <Grid container spacing={2} direction={{ md: 'column', xs: 'row' }} alignItems='center' justifyContent='center'>
                                 <Grid item>
-                                    <Avatar alt="User Avatar" src="path/to/avatar.jpg"  sx={{ width: 200, height: 200 }} />
+                                    <Avatar alt={user?.first_name + ' ' + user?.last_name} src={user?.profile_image} sx={{ width: 200, height: 200 }} />
                                 </Grid>
                                 <Grid item>
-                                    <Typography variant="h5">John Doe</Typography>
+                                    <Typography variant="h5">{user?.first_name} {user?.last_name}</Typography>
                                     <Typography variant="subtitle1" color="textSecondary">
-                                       Frontend Developer
+                                        Developer
                                     </Typography>
                                 </Grid>
                             </Grid>
@@ -104,10 +136,10 @@ const Dashboard = () => { // This is the start of the function
                             </Typography>
                             <hr/>
                             <Grid container spacing={1}>
-                                {teams.map((team) => (
+                                {teams?.map((team) => (
                                     <Grid item>
-                                        <Avatar alt={team.name} sx={{ bgcolor: '#'+Math.floor(Math.random() * 0xFFFFFF).toString() }} variant="rounded">
-                                            {team.name.split(' ').map((word) => word[0]).join('')}
+                                        <Avatar alt={team.team_name} sx={{ bgcolor: '#'+Math.floor(Math.random() * 0xFFFFFF).toString() }} variant="rounded">
+                                            {team.team_name.split(' ').map((word) => word[0]).join('')}
                                         </Avatar>
                                     </Grid>
                             ))}
@@ -118,7 +150,7 @@ const Dashboard = () => { // This is the start of the function
                             </Typography>
                             <hr/>
                             <Grid container spacing={1}>
-                                {orgs.map((org) => (
+                                {orgs?.map((org) => (
                                     <Grid item>
                                         <Avatar alt={org.name} sx={{ bgcolor: '#'+Math.floor(Math.random() * 0xFFFFFF).toString() }} variant="rounded">
                                             {org.name.split(' ').map((word) => word[0]).join('')}
@@ -129,15 +161,15 @@ const Dashboard = () => { // This is the start of the function
                         </Grid>
                     </Grid>
                 </Grid>
-                <Grid item paddingY={5} spacing={2}>
+                <Grid item paddingY={5}>
                     <Typography variant="h5">
                         About
                     </Typography>
                     <Typography variant="body1" paragraph>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla quis lorem ut libero malesuada feugiat.
+                        {user?.about}
                     </Typography>
                     <Grid container spacing={3} direction='column'>
-                        {projects.map((project) => (
+                        {projects?.map((project) => (
                             <Grid item>
                                 <Paper elevation={1} sx={{ p: 2 }}>
                                     <Grid container direction='row' spacing={2} justifyContent='space-between'>
@@ -165,37 +197,7 @@ const Dashboard = () => { // This is the start of the function
                                 </Paper>
                             </Grid>
                         ))}
-
                     </Grid>
-    {/*                <TableContainer component={Paper}>*/}
-    {/*  <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">*/}
-    {/*    <TableHead>*/}
-    {/*      <TableRow>*/}
-    {/*        <TableCell>Title</TableCell>*/}
-    {/*        <TableCell align="center">Desc</TableCell>*/}
-    {/*        <TableCell align="center">Tag</TableCell>*/}
-
-    {/*      </TableRow>*/}
-    {/*    </TableHead>*/}
-    {/*    <TableBody>*/}
-    {/*      {testTable.map((row) => (*/}
-    {/*        <TableRow*/}
-    {/*          key={row.title}*/}
-    {/*          sx={{ '&:last-child td, &:last-child th': { border: 0 } }}*/}
-    {/*        >*/}
-    {/*          <TableCell component="th" scope="row">*/}
-    {/*            {row.title}*/}
-    {/*          </TableCell>*/}
-    {/*          <TableCell align="center">{row.description}</TableCell>*/}
-    {/*          <TableCell align="center">{row.tags}</TableCell>*/}
-    {/*      */}
-    {/*        </TableRow>*/}
-    {/*      ))}*/}
-    {/*    </TableBody>*/}
-    {/*  </Table>*/}
-    {/*</TableContainer>*/}
-
-
                 </Grid>
             </Grid>
         </Box>

@@ -1,11 +1,14 @@
 from django.urls import path
-from .views import UserDetail, UserProjectList, UserTeamsList, UserOrganizationList
-
+from .views import (
+    UserDetail, UserProjectList, UserTeamList, UserOrganizationList, UserFollowList,
+    OrganizationDetail, OrganizationProjectList, OrganizationTeamList, OrganizationEventsList,
+    GlobalSearchAPIView,
+    TeamDetail, TeamMembersList,
+)
 # Define the url namespace for these URL patterns
 app_name = 'apis'
 
-# TODO Tag lookup performs query on project list/team list/etc
-# TODO Team view (unique by owner_id, team_name)
+ # TODO Team view (unique by owner_id, team_name)
 # TODO Team permissions (might do a join on another query), show all members of a team and team permissions/settings (unique by Team_id, permission)
 # TODO Member (show all the members of a team), probably a read only endpoint (unique by (user_id, owner_id, team_name))
 # TODO Project (probably needs multiple views) (unique by id: Strong entity)
@@ -15,16 +18,39 @@ app_name = 'apis'
 # TODO Follow (unique by user_id, project_id)
 # TODO Own (unique by owner_id, project_id)
 
+
 """
 A user must be able to search all projects with a query
 A user must be able to view all projects owned by a user/organization under that user/organizations page
 
 """
 urlpatterns = [
-    # URL pattern to retrieve a specific project (provides the primary key in the url slug)
-    # path('<int:pk>/', ProjectDetail.as_view(), name='detailcreate'),
-    # # URL pattern for listing and creating projects
-    # path('', ProjectList.as_view(), name='listcreate')
+    # URL patterns for user dashboard
+    path('user/<uuid:id>/', UserDetail.as_view(), name='api-user-detail'),
+    path('user-projects/<uuid:owner_id>/', UserProjectList.as_view(), name='api-user-projects'),
+    path('user-teams/<uuid:user_id>/', UserTeamList.as_view(), name='api-user-teams'),
+    path('user-orgs/<uuid:owner_id>/', UserOrganizationList.as_view(), name='api-user-orgs'),
+    path('user-follows/<uuid:user_id>/', UserFollowList.as_view(), name='api-user-follows'),
+    # URL patterns for organization dashboard
+    path('organization/<uuid:id>/', OrganizationDetail.as_view(), name='api-org-detail'),
+    path('organization-projects/<uuid:org_id>/', OrganizationProjectList.as_view(), name='api-org-projects'),
+    path('organization-teams/<uuid:owner_id>/', OrganizationTeamList.as_view(), name='api-org-teams'),
+    path('organization-events/<uuid:owner_id>/', OrganizationEventsList.as_view(), name='api-org-events'),
+    # URL patterns for search
+    path('search/', GlobalSearchAPIView.as_view(), name='api-global-search'),
+    # URL pattern for teams
+    path('team/<uuid:owner_id>/<str:team_name>/', TeamDetail.as_view(), name='api-team-detail'),
+    path('team/<uuid:owner_id>/<str:team_name>/members/', TeamMembersList.as_view(), name='api-team-members-list'),
+    # URL patterns for project detail
+    # path('project/<uuid:id>', ),
+    # path('project/<uuid:id>/teams/', ),
+    # path('project/<uuid:id>/repos/', ),
+    # # URL patterns for repo detail
+    # path('repository/<uuid:project_id>/<str:repo_name>/', ),
+    # # URL patterns for event detail
+    # path('event/'),
+
+    # URL patterns for bugs
 ]
 # """ Concrete View Classes
 # #CreateAPIView

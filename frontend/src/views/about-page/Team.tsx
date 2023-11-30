@@ -53,7 +53,7 @@ const Team = () => {
     return (
         <Grid container>
             {team.map((contact) => (
-                <ContactGridItem item xs={12} md={6} lg={3}>
+                <ContactGridItem key={contact.name} item xs={12} md={6} lg={3}>
                     <Card style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                         <Contact contact={contact}/>
                         <Button

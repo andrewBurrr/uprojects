@@ -21,7 +21,7 @@ import rest_framework.schemas.coreapi
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env(
-    SECRET_KEY=(str,),
+    SECRET_KEY=(str, ""),
     DEBUG=(bool, False),
     DJANGO_ALLOWED_HOSTS=(str, ""),
     SQL_ENGINE=(str, "django.db.backends.sqlite3"),
@@ -39,7 +39,7 @@ env.read_env(BASE_DIR / '.env.dev')
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env("SECRET_KEY")
-
+print(f"key: {SECRET_KEY}", type(SECRET_KEY))
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env("DEBUG")
 
@@ -65,6 +65,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -72,7 +73,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -115,18 +115,18 @@ DATABASES = {
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    # {
+    #     'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    # },
+    # {
+    #     'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    # },
+    # {
+    #     'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    # },
+    # {
+    #     'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    # },
 ]
 
 LOGGING = {
@@ -178,7 +178,7 @@ REST_FRAMEWORK = {
 # allow resource sharing with the following origins
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "http://localhost:8000"
+    "http://localhost:8000",
 ]
 
 CORS_ALLOW_CREDENTIALS = True

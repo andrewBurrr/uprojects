@@ -9,13 +9,11 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         print("getting token")
-        token = super(CustomTokenObtainPairSerializer, cls).get_token(user)
+        token = super().get_token(user)
 
         token['first_name'] = user.first_name
         token['last_name'] = user.last_name
-
-        profile_image = user.profile_image.url if user.profile_image else ""
-        token['profile_image'] = profile_image
+        token['profile_image'] = str(user.profile_image.url if user.profile_image else None)
 
         return token
 

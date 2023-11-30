@@ -39,7 +39,7 @@ const Contact: React.FC<ContactProps> = ({ contact }) => {
             { contact.skills ?
                 <Grid item sx={{p: 1}}>
                     {contact.skills.map((skill) => (
-                        <Chip label={skill} size="small" sx={{ margin: 0.5 }}/>
+                        <Chip label={skill} key={skill} size="small" sx={{ margin: 0.5 }}/>
                     ))}
                 </Grid>
                 : null

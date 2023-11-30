@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import CustomUserRegister, BlacklistTokenUpdateView, CustomTokenObtainPairView
-from rest_framework_simplejwt.views import TokenRefreshView
+from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
 
 app_name = 'users'
 
