@@ -11,11 +11,11 @@ from .storage import OverwriteStorage
 # TODO: Make sure that models create Owner_id for each user when user is created.
 # TODO: comment
 
-# def image_to_path(instance, filename, category):
-#     extension = filename.split('.')[-1]
-#     unique_filename = f'{category}.{extension}'
-#     result = join(f'{category}', f'{instance.id}_{unique_filename}')
-#     return result
+def image_to_path(instance, filename, category):
+    extension = filename.split('.')[-1]
+    unique_filename = f'{category}.{extension}'
+    result = join(f'{category}', f'{instance.id}_{unique_filename}')
+    return result
 
 
 class CustomAccountManager(BaseUserManager):
@@ -60,11 +60,10 @@ class CustomAccountManager(BaseUserManager):
 class CustomAccount(AbstractBaseUser, PermissionsMixin):
     """
     Custom Account Model using Django's AbstractBaseUser and Django's PermissionsMixin
-    TODO: Form class for accepted images? could be universal for all logo's/profile images.
+    
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
-    # profile_image = models.ImageField(upload_to=lambda instance, filename: image_to_path(instance, filename, "profile_image"), storage=OverwriteStorage(), blank=True)
-    profile_image = models.ImageField(upload_to="images/profile_images/", storage=OverwriteStorage(), blank=True)
+    profile_image = models.ImageField(upload_to=lambda instance, filename: image_to_path(instance, filename, "profile_image"), storage=OverwriteStorage(), blank=True)
     about = models.TextField(max_length=1000)
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=150)
@@ -99,16 +98,17 @@ class Owner(models.Model):
 class Tag(models.Model):
 
     """
-    Tag model used by django's built in ORM
+    Interest model used by django's built in ORM
 
     This model defines the fields and parameters that will be defined for the 
-    Tag table.
+    Interest table.
 
     Attributes:
-        tag (str): (Primary Key) Char Field containing the specified tag
+        tag (str): (Primary Key) Char Field containing the specified interest
     """
 
     tag = models.CharField(max_length=60, primary_key=True, unique=True)
+
 
 
 class CustomUser(CustomAccount):
@@ -127,7 +127,7 @@ class CustomUser(CustomAccount):
     # needs a ownerID.
 
     owner_id = models.ForeignKey(Owner, on_delete=models.SET_NULL, null=True)
-    tags = models.ManyToManyField(Tag)
+    tag = models.ManyToManyField(Tag)
 
 
 class CustomAdmin(CustomAccount):
@@ -161,14 +161,12 @@ class CustomAdminPermission(models.Model):
 class Organization(models.Model):
     """
     TODO: comment
-    TODO: form class for accepted logo's?
     """
     org_id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
-    #logo = models.ImageField(upload_to=lambda instance, filename: image_to_path(instance, filename, "logo_image"), storage=OverwriteStorage(), blank=True)  
-    logo = models.ImageField(upload_to="images/logo_images/", storage=OverwriteStorage(), blank=True)  # TODO yolo 
+    logo = models.ImageField(upload_to=lambda instance, filename: image_to_path(instance, filename, "logo_image"), storage=OverwriteStorage(), blank=True)  # TODO figure out params
     name = models.CharField(max_length=60)
     description = models.TextField()
-    user_owner = models.ForeignKey(Owner, related_name="user_owner", on_delete=models.CASCADE)
-    owner_id = models.ForeignKey(Owner, related_name="owner_id", on_delete=models.SET_NULL, null=True)
+    user_owner = models.ForeignKey(Owner, on_delete=models.CASCADE)
+    owner_id = models.ForeignKey(Owner, on_delete=models.SET_NULL, null=True)
     tags = models.ManyToManyField(Tag)
 
