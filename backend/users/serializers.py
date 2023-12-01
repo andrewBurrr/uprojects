@@ -25,6 +25,7 @@ class CustomUserRegisterSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'password': {'write_only': True}
         }
+    
 
     def save(self, **kwargs):
         owner = Owner.objects.create()

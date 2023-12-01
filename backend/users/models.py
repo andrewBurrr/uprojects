@@ -263,27 +263,3 @@ class Organization(models.Model):
     user_owner = models.ForeignKey(Owner, related_name="user_owner", on_delete=models.CASCADE, null=True) # set to null for now, will be set to a unique value upon creation.
     owner_id = models.ForeignKey(Owner, related_name="owner_id", on_delete=models.SET_NULL, null=True) # set to null for now, will be set to a unique value upon creation.
     tags = models.ManyToManyField(Tag)
-
-    def save(self, *args, **kwargs):
-        """
-        Overridden save method for the Organization model.
-
-        This method is called when saving an Organization instance.
-        It handles the creation of owner information:
-        - Creates an Owner instance and associates it with the organization as the owner identifier.
-        - If a user is provided during save (via the 'user' parameter),
-          it sets the user as the owner user.
-
-        Args:
-            *args: Additional positional arguments.
-            **kwargs: Additional keyword arguments, expected to include 'user' (optional).
-
-        Returns:
-            None
-        """
-        if not self.pk:
-            owner_id = Owner.objects.create()
-            self.owner_id = owner_id
-            if 'user' in kwargs:
-                self.user_owner = kwargs['user']
-        super().save(*args, **kwargs)

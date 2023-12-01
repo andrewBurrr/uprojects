@@ -340,6 +340,15 @@ class OrganizationEventsList(generics.ListCreateAPIView):
             id__in=Hosts.objects.filter(org_id=organization_id).values('event_id'),
         )
         return queryset
+    
+class OrganizationCreateAPIView(generics.CreateAPIView):
+    serializer_class = OrganizationSerializer
+    permission_classes = [IsOwnerOrReadOnly]
+
+    def perform_create(self, serializer):
+        user_id = self.kwargs['user_id']
+        owner_id = CustomUser.objects.get(id=user_id).owner_id
+        serializer.save(owner_id=owner_id)
 
 
 class TeamMembersList(generics.ListCreateAPIView):
