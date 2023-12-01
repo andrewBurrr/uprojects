@@ -183,14 +183,14 @@ class CustomUser(CustomAccount):
     owner_id = models.ForeignKey(Owner, null=True, on_delete=models.CASCADE) # set to null for now, will be set to a unique value upon creation.
     tags = models.ManyToManyField(Tag)
 
-    def save(self, *args, **kwargs):
-        """
-        Overridden save method for the CustomUser model.
-        """
-        if not self.pk:
-            Owner.objects.create()
-            self.owner_id = Owner.objects.create()
-        super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     """
+    #     Overridden save method for the CustomUser model.
+    #     """
+    #     if not self.pk:
+    #         Owner.objects.create()
+    #         self.owner_id = Owner.objects.create()
+    #     super().save(*args, **kwargs)
 
 
 class CustomAdmin(CustomAccount):

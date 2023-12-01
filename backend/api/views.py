@@ -27,6 +27,11 @@ class MultipleFieldLookupMixin:
         self.check_object_permissions(self.request, obj)
         return obj
 
+class Usercreate(generics.CreateAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = UserSerializer
+    
+
 
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     """

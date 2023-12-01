@@ -2,7 +2,7 @@ from abc import ABC
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import serializers
-from .models import CustomUser
+from .models import CustomUser, Owner
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -27,10 +27,13 @@ class CustomUserRegisterSerializer(serializers.ModelSerializer):
         }
 
     def save(self, **kwargs):
+        owner = Owner.objects.create()
+        self.validated_data['owner_id'] = owner
         user = CustomUser(
             first_name=self.validated_data['first_name'],
             last_name=self.validated_data['last_name'],
             email=self.validated_data['email'],
+            owner_id=self.validated_data['owner_id']
         )
         password = self.validated_data['password']
         user.set_password(password)

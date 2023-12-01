@@ -60,9 +60,32 @@ class OwnerAdmin(admin.ModelAdmin):
     model = Owner
     list_display = ("id",)
 
-# class CustomUserAdmin(admin.ModelAdmin):
-#     model = CustomUser
-#     list_display =("id","email", "first_name", "last_name", "owner_id")
+# create a custom user admin model like AccountAdminConfig
+class CustomUserAdmin(AccountAdminConfig):
+    model = CustomUser
+
+    search_fields = ('email', 'first_name', 'last_name', 'owner_id')
+    list_filter = ('email', 'first_name', 'last_name', 'is_active', 'is_staff', 'owner_id', 'tags')
+    ordering = ('-start_date',)
+    list_display = ('email', 'first_name', 'last_name',
+                    'is_active', 'is_staff', 'owner_id')
+    fieldsets = (
+        (None, {'fields': ('email', 'first_name', 'last_name')}),
+        ('Permissions', {'fields': ('is_staff', 'is_active')}),
+        ('Personal', {'fields': ('about', 'profile_image')}),
+    )
+    formfield_overrides = {
+        models.TextField: {'widget': Textarea(attrs={'rows': 20, 'cols': 60})},
+    }
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('email', 'first_name', 'last_name', 'password1', 'password2', 'is_active', 'is_staff', 'tags')}
+         ),
+    )
+
+
+    
 
 
 # class CustomAdminAdmin(admin.ModelAdmin):
@@ -125,7 +148,7 @@ class OrganizationAdmin(admin.ModelAdmin):
 
 admin.site.register(Owner, OwnerAdmin)
 admin.site.register(CustomAccount, AccountAdminConfig)
-admin.site.register(CustomUser, AccountAdminConfig)
+admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(CustomAdmin, AccountAdminConfig)
 admin.site.register(CustomAdminPermission, CustomAdminPermissionAdmin)
 admin.site.register(Tag, TagAdmin)
