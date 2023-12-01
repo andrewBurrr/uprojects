@@ -25,7 +25,7 @@ class MultipleFieldLookupMixin:
                 filter[field] = self.kwargs[field]
         obj = generics.get_object_or_404(queryset, **filter)  # Lookup the object
         self.check_object_permissions(self.request, obj)
-        return obj    
+        return obj
 
 
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -40,70 +40,25 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
 
 class UserProjectList(generics.ListCreateAPIView):
     """
-    View to get a list of public projects by owner id. 
+    View to get a list of public projects by owner id.
     """
     serializer_class = ProjectSerializer
     permission_classes = [IsOwnerOrReadOnly]
 
-    #TODO: WIP
-
     def get_queryset(self):
-        # queryset = Project.objects.all()
+        owner_id = self.kwargs.get('owner_id')
+        user_id = self.request.user.id
+        current_user = CustomUser.objects.get(id=user_id)
 
-        url_owner_id = self.kwargs['owner_id']
-
-        #getting all public projects
-        public_projects = Project.objects.filter(visibility='PUBLIC')
-        queryset = public_projects
-
-        # this will break if nobody is loged in
-
-        # current_user = CustomUser.objects.get(id=self.request.user)
-
-        # FIXME: current issue is idk how to get the current users owner id for authentication checks
-
-        if self.request.user.is_authenticated:# and self.request.user.owner_id == url_owner_id:
-            #getting all projects this user owns
-            # need to go through the owns table.
-                # filter the owns table by owner_id
-                # then filter the projects table by all the project_id in the result
-
-            # FIXME: might be better to just use union here too lol
-            user_owner = Own.objects.filter(owner_id=url_owner_id).values('project_id')
-            user_owns = Project.objects.filter(project_id__in=user_owner)
-
-            #getting all projects this user has access to (teams)
-
-            # need to go through the member table (project team) filtering by user_id=requests.user.id
-                # then go through the teams (project owner_id) filtering by id=team.id
-                    # then go through owns (project project_id) filtering by owner_id= teams owner id
-                        # then go through project filtering by project_id = owns project_id
-            user_member = Member.objects.filter(user_id=self.request.user.id).values('team')
-            team_owner = Team.objects.filter(id__in=user_member).values('owner_id')
-            project_owner = Own.objects.filter(owner_id__in=team_owner).values('project_id')
-            user_has_access_to = Project.objects.filter(project_id__in=project_owner)
-
-            # user_owns = Project.objects.all()
-            # user_has_access_to = Project.objects.all()
-
-            queryset = (public_projects.union(user_owns)).union(user_has_access_to)
-    
+        if self.request.user.is_authenticated and current_user.owner_id.id == owner_id:
+            queryset = Project.objects.filter(owner_id=owner_id)
+        else:
+            user_teams = Member.objects.filter(user_id=current_user.id).values('team')
+            queryset = Project.objects.filter(
+                Q(owner_id=owner_id, visibility='PUBLIC') |
+                Q(owner_id=owner_id, partof__team__in=user_teams)
+            )
         return queryset
-
-    # def get_queryset(self):
-    #     # test = self.kwargs.get('owner_id')
-    #     # owner_id = Owner.objects.get(id=test)
-    #     user_id = self.request.user.id
-    #     current_user = CustomUser.objects.get(id=user_id)
-
-    #     if self.request.user.is_authenticated and current_user.owner_id == owner_id:
-    #         queryset = Project.objects.filter(owner_id=owner_id)
-    #     else:
-    #         user_teams = Member.objects.filter(user_id=current_user.id).values('team')
-    #         queryset = Project.objects.filter(
-    #             Q(owner_id=owner_id, visibility='public') |
-    #             Q(owner_id=owner_id, partof__team__in=user_teams))
-    #     return queryset
 
 
 class UserTeamList(generics.ListCreateAPIView):
@@ -144,7 +99,7 @@ class UserFollowList(MultipleFieldLookupMixin, generics.ListCreateAPIView):
 
 
 class GlobalSearchAPIView(generics.ListAPIView):
-    serializer_class = None
+    serializer_class = SearchResultSerializer
     ordering_fields = ['projects', 'teams', 'events', 'orgs', 'users']
 
     def get_queryset(self):
@@ -163,18 +118,26 @@ class GlobalSearchAPIView(generics.ListAPIView):
             org_results = org_results.filter(tags__tag__in=tags)
             user_results = user_results.filter(tags__tag__in=tags)
 
-        all_results = {
-            'projects': ProjectSerializer(project_results, many=True).data,
-            'teams': TeamSerializer(team_results, many=True).data,
-            'events': EventSerializer(event_results, many=True).data,
-            'orgs': OrganizationSerializer(org_results, many=True).data,
-            'users': UserSerializer(user_results, many=True).data
-        }
-        # localhost:8000/search/?q='some stuff'&tags='','',''&sort='reverse'
-        order_by = self.request.query_params.get('sort', '')
-        if order_by and order_by in self.ordering_fields:
-            for category, results in all_results.items():
-                all_results[category] = sorted(results, key=lambda x: x[order_by])
+        # all_results = {
+        #     'projects': ProjectSerializer(project_results, many=True).data,
+        #     'teams': TeamSerializer(team_results, many=True).data,
+        #     'events': EventSerializer(event_results, many=True).data,
+        #     'orgs': OrganizationSerializer(org_results, many=True).data,
+        #     'users': UserSerializer(user_results, many=True).data
+        # }
+
+        all_results = SearchResultSerializer(
+            ProjectSerializer(project_results, many=True).data,
+            TeamSerializer(team_results, many=True).data,
+            EventSerializer(event_results, many=True).data,
+            OrganizationSerializer(org_results, many=True).data,
+            UserSerializer(user_results, many=True).data
+        )
+
+        # order_by = self.request.query_params.get('sort', '')
+        # if order_by and order_by in self.ordering_fields:
+        #     for category, results in all_results.items():
+        #         all_results[category] = sorted(results, key=lambda x: x[order_by])
 
         return all_results
 
@@ -193,9 +156,23 @@ class TeamDetail(generics.RetrieveUpdateDestroyAPIView):
         obj = get_object_or_404(query_set, **composite_key)
         self.check_object_permissions(self.request, obj)
         return obj
+
+
+class TeamMembersList(generics.ListCreateAPIView):
+    serializer_class = MemberSerializer
+    permission_classes = [IsOwnerOrReadOnly]
+
+    def get_queryset(self):
+        composite_key = {
+            'owner_id': self.kwargs['owner_id'],
+            'team_name': self.kwargs['team_name'],
+        }
+        team = get_object_or_404(Team.objects.all(), **composite_key)
+        queryset = Member.objects.filter(team=team)
+        return queryset
 # project
 
-# TODO: fix
+
 class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
@@ -238,7 +215,7 @@ class RepositoryItemList(generics.ListCreateAPIView):
 
     def get_serializer_class(self):
         type_param = self.request.query_params.get('type', '').lower()
-        return self.serializer_class_mapping.get(type_param, IssueSerializer)
+        return self.serializer_class_mapping.get(type_param, ItemSerializer)
 
     def get_queryset(self):
         content_type = ContentType.objects.get_for_model(Item)
@@ -278,8 +255,7 @@ class RepositoryItemList(generics.ListCreateAPIView):
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
 
-# TODO: Make a view for each item type. I don't think that item detail view will work 
-#       for abstract classes. This will need testing.
+
 class ItemDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class_mapping = {
         'issue': IssueSerializer,
@@ -386,7 +362,7 @@ class OrganizationEventsList(generics.ListCreateAPIView):
             id__in=Hosts.objects.filter(org_id=organization_id).values('event_id'),
         )
         return queryset
-    
+
 class OrganizationRegister(generics.CreateAPIView):
     serializer_class = OrganizationRegisterSerializer
     permission_classes = [IsOwnerOrReadOnly]
@@ -398,24 +374,6 @@ class OrganizationRegister(generics.CreateAPIView):
             self.perform_create(serializer)
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
-
-
-
-
-
-
-class TeamMembersList(generics.ListCreateAPIView):
-    serializer_class = MemberSerializer
-    permission_classes = [IsOwnerOrReadOnly]
-
-    def get_queryset(self):
-        owner_id = self.kwargs['owner_id']
-        team_name = self.kwargs['team_name']
-        queryset = Member.objects.filter(
-            owner_id=owner_id,
-            team_name=team_name
-        )
-        return queryset
 
 
 class EventDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -455,13 +413,13 @@ class DropBoxSubmissionFileList(generics.ListCreateAPIView):
 
 class BugList(generics.ListCreateAPIView):
     queryset = BugReport.objects.all()
-    serializer_class = BugResponseSerializer
+    serializer_class = BugReportSerializer
     permission_classes = [IsOwnerOrReadOnly]
 
 
 class BugDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = BugReport.objects.all()
-    serializer_class = BugResponseSerializer
+    serializer_class = BugReportSerializer
     permission_classes = [IsOwnerOrReadOnly]
 
 

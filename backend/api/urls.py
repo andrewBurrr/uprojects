@@ -26,9 +26,9 @@ A user must be able to view all projects owned by a user/organization under that
 """
 urlpatterns = [
     # URL patterns for user dashboard
-    path('user/<uuid:id>/', UserDetail.as_view(), name='api-user-detail'),
-    path('user-projects/<uuid:owner_id>/', UserProjectList.as_view(), name='api-user-projects'),
-    path('user-teams/<uuid:user_id>/', UserTeamList.as_view(), name='api-user-teams'),
+    path('user/<uuid:id>/', UserDetail.as_view(), name='api-user-detail'),  # tested
+    path('user-projects/<uuid:owner_id>/', UserProjectList.as_view(), name='api-user-projects'),  # tested
+    path('user-teams/<uuid:user_id>/', UserTeamList.as_view(), name='api-user-teams'),  # tested
     path('user-orgs/<uuid:owner_id>/', UserOrganizationList.as_view(), name='api-user-orgs'),
     path('user-follows/<uuid:user_id>/', UserFollowList.as_view(), name='api-user-follows'),
     # URL patterns for organization dashboard
@@ -40,8 +40,8 @@ urlpatterns = [
     # URL patterns for search
     path('search/', GlobalSearchAPIView.as_view(), name='api-global-search'),
     # URL pattern for teams
-    path('team/<uuid:owner_id>/<str:team_name>/', TeamDetail.as_view(), name='api-team-detail'),
-    path('team/<uuid:owner_id>/<str:team_name>/members/', TeamMembersList.as_view(), name='api-team-members-list'),
+    path('team/<uuid:owner_id>/<str:team_name>/', TeamDetail.as_view(), name='api-team-detail'),  # tested
+    path('team/<uuid:owner_id>/<str:team_name>/members/', TeamMembersList.as_view(), name='api-team-members-list'),  # tested
     # URL patterns for project detail
     # path('project/<uuid:id>', ),
     # path('project/<uuid:id>/teams/', ),
