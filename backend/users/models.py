@@ -100,7 +100,7 @@ class CustomAccount(AbstractBaseUser, PermissionsMixin):
     Methods:
         __str__: Returns a string representation of the user, using first name and last name.
     """
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     profile_image = models.ImageField(upload_to="images/profile_images/", storage=OverwriteStorage(), blank=True)
     about = models.TextField(max_length=1000)
     profession = models.TextField(max_length=150, default="")
@@ -137,7 +137,7 @@ class Owner(models.Model):
         id (int): (Primary Key)The owner identification number of both user's and 
                  Organizations.
     """
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
 
 class Tag(models.Model):
@@ -256,7 +256,7 @@ class Organization(models.Model):
               It creates an Owner instance and associates it with the organization as the owner identifier.
               If a user is provided during save (via the 'user' parameter), it sets the user as the owner user.
     """
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     logo = models.ImageField(upload_to="images/logo_images/", storage=OverwriteStorage(), blank=True)
     name = models.CharField(max_length=60)
     description = models.TextField()

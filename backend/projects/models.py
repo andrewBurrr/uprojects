@@ -22,7 +22,7 @@ class BugReport(models.Model):
     Methods:
         None
     """
-    bug_id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
+    bug_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     time_stamp = models.DateTimeField(auto_now_add=True)
     description = models.TextField()
     user_id = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
@@ -167,7 +167,7 @@ class Project(models.Model):
         ("PUBLIC", "public"),
         ("PRIVATE", "private"),
     ]
-    project_id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
+    project_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=60)
     visibility = models.CharField(max_length=60, choices=VISIBILITY, default="PRIVATE")
     description = models.TextField()
@@ -197,7 +197,7 @@ class Event(models.Model):
     Methods:
         None
     """
-    event_id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
+    event_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)  # events need to be hosted by an organization
     event_type = models.CharField(max_length=60)
     start_date = models.DateTimeField()
