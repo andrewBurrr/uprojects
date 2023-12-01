@@ -2,7 +2,7 @@ from django.urls import path
 from .views import (
     UserDetail, UserProjectList, UserTeamList, UserOrganizationList, UserFollowList,
     OrganizationDetail, OrganizationProjectList, OrganizationTeamList, OrganizationEventsList,
-    GlobalSearchAPIView,
+    OrganizationCreateAPIView, GlobalSearchAPIView,
     TeamDetail, TeamMembersList,
 )
 # Define the url namespace for these URL patterns
@@ -36,6 +36,7 @@ urlpatterns = [
     path('organization-projects/<uuid:org_id>/', OrganizationProjectList.as_view(), name='api-org-projects'),
     path('organization-teams/<uuid:owner_id>/', OrganizationTeamList.as_view(), name='api-org-teams'),
     path('organization-events/<uuid:owner_id>/', OrganizationEventsList.as_view(), name='api-org-events'),
+    path('organization-register/', OrganizationCreateAPIView.as_view(), name='api-org-register'),
     # URL patterns for search
     path('search/', GlobalSearchAPIView.as_view(), name='api-global-search'),
     # URL pattern for teams

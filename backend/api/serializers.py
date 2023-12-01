@@ -41,8 +41,6 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ['id', 'profile_image', 'about', 'email', 'first_name', 'last_name', 'start_date', 'owner_id', 'tags']
-
 
 
 class AdminSerializer(serializers.ModelSerializer):
@@ -71,6 +69,20 @@ class OrganizationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
         fields = ['org_id', 'logo', 'name', 'description', 'user_owner', 'owner_id', 'tags']
+    
+    def save(self, **kwargs):
+        org = Organization(
+            logo=self.validated_data['logo'],
+            name=self.validated_data['name'],
+            description=self.validated_data['description'],
+            user_owner=self.validated_data['user_owner'],
+            owner_id=self.validated_data['owner_id'],
+        )
+        org.save()
+        return org
+
+
+    
 
 
 """
