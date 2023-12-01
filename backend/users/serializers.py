@@ -29,13 +29,12 @@ class CustomUserRegisterSerializer(serializers.ModelSerializer):
 
     def save(self, **kwargs):
         owner = Owner.objects.create()
-        self.validated_data['owner_id'] = owner
         
         user = CustomUser(
             first_name=self.validated_data['first_name'],
             last_name=self.validated_data['last_name'],
             email=self.validated_data['email'],
-            owner_id=self.validated_data['owner_id'],
+            owner_id=owner,
         )
         password = self.validated_data['password']
         user.set_password(password)

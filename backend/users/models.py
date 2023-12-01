@@ -257,7 +257,7 @@ class Organization(models.Model):
               If a user is provided during save (via the 'user' parameter), it sets the user as the owner user.
     """
     org_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    logo = models.ImageField(upload_to="images/logo_images/", storage=OverwriteStorage(), blank=True)
+    logo = models.ImageField(upload_to="images/logo_images/", storage=OverwriteStorage(), default="",blank=True)
     name = models.CharField(max_length=60)
     description = models.TextField()
     user_owner = models.ForeignKey(Owner, related_name="user_owner", on_delete=models.CASCADE, null=True) # set to null for now, will be set to a unique value upon creation.

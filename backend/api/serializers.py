@@ -72,21 +72,37 @@ class OrganizationSerializer(serializers.ModelSerializer):
         model = Organization
         fields = ['org_id', 'logo', 'name', 'description', 'user_owner', 'owner_id', 'tags']
     
+
+class OrganizationRegisterSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the users/models.Organization model
+
+    Necessary Organization fields:
+    - org_id
+    - logo
+    - name 
+    - description
+    """
+
+    class Meta:
+        model = Organization
+        fields = ['org_id', 'logo', 'name', 'description',]
+    
     def save(self, **kwargs):
-        
-        
+        request = self.context.get('request')
+        owner = Owner.objects.create()
+        user = CustomUser.objects.get(id=request.user.id).owner_id
+
+        logo = self.validated_data.get('logo', None)
         org = Organization(
-            logo=self.validated_data['logo'],
+            logo=logo,
             name=self.validated_data['name'],
             description=self.validated_data['description'],
-            user_owner=self.validated_data['user_owner'],
-            owner_id=self.validated_data['owner_id'],
+            user_owner=user,
+            owner_id=owner,
         )
         org.save()
         return org
-
-
-    
 
 
 """

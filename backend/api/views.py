@@ -341,14 +341,21 @@ class OrganizationEventsList(generics.ListCreateAPIView):
         )
         return queryset
     
-class OrganizationCreateAPIView(generics.CreateAPIView):
-    serializer_class = OrganizationSerializer
+class OrganizationRegister(generics.CreateAPIView):
+    serializer_class = OrganizationRegisterSerializer
     permission_classes = [IsOwnerOrReadOnly]
 
-    def perform_create(self, serializer):
-        user_id = self.request.user.id
-        owner_id = CustomUser.objects.get(id=user_id).owner_id
-        serializer.save(owner_id=owner_id)
+    def post(self, request, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+
+
+
+
 
 
 class TeamMembersList(generics.ListCreateAPIView):
