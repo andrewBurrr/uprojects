@@ -25,12 +25,7 @@ class MultipleFieldLookupMixin:
                 filter[field] = self.kwargs[field]
         obj = generics.get_object_or_404(queryset, **filter)  # Lookup the object
         self.check_object_permissions(self.request, obj)
-        return obj
-
-class Usercreate(generics.CreateAPIView):
-    queryset = CustomUser.objects.all()
-    serializer_class = UserSerializer
-    
+        return obj    
 
 
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):

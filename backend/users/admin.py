@@ -67,7 +67,7 @@ class CustomUserAdmin(AccountAdminConfig):
     search_fields = ('email', 'first_name', 'last_name', 'owner_id')
     list_filter = ('email', 'first_name', 'last_name', 'is_active', 'is_staff', 'owner_id', 'tags')
     ordering = ('-start_date',)
-    list_display = ('email', 'first_name', 'last_name',
+    list_display = ('id', 'email', 'first_name', 'last_name',
                     'is_active', 'is_staff', 'owner_id')
     fieldsets = (
         (None, {'fields': ('email', 'first_name', 'last_name')}),
