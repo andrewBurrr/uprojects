@@ -62,7 +62,7 @@ class CustomAccountManager(BaseUserManager):
             raise ValueError(_('You must provide an email address'))
 
         email = self.normalize_email(email)
-        user = self.model(email=email, first_name=first_name,
+        user = self.model(email=email, first_name=first_name,        
                           last_name=last_name, **other_fields)
         user.set_password(password)
         user.save()
@@ -101,7 +101,7 @@ class CustomAccount(AbstractBaseUser, PermissionsMixin):
         __str__: Returns a string representation of the user, using first name and last name.
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    profile_image = models.ImageField(upload_to="images/profile_images/", storage=OverwriteStorage(), blank=True)
+    profile_image = models.ImageField(upload_to="images/profile_images/", storage=OverwriteStorage, blank=True)
     about = models.TextField(max_length=1000)
     profession = models.TextField(max_length=150, default="")
     email = models.EmailField(unique=True)
@@ -256,7 +256,7 @@ class Organization(models.Model):
               It creates an Owner instance and associates it with the organization as the owner identifier.
               If a user is provided during save (via the 'user' parameter), it sets the user as the owner user.
     """
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    org_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     logo = models.ImageField(upload_to="images/logo_images/", storage=OverwriteStorage(), blank=True)
     name = models.CharField(max_length=60)
     description = models.TextField()

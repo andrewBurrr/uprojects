@@ -8,7 +8,7 @@ from .views import (
 # Define the url namespace for these URL patterns
 app_name = 'apis'
 
- # TODO Team view (unique by owner_id, team_name)
+# TODO Team view (unique by owner_id, team_name)
 # TODO Team permissions (might do a join on another query), show all members of a team and team permissions/settings (unique by Team_id, permission)
 # TODO Member (show all the members of a team), probably a read only endpoint (unique by (user_id, owner_id, team_name))
 # TODO Project (probably needs multiple views) (unique by id: Strong entity)
@@ -36,7 +36,7 @@ urlpatterns = [
     path('organization-projects/<uuid:org_id>/', OrganizationProjectList.as_view(), name='api-org-projects'),
     path('organization-teams/<uuid:owner_id>/', OrganizationTeamList.as_view(), name='api-org-teams'),
     path('organization-events/<uuid:owner_id>/', OrganizationEventsList.as_view(), name='api-org-events'),
-    path('organization-register/<uuid:owner_id>/', OrganizationCreateAPIView.as_view(), name='api-org-register'),
+    path('organization-register/<uuid:user_id>/', OrganizationCreateAPIView.as_view(), name='api-org-register'),
     # URL patterns for search
     path('search/', GlobalSearchAPIView.as_view(), name='api-global-search'),
     # URL pattern for teams

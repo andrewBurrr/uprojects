@@ -73,6 +73,8 @@ class OrganizationSerializer(serializers.ModelSerializer):
         fields = ['org_id', 'logo', 'name', 'description', 'user_owner', 'owner_id', 'tags']
     
     def save(self, **kwargs):
+        
+        
         org = Organization(
             logo=self.validated_data['logo'],
             name=self.validated_data['name'],

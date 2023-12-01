@@ -31,3 +31,4 @@ yarn-error.log*
 .vscode/launch.json
 backend/sql.log
 backend/resetMigrations.sh
+backend/sql.log
