@@ -15,13 +15,14 @@ interface User {
     id: string;
     profile_image: string; // Assuming the image path is stored as a string
     about: string;
+    profession: string;
     email: string;
     first_name: string;
     last_name: string;
     start_date: string; // Assuming the date is stored as a string
     is_staff: boolean;
     is_active: boolean;
-    owner_id?: string;
+    owner_id: string;
     tags?: string[];
 }
 
@@ -125,7 +126,7 @@ const Dashboard = () => { // This is the start of the function
                                 <Grid item>
                                     <Typography variant="h5">{user?.first_name} {user?.last_name}</Typography>
                                     <Typography variant="subtitle1" color="textSecondary">
-                                        Developer
+                                        {user?.profession}
                                     </Typography>
                                 </Grid>
                             </Grid>

@@ -44,14 +44,18 @@ class UserProjectList(generics.ListCreateAPIView):
         user_id = self.request.user.id
         current_user = CustomUser.objects.get(id=user_id)
 
-        if self.request.user.is_authenticated and current_user.owner_id == owner_id:
+        if self.request.user.is_authenticated and current_user.owner_id.id == owner_id:
             queryset = Project.objects.filter(owner_id=owner_id)
         else:
             user_teams = Member.objects.filter(user_id=current_user.id).values('team')
             queryset = Project.objects.filter(
-                Q(owner_id=owner_id, visibility='public') |
-                Q(owner_id=owner_id, partof__team__in=user_teams))
+                Q(owner_id=owner_id, visibility='PUBLIC') |
+                Q(owner_id=owner_id, partof__team__in=user_teams)
+            )
         return queryset
+
+
+# Q(owner_id=owner_id, partof__team__in=user_teams)
 
 
 class UserTeamList(generics.ListCreateAPIView):
@@ -88,7 +92,7 @@ class UserFollowList(MultipleFieldLookupMixin, generics.ListCreateAPIView):
 
 
 class GlobalSearchAPIView(generics.ListAPIView):
-    serializer_class = None
+    serializer_class = SearchResultSerializer
     ordering_fields = ['projects', 'teams', 'events', 'orgs', 'users']
 
     def get_queryset(self):
@@ -107,18 +111,26 @@ class GlobalSearchAPIView(generics.ListAPIView):
             org_results = org_results.filter(tags__tag__in=tags)
             user_results = user_results.filter(tags__tag__in=tags)
 
-        all_results = {
-            'projects': ProjectSerializer(project_results, many=True).data,
-            'teams': TeamSerializer(team_results, many=True).data,
-            'events': EventSerializer(event_results, many=True).data,
-            'orgs': OrganizationSerializer(org_results, many=True).data,
-            'users': UserSerializer(user_results, many=True).data
-        }
-        # localhost:8000/search/?q='some stuff'&tags='','',''&sort='reverse'
-        order_by = self.request.query_params.get('sort', '')
-        if order_by and order_by in self.ordering_fields:
-            for category, results in all_results.items():
-                all_results[category] = sorted(results, key=lambda x: x[order_by])
+        # all_results = {
+        #     'projects': ProjectSerializer(project_results, many=True).data,
+        #     'teams': TeamSerializer(team_results, many=True).data,
+        #     'events': EventSerializer(event_results, many=True).data,
+        #     'orgs': OrganizationSerializer(org_results, many=True).data,
+        #     'users': UserSerializer(user_results, many=True).data
+        # }
+
+        all_results = SearchResultSerializer(
+            ProjectSerializer(project_results, many=True).data,
+            TeamSerializer(team_results, many=True).data,
+            EventSerializer(event_results, many=True).data,
+            OrganizationSerializer(org_results, many=True).data,
+            UserSerializer(user_results, many=True).data
+        )
+
+        # order_by = self.request.query_params.get('sort', '')
+        # if order_by and order_by in self.ordering_fields:
+        #     for category, results in all_results.items():
+        #         all_results[category] = sorted(results, key=lambda x: x[order_by])
 
         return all_results
 
@@ -137,6 +149,20 @@ class TeamDetail(generics.RetrieveUpdateDestroyAPIView):
         obj = get_object_or_404(query_set, **composite_key)
         self.check_object_permissions(self.request, obj)
         return obj
+
+
+class TeamMembersList(generics.ListCreateAPIView):
+    serializer_class = MemberSerializer
+    permission_classes = [IsOwnerOrReadOnly]
+
+    def get_queryset(self):
+        composite_key = {
+            'owner_id': self.kwargs['owner_id'],
+            'team_name': self.kwargs['team_name'],
+        }
+        team = get_object_or_404(Team.objects.all(), **composite_key)
+        queryset = Member.objects.filter(team=team)
+        return queryset
 # project
 
 
@@ -331,20 +357,6 @@ class OrganizationEventsList(generics.ListCreateAPIView):
         return queryset
 
 
-class TeamMembersList(generics.ListCreateAPIView):
-    serializer_class = MemberSerializer
-    permission_classes = [IsOwnerOrReadOnly]
-
-    def get_queryset(self):
-        owner_id = self.kwargs['owner_id']
-        team_name = self.kwargs['team_name']
-        queryset = Member.objects.filter(
-            owner_id=owner_id,
-            team_name=team_name
-        )
-        return queryset
-
-
 class EventDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
@@ -390,7 +402,6 @@ class BugDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = BugReport.objects.all()
     serializer_class = BugReportSerializer
     permission_classes = [IsOwnerOrReadOnly]
-
 
 # class CommitDetail(generics.RetrieveUpdateDestroyAPIView):
 #     """

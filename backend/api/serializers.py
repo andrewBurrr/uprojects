@@ -193,6 +193,14 @@ class CommitSerializer(serializers.ModelSerializer):
                   'due_date', 'team', 'commit_id']
 
 
+class SearchResultSerializer(serializers.Serializer):
+    projects = ProjectSerializer(many=True)
+    teams = TeamSerializer(many=True)
+    events = EventSerializer(many=True)
+    orgs = OrganizationSerializer(many=True)
+    users = UserSerializer(many=True)
+
+
 # TODO: test for
 class CodeReviewSerializer(serializers.ModelSerializer):
     commits = CommitSerializer(many=True, read_only=True)
