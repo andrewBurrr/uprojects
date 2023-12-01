@@ -188,8 +188,8 @@ class CustomUser(CustomAccount):
         Overridden save method for the CustomUser model.
         """
         if not self.pk:
-            owner_id = Owner.objects.create()
-            self.owner_id = owner_id
+            Owner.objects.create()
+            self.owner_id = Owner.objects.create()
         super().save(*args, **kwargs)
 
 
