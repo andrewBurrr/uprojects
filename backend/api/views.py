@@ -346,7 +346,7 @@ class OrganizationCreateAPIView(generics.CreateAPIView):
     permission_classes = [IsOwnerOrReadOnly]
 
     def perform_create(self, serializer):
-        user_id = self.kwargs['user_id']
+        user_id = self.request.user.id
         owner_id = CustomUser.objects.get(id=user_id).owner_id
         serializer.save(owner_id=owner_id)
 

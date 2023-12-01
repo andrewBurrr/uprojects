@@ -256,7 +256,7 @@ class Organization(models.Model):
               It creates an Owner instance and associates it with the organization as the owner identifier.
               If a user is provided during save (via the 'user' parameter), it sets the user as the owner user.
     """
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
+    org_id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
     logo = models.ImageField(upload_to="images/logo_images/", storage=OverwriteStorage(), blank=True)
     name = models.CharField(max_length=60)
     description = models.TextField()

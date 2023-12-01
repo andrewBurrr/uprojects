@@ -143,7 +143,7 @@ class OrganizationAdmin(admin.ModelAdmin):
     """
 
     model = Organization
-    list_display = ("id", "name", "owner_id",)
+    list_display = ("org_id", "name", "owner_id",)
 
 
 admin.site.register(Owner, OwnerAdmin)
