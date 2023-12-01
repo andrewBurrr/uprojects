@@ -29,6 +29,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .vscode/launch.json
+sql.log
 backend/sql.log
 backend/resetMigrations.sh
-backend/sql.log

@@ -45,8 +45,11 @@ class UserProjectList(generics.ListCreateAPIView):
     serializer_class = ProjectSerializer
     permission_classes = [IsOwnerOrReadOnly]
 
+    #TODO: WIP
+
     def get_queryset(self):
-        owner_id = self.kwargs.get('owner_id')
+        # test = self.kwargs.get('owner_id')
+        # owner_id = Owner.objects.get(id=test)
         user_id = self.request.user.id
         current_user = CustomUser.objects.get(id=user_id)
 
