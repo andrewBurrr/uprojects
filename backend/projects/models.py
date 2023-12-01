@@ -353,7 +353,7 @@ class Item(models.Model):
     the item table
 
     Attributes:
-        repository (ForeignKey to Repository): Foreign key to the repository this item belongs to.
+        repo (ForeignKey to Repository): Foreign key to the repository this item belongs to.
         item_id (IntegerField): Unique identifier for the item (auto-incremented by default).
         item_name (CharField): Name of the item.
         status (CharField): Status of the item (chosen from predefined choices).
@@ -371,7 +371,7 @@ class Item(models.Model):
         ("PENDINGAPPROVAL", "pending approval"),
         ("COMPLETED", "completed"),
     ]
-    repository = models.ForeignKey(Repository, on_delete=models.CASCADE)  # django magic
+    repo = models.ForeignKey(Repository, on_delete=models.CASCADE)  # django magic
     item_id = models.IntegerField(default=1)
     item_name = models.CharField(max_length=60)
     status = models.CharField(max_length=60, choices=STATUS, default="NOTAPPROVED")
@@ -391,7 +391,7 @@ class Item(models.Model):
         abstract = True
         constraints = [
             models.UniqueConstraint(
-                fields=["repository", "item_id"],
+                fields=["repo", "item_id"],
                 name="%(class)s_unique_project_repository_item_key_constraint"
             )
         ]

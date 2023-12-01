@@ -1,0 +1,1 @@
+(0.003) SELECT "projects_bugreport"."bug_id", "projects_bugreport"."time_stamp", "projects_bugreport"."description", "projects_bugreport"."user_id_id" FROM "projects_bugreport" LIMIT 21; args=(); alias=default

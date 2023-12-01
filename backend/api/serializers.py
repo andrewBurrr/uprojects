@@ -78,7 +78,6 @@ START PROJECT SERIALIZERS
 """
 
 
-
 class BugResponseSerializer(serializers.ModelSerializer):
     class Meta:
         model = BugResponse
@@ -188,7 +187,6 @@ class RepositorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Repository
         fields = ['project_id', 'repo_name', 'git_base_path']
-        fields = ['project_id', 'repo_name', 'git_base_path']
 
 
 class IssueSerializer(serializers.ModelSerializer):
@@ -196,9 +194,6 @@ class IssueSerializer(serializers.ModelSerializer):
         model = Issue
         fields = ['repo', 'item_id', 'item_name', 'status', 'description', 'is_approved',
                 'due_date', 'team','issue_type']
-        model = Issue
-        fields = ['repo', 'item_id', 'item_name', 'status', 'description', 'is_approved',
-                  'due_date', 'team', 'issue_type']
 
 
 class PullRequestSerializer(serializers.ModelSerializer):

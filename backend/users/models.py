@@ -101,10 +101,9 @@ class CustomAccount(AbstractBaseUser, PermissionsMixin):
         __str__: Returns a string representation of the user, using first name and last name.
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
-    # profile_image = models.ImageField(upload_to=lambda instance, filename: image_to_path(instance, filename, "profile_image"), storage=OverwriteStorage(), blank=True)
     profile_image = models.ImageField(upload_to="images/profile_images/", storage=OverwriteStorage(), blank=True)
     about = models.TextField(max_length=1000)
-    profession = models.TextField(max_length=150)
+    profession = models.TextField(max_length=150, default="")
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=150)
     last_name = models.CharField(max_length=150)
@@ -181,10 +180,13 @@ class CustomUser(CustomAccount):
     Methods:
         save
     """
-    owner_id = models.ForeignKey(Owner, on_delete=models.CASCADE)
+    owner_id = models.ForeignKey(Owner, null=True, on_delete=models.CASCADE) # set to null for now, will be set to a unique value upon creation.
     tags = models.ManyToManyField(Tag)
 
     def save(self, *args, **kwargs):
+        """
+        Overridden save method for the CustomUser model.
+        """
         if not self.pk:
             owner_id = Owner.objects.create()
             self.owner_id = owner_id
@@ -267,8 +269,8 @@ class Organization(models.Model):
     logo = models.ImageField(upload_to="images/logo_images/", storage=OverwriteStorage(), blank=True)
     name = models.CharField(max_length=60)
     description = models.TextField()
-    user_owner = models.ForeignKey(Owner, related_name="user_owner", on_delete=models.CASCADE)
-    owner_id = models.ForeignKey(Owner, related_name="owner_id", on_delete=models.SET_NULL, null=True)
+    user_owner = models.ForeignKey(Owner, related_name="user_owner", on_delete=models.CASCADE, null=True) # set to null for now, will be set to a unique value upon creation.
+    owner_id = models.ForeignKey(Owner, related_name="owner_id", on_delete=models.SET_NULL, null=True) # set to null for now, will be set to a unique value upon creation.
     tags = models.ManyToManyField(Tag)
 
     def save(self, *args, **kwargs):
@@ -291,7 +293,6 @@ class Organization(models.Model):
         if not self.pk:
             owner_id = Owner.objects.create()
             self.owner_id = owner_id
-            user = kwargs.get('user')
-            if isinstance(user, CustomUser):
-                self.user_owner = user.owner_id
+            if 'user' in kwargs:
+                self.user_owner = kwargs['user']
         super().save(*args, **kwargs)

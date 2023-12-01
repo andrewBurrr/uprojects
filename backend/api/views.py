@@ -192,7 +192,7 @@ class RepositoryItemList(generics.ListCreateAPIView):
 
     def get_serializer_class(self):
         type_param = self.request.query_params.get('type', '').lower()
-        return self.serializer_class_mapping.get(type_param, ItemSerializer)
+        return self.serializer_class_mapping.get(type_param, IssueSerializer)
 
     def get_queryset(self):
         content_type = ContentType.objects.get_for_model(Item)
@@ -232,7 +232,8 @@ class RepositoryItemList(generics.ListCreateAPIView):
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
 
-
+# TODO: Make a view for each item type. I don't think that item detail view will work 
+#       for abstract classes. This will need testing.
 class ItemDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class_mapping = {
         'issue': IssueSerializer,
@@ -392,13 +393,13 @@ class DropBoxSubmissionFileList(generics.ListCreateAPIView):
 
 class BugList(generics.ListCreateAPIView):
     queryset = BugReport.objects.all()
-    serializer_class = BugReportSerializer
+    serializer_class = BugResponseSerializer
     permission_classes = [IsOwnerOrReadOnly]
 
 
 class BugDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = BugReport.objects.all()
-    serializer_class = BugReportSerializer
+    serializer_class = BugResponseSerializer
     permission_classes = [IsOwnerOrReadOnly]
 
 
