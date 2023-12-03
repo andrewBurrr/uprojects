@@ -48,19 +48,62 @@ class UserProjectList(generics.ListCreateAPIView):
     #TODO: WIP
 
     def get_queryset(self):
-        # test = self.kwargs.get('owner_id')
-        # owner_id = Owner.objects.get(id=test)
-        user_id = self.request.user.id
-        current_user = CustomUser.objects.get(id=user_id)
+        # queryset = Project.objects.all()
 
-        if self.request.user.is_authenticated and current_user.owner_id == owner_id:
-            queryset = Project.objects.filter(owner_id=owner_id)
-        else:
-            user_teams = Member.objects.filter(user_id=current_user.id).values('team')
-            queryset = Project.objects.filter(
-                Q(owner_id=owner_id, visibility='public') |
-                Q(owner_id=owner_id, partof__team__in=user_teams))
+        url_owner_id = self.kwargs['owner_id']
+
+        #getting all public projects
+        public_projects = Project.objects.filter(visibility='PUBLIC')
+        queryset = public_projects
+
+        # this will break if nobody is loged in
+
+        # current_user = CustomUser.objects.get(id=self.request.user)
+
+        # FIXME: current issue is idk how to get the current users owner id for authentication checks
+
+        if self.request.user.is_authenticated:# and self.request.user.owner_id == url_owner_id:
+            #getting all projects this user owns
+            # need to go through the owns table.
+                # filter the owns table by owner_id
+                # then filter the projects table by all the project_id in the result
+
+            # FIXME: might be better to just use union here too lol
+            user_owner = Own.objects.filter(owner_id=url_owner_id).values('project_id')
+            user_owns = Project.objects.filter(project_id__in=user_owner)
+
+            #getting all projects this user has access to (teams)
+
+            # need to go through the member table (project team) filtering by user_id=requests.user.id
+                # then go through the teams (project owner_id) filtering by id=team.id
+                    # then go through owns (project project_id) filtering by owner_id= teams owner id
+                        # then go through project filtering by project_id = owns project_id
+            user_member = Member.objects.filter(user_id=self.request.user.id).values('team')
+            team_owner = Team.objects.filter(id__in=user_member).values('owner_id')
+            project_owner = Own.objects.filter(owner_id__in=team_owner).values('project_id')
+            user_has_access_to = Project.objects.filter(project_id__in=project_owner)
+
+            # user_owns = Project.objects.all()
+            # user_has_access_to = Project.objects.all()
+
+            queryset = (public_projects.union(user_owns)).union(user_has_access_to)
+    
         return queryset
+
+    # def get_queryset(self):
+    #     # test = self.kwargs.get('owner_id')
+    #     # owner_id = Owner.objects.get(id=test)
+    #     user_id = self.request.user.id
+    #     current_user = CustomUser.objects.get(id=user_id)
+
+    #     if self.request.user.is_authenticated and current_user.owner_id == owner_id:
+    #         queryset = Project.objects.filter(owner_id=owner_id)
+    #     else:
+    #         user_teams = Member.objects.filter(user_id=current_user.id).values('team')
+    #         queryset = Project.objects.filter(
+    #             Q(owner_id=owner_id, visibility='public') |
+    #             Q(owner_id=owner_id, partof__team__in=user_teams))
+    #     return queryset
 
 
 class UserTeamList(generics.ListCreateAPIView):
@@ -152,7 +195,7 @@ class TeamDetail(generics.RetrieveUpdateDestroyAPIView):
         return obj
 # project
 
-
+# TODO: fix
 class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
