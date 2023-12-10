@@ -5,6 +5,9 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from .storage import OverwriteStorage
 
+import logging
+
+logging.basicConfig(filename='users.log',encoding='utf-8', level=logging.DEBUG)
 
 class CustomAccountManager(BaseUserManager):
     """
@@ -180,8 +183,21 @@ class CustomUser(CustomAccount):
     Methods:
         save
     """
-    owner_id = models.ForeignKey(Owner, null=True, on_delete=models.CASCADE) # set to null for now, will be set to a unique value upon creation.
+    owner_id = models.OneToOneField(Owner, on_delete=models.CASCADE) 
     tags = models.ManyToManyField(Tag)
+
+    def delete(self, *args, **kwargs):
+        print("deleting user got here \n_")
+        """
+        Overridden delete method to delete the associated owner instance as well.
+        """
+        if self.owner_id:
+            try:
+                owner = Owner.objects.get(id=self.owner_id.id)
+                owner.delete()
+            except Exception as e:
+                logging.exception("Error deleting Owner: %s", e)
+        super().delete(*args, **kwargs)
 
 
 class CustomAdmin(CustomAccount):
@@ -260,6 +276,15 @@ class Organization(models.Model):
     logo = models.ImageField(upload_to="images/logo_images/", storage=OverwriteStorage(), default="",blank=True)
     name = models.CharField(max_length=60)
     description = models.TextField()
-    user_owner = models.ForeignKey(Owner, related_name="user_owner", on_delete=models.CASCADE, null=True) # set to null for now, will be set to a unique value upon creation.
-    owner_id = models.ForeignKey(Owner, related_name="owner_id", on_delete=models.SET_NULL, null=True) # set to null for now, will be set to a unique value upon creation.
+    user_owner = models.ForeignKey(Owner, related_name="user_owner", on_delete=models.CASCADE) # set to null for now, will be set to a unique value upon creation.
+    owner_id = models.ForeignKey(Owner, related_name="owner_id", on_delete=models.CASCADE) # set to null for now, will be set to a unique value upon creation.
     tags = models.ManyToManyField(Tag)
+
+
+    def delete(self, *args, **kwargs):
+        """
+        Overridden delete method to delete the associated owner instance as well.
+        """
+        if self.owner_id_id:
+            self.owner_id.delete()
+        super().delete(*args, **kwargs)

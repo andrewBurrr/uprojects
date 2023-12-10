@@ -42,6 +42,10 @@ class AccountAdminConfig(UserAdmin):
             'fields': ('email', 'first_name', 'last_name', 'password1', 'password2', 'is_active', 'is_staff')}
          ),
     )
+    def delete_queryset(self, request, queryset):
+        for obj in queryset:
+            obj.delete()
+
 
 
 class OwnerAdmin(admin.ModelAdmin):
@@ -84,6 +88,9 @@ class CustomUserAdmin(AccountAdminConfig):
          ),
     )
 
+    def delete_queryset(self, request, queryset):
+        for obj in queryset:
+            obj.delete()
 
     
 

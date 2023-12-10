@@ -42,7 +42,22 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['id','profile_image', 'about', 'email', 'first_name', 'last_name', 'start_date', 'owner_id', 'tags']
+    
+class UserUpdateSerializer(serializers.ModelSerializer):
+    tags = TagSerializer(read_only=True, many=True)
+    class Meta:
+        model = CustomUser
+        fields = ['profile_image', 'about', 'first_name', 'last_name', 'password', 'tags']
 
+    def update(self, instance, validated_data):
+        for attr, value in validated_data.items():
+            if value is not None and value != '':  # Ignore fields with value None
+                if attr == 'password':
+                    instance.set_password(value)
+                else:
+                    setattr(instance, attr, value)
+        instance.save()
+        return instance
 
 
 class AdminSerializer(serializers.ModelSerializer):

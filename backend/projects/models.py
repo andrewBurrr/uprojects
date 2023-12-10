@@ -17,6 +17,7 @@ class BugReport(models.Model):
         bug_id (UUID): Unique identifier for the bug report.
         time_stamp (DateTimeField): Date and time when the bug report was created (auto-generated).
         description (TextField): Description of the bug.
+        Watching for file changes with StatReloader
         user_id (ForeignKey to CustomUser): Foreign key to the user associated with the bug report.
 
     Methods:
@@ -79,7 +80,7 @@ class Team(models.Model):
     Methods:
         None
     """
-    owner_id = models.ForeignKey(Owner, on_delete=models.SET_NULL, null=True)
+    owner_id = models.ForeignKey(Owner, on_delete=models.CASCADE)
     team_name = models.CharField(max_length=60)
     tags = models.ManyToManyField(Tag)
 
