@@ -40,6 +40,18 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class UserUpdateView(generics.UpdateAPIView):
+    """ 
+    Allows a user to update their using patch requests.
+    View to update currently logged in CustomUser attributes. If a field is left 
+    blank just returns the current user values for that field.
+    Updates the following fields:
+    - 'profile_image' 
+    - 'about' 
+    - 'first_name'
+    - 'last_name'
+    - 'password'
+    - 'tags'
+    """
     queryset = CustomUser.objects.all()
     serializer_class = UserUpdateSerializer
     permission_classes = [IsAuthenticated]
@@ -47,6 +59,14 @@ class UserUpdateView(generics.UpdateAPIView):
 
     def get_object(self):
         return self.request.user
+
+    def partial_update(self, request, *args, **kwargs):
+        kwargs['partial'] = True
+        return self.update(request, *args, **kwargs)
+
+    
+
+    
 
 class UserProjectList(generics.ListCreateAPIView):
     """

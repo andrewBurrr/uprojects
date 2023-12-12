@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.contrib.auth.password_validation import validate_password
 from projects.models import (Hosts, Own, PartOf, Project, BugResponse, Team, Follow, Event,
                              Issue, PullRequest, CodeReview, Commit, Repository,
                              Member, DropboxSubmission, SubmissionFile, BugReport, TeamPermission)
@@ -42,23 +43,36 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['id','profile_image', 'about', 'email', 'first_name', 'last_name', 'start_date', 'owner_id', 'tags']
-    
+
 class UserUpdateSerializer(serializers.ModelSerializer):
-    tags = TagSerializer(read_only=True, many=True)
+    password = serializers.CharField(write_only=True, required=False)
+
     class Meta:
         model = CustomUser
-        fields = ['profile_image', 'about', 'first_name', 'last_name', 'password', 'tags']
+        fields = ['profile_image', 'about', 'first_name', 'last_name', 'password']
+        extra_kwargs = {
+            'profile_image': {'required': False},
+            'about': {'required': False},
+            'first_name': {'required': False},
+            'last_name': {'required': False},
+            'password': {'required': False},
+            'tags': {'required': False},
+        }
+    
+    def validate_password(self, value):
+        validate_password(value)
+        return value
 
     def update(self, instance, validated_data):
         for attr, value in validated_data.items():
-            if value is not None and value != '':  # Ignore fields with value None
+            if value is not None and value != '':  # Ignore fields with value None or empty string
                 if attr == 'password':
                     instance.set_password(value)
                 else:
                     setattr(instance, attr, value)
         instance.save()
         return instance
-
+    
 
 class AdminSerializer(serializers.ModelSerializer):
     class Meta:
