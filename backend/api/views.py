@@ -42,8 +42,8 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
 class UserUpdateView(generics.UpdateAPIView):
     """ 
     Allows a user to update their using patch requests.
-    View to update currently logged in CustomUser attributes. If a field is left 
-    blank just returns the current user values for that field.
+    View to update currently logged in CustomUser attributes. 
+    If a field is left blank just returns the current user values for that field.
     Updates the following fields:
     - 'profile_image' 
     - 'about' 

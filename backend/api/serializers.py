@@ -46,33 +46,35 @@ class UserSerializer(serializers.ModelSerializer):
 
 class UserUpdateSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=False)
-
+    password_confirmation = serializers.CharField(write_only=True, required=False)
+    
     class Meta:
         model = CustomUser
-        fields = ['profile_image', 'about', 'first_name', 'last_name', 'password']
+        fields = ['profile_image', 'about', 'first_name', 'last_name', 'password', 'password_confirmation', 'tags']
         extra_kwargs = {
             'profile_image': {'required': False},
             'about': {'required': False},
             'first_name': {'required': False},
             'last_name': {'required': False},
-            'password': {'required': False},
             'tags': {'required': False},
         }
-    
-    def validate_password(self, value):
-        validate_password(value)
-        return value
+
+    def validate(self, data):
+        if 'password' in data and 'password_confirmation' in data:
+            if data['password'] != data['password_confirmation']:
+                raise serializers.ValidationError("Passwords must match.")
+            validate_password(data['password'])
+        return data
 
     def update(self, instance, validated_data):
+        validated_data.pop('password_confirmation', None)
         for attr, value in validated_data.items():
-            if value is not None and value != '':  # Ignore fields with value None or empty string
-                if attr == 'password':
-                    instance.set_password(value)
-                else:
-                    setattr(instance, attr, value)
+            if attr == 'password':
+                instance.set_password(value)
+            else:
+                setattr(instance, attr, value)
         instance.save()
         return instance
-    
 
 class AdminSerializer(serializers.ModelSerializer):
     class Meta:
