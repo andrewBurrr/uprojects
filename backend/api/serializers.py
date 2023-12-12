@@ -60,6 +60,9 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         }
 
     def validate(self, data):
+        """
+        Validates the password and password_confirmation fields.
+        """
         if 'password' in data and 'password_confirmation' in data:
             if data['password'] != data['password_confirmation']:
                 raise serializers.ValidationError("Passwords must match.")
@@ -67,6 +70,9 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         return data
 
     def update(self, instance, validated_data):
+        """
+        Updates the user's information.        
+        """
         validated_data.pop('password_confirmation', None)
         for attr, value in validated_data.items():
             if attr == 'password':

@@ -187,7 +187,6 @@ class CustomUser(CustomAccount):
     tags = models.ManyToManyField(Tag)
 
     def delete(self, *args, **kwargs):
-        print("deleting user got here \n_")
         """
         Overridden delete method to delete the associated owner instance as well.
         """

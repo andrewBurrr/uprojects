@@ -39,7 +39,7 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = 'id'
 
 
-class UserUpdateView(generics.UpdateAPIView):
+class UserUpdate(generics.UpdateAPIView):
     """ 
     Allows a user to update their using patch requests.
     View to update currently logged in CustomUser attributes. 
@@ -64,8 +64,20 @@ class UserUpdateView(generics.UpdateAPIView):
         kwargs['partial'] = True
         return self.update(request, *args, **kwargs)
 
-    
+class UserSelfDelete(generics.DestroyAPIView):
+    """
+    Allows a user to delete their own account.
+    Uses the model delete method to delete the user.
+    """
+    queryset = CustomUser.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'id'
 
+    def destroy(self, request, *args, **kwargs):
+            user = CustomUser.objects.get(id=request.user.id)
+            user.delete()
+            return Response(status=204)
     
 
 class UserProjectList(generics.ListCreateAPIView):

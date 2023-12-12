@@ -2,8 +2,8 @@ from django.urls import path
 from .views import (
     UserDetail, UserProjectList, UserTeamList, UserOrganizationList, UserFollowList,
     OrganizationDetail, OrganizationProjectList, OrganizationTeamList, OrganizationEventsList,
-    OrganizationRegister, GlobalSearchAPIView, UserUpdateView,
-    TeamDetail, TeamMembersList,
+    OrganizationRegister, GlobalSearchAPIView, UserUpdate,
+    TeamDetail, TeamMembersList, UserSelfDelete
 )
 # Define the url namespace for these URL patterns
 app_name = 'apis'
@@ -27,11 +27,12 @@ A user must be able to view all projects owned by a user/organization under that
 urlpatterns = [
     # URL patterns for user dashboard
     path('user/<uuid:id>/', UserDetail.as_view(), name='api-user-detail'),
-    path('user/update/', UserUpdateView.as_view(), name='api-user-update'),
+    path('user/update/<uuid:id/', UserUpdate.as_view(), name='api-user-update'),
     path('user-projects/<uuid:owner_id>/', UserProjectList.as_view(), name='api-user-projects'),
     path('user-teams/<uuid:user_id>/', UserTeamList.as_view(), name='api-user-teams'),
     path('user-orgs/<uuid:owner_id>/', UserOrganizationList.as_view(), name='api-user-orgs'),
     path('user-follows/<uuid:user_id>/', UserFollowList.as_view(), name='api-user-follows'),
+    path('user/delete/', UserSelfDelete.as_view(), name='api-user-delete'),
     # URL patterns for organization dashboard
     path('organization/<uuid:id>/', OrganizationDetail.as_view(), name='api-org-detail'),
     path('organization-projects/<uuid:org_id>/', OrganizationProjectList.as_view(), name='api-org-projects'),

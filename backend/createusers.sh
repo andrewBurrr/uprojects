@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for i in {1..20}
+for i in {1..99}
 do
   EMAIL="user${i}@example.com"
   PASSWORD="password${i}"

@@ -128,3 +128,20 @@ When any of the models.py files are updated:
     >>> from api.checkSerial import func_test 
     >>> func_test(ExampleSerializer)
     ```
+
+## How to autopopulate the usertable (Backend)
+Make sure you have migrated and started the server already then:
+1. open a bash terminal
+2. Enter:
+    ```bash
+    bash createusers.sh
+    ```
+3.  Creates 100 users and a test user.
+    ```txt
+    {
+        email:'test@gmail.com', 
+        first_name:'test', 
+        last_name:'test', 
+        password:'1'
+    }
+    ```
