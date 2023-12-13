@@ -8,6 +8,7 @@ import {PasswordReset} from "views/password-reset-page/PasswordReset";
 import {Register} from "views/register-page/Register";
 import {ProtectedRoute} from "helpers/ProtectedRoute";
 import {Dashboard} from "views/dashboard-page/Dashboard";
+import {Search} from "views/search-page/Search";
 
 type CustomRoute = {
     title: string;
@@ -24,6 +25,15 @@ const publicRoutes: CustomRoute[] = [
         element:
             <AppLayout>
                 <About />
+            </AppLayout>,
+        icon: <AboutIcon />
+    },
+    {
+        title: "Search",
+        path: "/search",
+        element:
+            <AppLayout>
+                <Search />
             </AppLayout>,
         icon: <AboutIcon />
     },

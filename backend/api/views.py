@@ -10,8 +10,9 @@ from .serializers import *
 from users.models import CustomUser, Organization
 from projects.models import (
     Project, Team, Member, Follow, Event, PartOf,
-    Repository, Item, Issue, CodeReview, PullRequest, BugReport,
-    Hosts, DropboxSubmission, SubmissionFile
+    Repository, Item, Issue, CodeReview, PullRequest,
+    BugResponse, BugReport, Hosts, DropboxSubmission,
+    SubmissionFile
 )
 
 
@@ -98,50 +99,6 @@ class UserFollowList(MultipleFieldLookupMixin, generics.ListCreateAPIView):
         return Follow.objects.filter(user_id=user_id)
 
 
-class GlobalSearchAPIView(generics.ListAPIView):
-    serializer_class = SearchResultSerializer
-    ordering_fields = ['projects', 'teams', 'events', 'orgs', 'users']
-
-    def get_queryset(self):
-        query = self.request.query_params.get('q', '')
-        tags = self.request.query_params.getlist('tags', [])
-        project_results = Project.objects.filter(name__icontains=query)  # TODO restrict public projects
-        team_results = Team.objects.filter(team_name__icontains=query)
-        event_results = Event.objects.filter(name__icontains=query)
-        org_results = Organization.objects.filter(name__icontains=query)
-        user_results = CustomUser.objects.filter(Q(first_name__icontains=query) | Q(last_name__icontains=query))
-
-        if tags:
-            project_results = project_results.filter(tags__tag__in=tags)
-            team_results = team_results.filter(tags__tag__in=tags)
-            event_results = event_results.filter(tags__tag__in=tags)
-            org_results = org_results.filter(tags__tag__in=tags)
-            user_results = user_results.filter(tags__tag__in=tags)
-
-        # all_results = {
-        #     'projects': ProjectSerializer(project_results, many=True).data,
-        #     'teams': TeamSerializer(team_results, many=True).data,
-        #     'events': EventSerializer(event_results, many=True).data,
-        #     'orgs': OrganizationSerializer(org_results, many=True).data,
-        #     'users': UserSerializer(user_results, many=True).data
-        # }
-
-        all_results = SearchResultSerializer(
-            ProjectSerializer(project_results, many=True).data,
-            TeamSerializer(team_results, many=True).data,
-            EventSerializer(event_results, many=True).data,
-            OrganizationSerializer(org_results, many=True).data,
-            UserSerializer(user_results, many=True).data
-        )
-
-        # order_by = self.request.query_params.get('sort', '')
-        # if order_by and order_by in self.ordering_fields:
-        #     for category, results in all_results.items():
-        #         all_results[category] = sorted(results, key=lambda x: x[order_by])
-
-        return all_results
-
-
 class TeamDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Team.objects.all()
     serializer_class = TeamSerializer
@@ -179,7 +136,7 @@ class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsOwnerOrReadOnly]  # TODO use permissions fields
 
 
-class ProjectTeamsList(generics.ListCreateAPIView):
+class ProjectTeamList(generics.ListCreateAPIView):
     serializer_class = TeamSerializer
     permission_classes = [IsOwnerOrReadOnly]  # TODO use permissions fields
 
@@ -363,6 +320,7 @@ class OrganizationEventsList(generics.ListCreateAPIView):
         )
         return queryset
 
+
 class OrganizationRegister(generics.CreateAPIView):
     serializer_class = OrganizationRegisterSerializer
     permission_classes = [IsOwnerOrReadOnly]
@@ -382,7 +340,7 @@ class EventDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsOwnerOrReadOnly]
 
 
-class EventDropBoxSubmissionList(generics.ListCreateAPIView):
+class EventDropboxSubmissionList(generics.ListCreateAPIView):
     serializer_class = DropboxSubmissionSerializer
     permission_classes = [IsOwnerOrReadOnly]
 
@@ -421,6 +379,167 @@ class BugDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = BugReport.objects.all()
     serializer_class = BugReportSerializer
     permission_classes = [IsOwnerOrReadOnly]
+
+
+class BugResponseList(generics.ListCreateAPIView):
+    serializer_class = BugResponseSerializer
+    permission_classes = [IsOwnerOrReadOnly]
+
+    def get_queryset(self):
+        bug_id = self.kwargs.get('bug_id')
+        return BugResponse.objects.filter(bug_id=bug_id)
+
+
+class BugResponseDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = BugResponse.objects.all()
+    serializer_class = BugResponseSerializer
+    permission_classes = [IsOwnerOrReadOnly]
+
+    def get_object(self):
+        query_set = self.get_queryset()
+        composite_key = {
+            'bug_id': self.kwargs['bug_id'],
+            'admin_id': self.kwargs['admin_id'],
+        }
+        obj = get_object_or_404(query_set, **composite_key)
+        self.check_object_permissions(self.request, obj)
+        return obj
+
+
+class ProjectListSearch(generics.ListAPIView):
+    serializer_class = ProjectSerializer
+
+    def get_queryset(self):
+        query = self.request.query_params.get('query', '')
+        tags = self.request.query_params.getlist('tags', [])
+        sort_order = self.request.query_params.get('sort', '')
+
+        # Start with all projects
+        # TODO filter by projects visible to the current user
+        queryset = Project.objects.all()
+
+        # Apply search filters
+        if query:
+            queryset = queryset.filter(Q(name__icontains=query) | Q(description__icontains=query))
+
+        # Apply tag filters
+        if tags:
+            queryset = queryset.filter(tags__tag__in=tags)
+
+        # Apply sorting
+        if sort_order:
+            queryset = queryset.order_by(sort_order)
+
+        return queryset
+
+
+class TeamListSearch(generics.ListAPIView):
+    serializer_class = TeamSerializer
+
+    def get_queryset(self):
+        query = self.request.query_params.get('query', '')
+        tags = self.request.query_params.getlist('tags', [])
+        sort_order = self.request.query_params.get('sort', '')
+
+        # Start with all teams
+        queryset = Team.objects.all()
+
+        # Apply search filters
+        if query:
+            queryset = queryset.filter(Q(team_name__icontains=query))
+
+        # Apply tag filters
+        if tags:
+            queryset = queryset.filter(tags__tag__in=tags)
+
+        # Apply sorting
+        if sort_order:
+            queryset = queryset.order_by(sort_order)
+
+        return queryset
+
+
+class EventListSearch(generics.ListAPIView):
+    serializer_class = EventSerializer
+
+    def get_queryset(self):
+        query = self.request.query_params.get('query', '')
+        tags = self.request.query_params.getlist('tags', [])
+        sort_order = self.request.query_params.get('sort', '')
+
+        # Start with all events
+        queryset = Event.objects.all()
+
+        # Apply search filters
+        if query:
+            queryset = queryset.filter(Q(name__icontains=query))
+
+        # Apply tag filters
+        if tags:
+            queryset = queryset.filter(tags__tag__in=tags)
+
+        # Apply sorting
+        if sort_order:
+            queryset = queryset.order_by(sort_order)
+
+        return queryset
+
+
+class OrganizationListSearch(generics.ListAPIView):
+    serializer_class = OrganizationSerializer
+
+    def get_queryset(self):
+        query = self.request.query_params.get('query', '')
+        tags = self.request.query_params.getlist('tags', [])
+        sort_order = self.request.query_params.get('sort', '')
+
+        # start with all organizations
+        queryset = Organization.objects.all()
+
+        # Apply search filters
+        if query:
+            queryset = queryset.filter(Q(name__icontains=query) | Q(description__icontains=query))
+
+        # Apply tag filters
+        if tags:
+            queryset = queryset.filter(tags__tag__in=tags)
+
+        # Apply sorting
+        if sort_order:
+            queryset = queryset.order_by(sort_order)
+
+        return queryset
+
+
+class UserListSearch(generics.ListAPIView):
+    serializer_class = UserSerializer
+
+    def get_queryset(self):
+        query = self.request.query_params.get('query', '')
+        tags = self.request.query_params.getlist('tags', '')
+        sort_order = self.request.query_params.get('sort', '')
+
+        # Start with all users
+        queryset = CustomUser.objects.all()
+
+        # Apply search filters
+        if query:
+            queryset = queryset.filter(
+                Q(first_name__icontains=query) |
+                Q(last_name__icontains=query) |
+                Q(profession__icontains=query) |
+                Q(about__icontains=query)
+            )
+
+        # Apply tag filters
+        if tags:
+            queryset = queryset.filter(tags__tag__in=tags)
+
+        # Apply sorting
+        if sort_order:
+            queryset = queryset.order_by(sort_order)
+
+        return queryset
 
 
 # """ Concrete View Classes

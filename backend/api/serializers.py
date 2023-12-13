@@ -4,7 +4,6 @@ from projects.models import (Hosts, Own, PartOf, Project, BugResponse, Team, Fol
                              Member, DropboxSubmission, SubmissionFile, BugReport, TeamPermission)
 from users.models import CustomUser, Owner, Tag, Organization, CustomAdmin
 
-
 """
 What do serializers do? 
 Converts a model's data to JSON/XML format.
@@ -24,16 +23,17 @@ We are using Django's ModelSerializer serializers for our application.
 START USERS SERIALIZERS
 """
 
+
 class OwnerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Owner
-        fields = ['id',]
+        fields = ['id', ]
 
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        fields = ['tag',]
+        fields = ['tag', ]
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -41,8 +41,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ['id','profile_image', 'about', 'email', 'first_name', 'last_name', 'start_date', 'owner_id', 'tags']
-
+        fields = ['id', 'profile_image', 'about', 'email', 'first_name', 'last_name', 'start_date', 'owner_id', 'tags']
 
 
 class AdminSerializer(serializers.ModelSerializer):
@@ -50,10 +49,11 @@ class AdminSerializer(serializers.ModelSerializer):
         model = CustomAdmin
         fields = ['id', 'profile_image', 'about', 'email', 'first_name', 'last_name', 'start_date', 'admin_type']
 
-#no need for admin permissions cause who tf cares?
-    #how admins update admin perms?
 
-    # TODO: create owner_id with creation of Organization.
+# no need for admin permissions cause who tf cares?
+# how admins update admin perms?
+
+# TODO: create owner_id with creation of Organization.
 class OrganizationSerializer(serializers.ModelSerializer):
     """
     Serializer for the users/models.Organization model
@@ -71,7 +71,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
         fields = ['org_id', 'logo', 'name', 'description', 'user_owner', 'owner_id', 'tags']
-    
+
 
 class OrganizationRegisterSerializer(serializers.ModelSerializer):
     """
@@ -86,8 +86,8 @@ class OrganizationRegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Organization
-        fields = ['org_id', 'logo', 'name', 'description',]
-    
+        fields = ['org_id', 'logo', 'name', 'description', ]
+
     def save(self, **kwargs):
         request = self.context.get('request')
         owner = Owner.objects.create()
@@ -109,6 +109,12 @@ class OrganizationRegisterSerializer(serializers.ModelSerializer):
 END USERS SERIALIZERS
 START PROJECT SERIALIZERS
 """
+
+
+class BugReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BugReport
+        fields = ['bug_id', 'time_stamp', 'description', 'user_id']
 
 
 class BugResponseSerializer(serializers.ModelSerializer):
@@ -142,9 +148,9 @@ class TeamPermissionSerializer(serializers.ModelSerializer):
         model = TeamPermission
         fields = ['team_id', 'permission']
 
-#FIXME: This serializer might be broken. Need to test it.
-class MemberSerializer(serializers.ModelSerializer):
 
+# FIXME: This serializer might be broken. Need to test it.
+class MemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = Member
         fields = ['user_id', 'team', 'role']
@@ -152,7 +158,7 @@ class MemberSerializer(serializers.ModelSerializer):
         fields = ['owner_id', 'team_name', 'tags']
 
 
-#TODO: Figure out if we need this serializer or the other one.
+# TODO: Figure out if we need this serializer or the other one.
 # class MemberSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = Member
@@ -226,21 +232,21 @@ class IssueSerializer(serializers.ModelSerializer):
     class Meta:
         model = Issue
         fields = ['repo', 'item_id', 'item_name', 'status', 'description', 'is_approved',
-                'due_date', 'team','issue_type']
+                  'due_date', 'team', 'issue_type']
 
 
 class PullRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = PullRequest
         fields = ['repo', 'item_id', 'item_name', 'status', 'description', 'is_approved',
-                'due_date', 'team', 'branch_name',]
+                  'due_date', 'team', 'branch_name', ]
 
 
 class CommitSerializer(serializers.ModelSerializer):
     class Meta:
         model = Commit
         fields = ['repo', 'item_id', 'item_name', 'status', 'description', 'is_approved',
-              'due_date', 'team', 'commit_id']
+                  'due_date', 'team', 'commit_id']
 
 
 class CodeReviewSerializer(serializers.ModelSerializer):
@@ -249,7 +255,7 @@ class CodeReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = CodeReview
         fields = ['repo', 'item_id', 'item_name', 'status', 'description', 'is_approved',
-              'due_date', 'team','commits']
+                  'due_date', 'team', 'commits']
 
 
 class UserFollowSerializer(serializers.ModelSerializer):
@@ -262,6 +268,7 @@ class OwnSerializer(serializers.ModelSerializer):
     class Meta:
         model = Own
         fields = ['owner_id', 'project_id']
+
 
 """
 END PROJECT SERIALIZERS

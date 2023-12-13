@@ -120,8 +120,8 @@ class API {
         localStorage.setItem('access_token', access);
     }
 
-    getData = async <T>(endpoint: string): Promise<T> => {
-        const response = await this.axiosInstance.get(endpoint);
+    getData = async <T>(endpoint: string, params?: Record<string, string | number | boolean>): Promise<T> => {
+        const response = await this.axiosInstance.get(endpoint, { params });
         return response.data as T;
     }
     

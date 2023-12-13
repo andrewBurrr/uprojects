@@ -52,6 +52,7 @@ class BugResponse(models.Model):
     bug_id = models.ForeignKey(BugReport, on_delete=models.CASCADE)
     time_stamp = models.DateTimeField(auto_now=True)
     comment = models.TextField()
+
     class Meta:
         constraints = [
             models.UniqueConstraint(
