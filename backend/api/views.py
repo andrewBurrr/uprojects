@@ -214,7 +214,7 @@ class RepositoryItemList(generics.ListCreateAPIView):
 
     def get_serializer_class(self):
         type_param = self.request.query_params.get('type', '').lower()
-        return self.serializer_class_mapping.get(type_param, ItemSerializer)
+        return self.serializer_class_mapping.get(type_param, RepositorySerializer)
 
     def get_queryset(self):
         content_type = ContentType.objects.get_for_model(Item)

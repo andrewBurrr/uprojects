@@ -1,6 +1,6 @@
-import React, {ChangeEvent, FormEvent, useState} from 'react';
+import React, { ChangeEvent, FormEvent, useState } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
-import {TabPanel} from "./TabPanel";
+import { TabPanel } from "./TabPanel";
 import {
     Container,
     Tabs,
@@ -14,8 +14,12 @@ import {
     Box,
     Button, InputAdornment, IconButton, useMediaQuery, useTheme
 } from "@mui/material";
-import {Link} from "react-router-dom";
-import {useApi} from "../../contexts/ApiContext";
+import { Link } from "react-router-dom";
+import { useApi } from "../../contexts/ApiContext";
+
+interface Tag {
+    tag: string;
+}
 
 interface Project {
     id: string;
@@ -23,13 +27,13 @@ interface Project {
     visibility: string;
     description: string;
     owner_id: string;
-    tags: string[];
+    tags: Tag[];
 }
 
 interface Team {
     owner_id: string;
     team_name: string;
-    tags: string[];
+    tags: Tag[];
 }
 
 interface Event {
@@ -39,22 +43,19 @@ interface Event {
     start_date: string;
     end_date: string;
     name: string;
-    tags: string[];
+    tags: Tag[];
 }
 
 interface User {
     id: string;
     profile_image: string; // Assuming the image path is stored as a string
     about: string;
-    profession: string;
     email: string;
     first_name: string;
     last_name: string;
     start_date: string; // Assuming the date is stored as a string
-    is_staff: boolean;
-    is_active: boolean;
     owner_id: string;
-    tags: string[];
+    tags: Tag[];
 }
 
 interface Org {
@@ -64,14 +65,14 @@ interface Org {
     description: string;
     user_owner: string;
     owner_id: string;
-    tags: string[];
+    tags: Tag[];
 }
 
 function a11yProps(index: number) {
-  return {
-    id: `vertical-tab-${index}`,
-    'aria-controls': `vertical-tabpanel-${index}`,
-  };
+    return {
+        id: `vertical-tab-${index}`,
+        'aria-controls': `vertical-tabpanel-${index}`,
+    };
 }
 
 const Search = () => {
@@ -140,6 +141,11 @@ const Search = () => {
                 tags: tags.join(','),
             });
             setOrgs(org_res);
+            console.log("Projects: ", proj_res);
+            console.log("Teams: ", team_res);
+            console.log("Events: ", event_res);
+            console.log("Users: ", user_res);
+            console.log("Orgs: ", org_res);
 
         } catch (error) {
             // Handle error, e.g., show an error message to the user
@@ -199,7 +205,7 @@ const Search = () => {
                     </form>
                     {/* Display selected tags as chips */}
                     {tags.map((tag) => (
-                    <Chip key={tag} label={tag} sx={{ margin: '4px' }} onDelete={() => handleRemoveTag(tag)} />
+                        <Chip key={tag} label={tag} sx={{ margin: '4px' }} onDelete={() => handleRemoveTag(tag)} />
                     ))}
                 </Grid>
 
@@ -224,7 +230,7 @@ const Search = () => {
                 <Grid item xs={12} lg={9}>
                     {/* Replace with your custom grid component for search results */}
                     <div>
-                        <h2>Search Results</h2>
+                        {/* <h2>Search Results</h2> */}
                         {/* Projects */}
                         <TabPanel value={value} index={0}>
                             <Grid container spacing={3} direction='column'>
@@ -244,13 +250,13 @@ const Search = () => {
                                                         </Grid>
                                                         <Grid item>
                                                             {project.tags.map((tag) => (
-                                                                <Chip label={tag} size="small" sx={{ margin: 0.5 }}/>
+                                                                <Chip key={tag.tag}  label={tag.tag} size="small" sx={{ margin: 0.5 }} />
                                                             ))}
                                                         </Grid>
                                                     </Grid>
                                                 </Grid>
                                                 <Grid item>
-                                                    <Chip label={project.visibility}/>
+                                                    <Chip label={project.visibility} />
                                                 </Grid>
                                             </Grid>
                                         </Paper>
@@ -274,7 +280,7 @@ const Search = () => {
                                                         </Grid>
                                                         <Grid item>
                                                             {team.tags.map((tag) => (
-                                                                <Chip label={tag} size="small" sx={{ margin: 0.5 }}/>
+                                                                <Chip key={tag.tag} label={tag.tag} size="small" sx={{ margin: 0.5 }} />
                                                             ))}
                                                         </Grid>
                                                     </Grid>
@@ -301,7 +307,7 @@ const Search = () => {
                                                         </Grid>
                                                         <Grid item>
                                                             {event.tags.map((tag) => (
-                                                                <Chip label={tag} size="small" sx={{ margin: 0.5 }}/>
+                                                                <Chip key={tag.tag} label={tag.tag} size="small" sx={{ margin: 0.5 }} />
                                                             ))}
                                                         </Grid>
                                                     </Grid>
@@ -325,13 +331,11 @@ const Search = () => {
                                                             <MuiLink variant='h5' component={Link} to='/' underline='none' color='secondary' fontWeight='500'>
                                                                 {user.first_name} {user.last_name}
                                                             </MuiLink>
-                                                            <Typography variant='subtitle2'>
-                                                                {user.profession}
-                                                            </Typography>
+                                                        
                                                         </Grid>
                                                         <Grid item>
                                                             {user.tags.map((tag) => (
-                                                                <Chip label={tag} size="small" sx={{ margin: 0.5 }}/>
+                                                                <Chip key={tag.tag} label={tag.tag} size="small" sx={{ margin: 0.5 }} />
                                                             ))}
                                                         </Grid>
                                                     </Grid>
@@ -361,7 +365,7 @@ const Search = () => {
                                                         </Grid>
                                                         <Grid item>
                                                             {org.tags.map((tag) => (
-                                                                <Chip label={tag} size="small" sx={{ margin: 0.5 }}/>
+                                                                <Chip key={tag.tag} label={tag.tag} size="small" sx={{ margin: 0.5 }} />
                                                             ))}
                                                         </Grid>
                                                     </Grid>
