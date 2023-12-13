@@ -44,6 +44,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = ['id','profile_image', 'about', 'email', 'first_name', 'last_name', 'start_date', 'owner_id', 'tags']
 
+
 class UserUpdateSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=False)
     password_confirmation = serializers.CharField(write_only=True, required=False)
@@ -81,6 +82,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
                 setattr(instance, attr, value)
         instance.save()
         return instance
+
 
 class AdminSerializer(serializers.ModelSerializer):
     class Meta:
