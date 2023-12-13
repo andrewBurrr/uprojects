@@ -30,7 +30,8 @@ const publicRoutes: CustomRoute[] = [
                 <About />
             </AppLayout>,
         icon: <AboutIcon />
-    },
+    }
+
 ];
 
 const authOnlyRoutes: CustomRoute[] = [

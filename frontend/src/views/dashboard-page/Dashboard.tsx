@@ -7,11 +7,12 @@ import {
     Typography,
     Box,
     Grid,
-    Chip, Link as MuiLink, Dialog, DialogTitle, DialogContent, IconButton, FormControlLabel, Checkbox, DialogActions, TextField, Stack
+    Chip, Link as MuiLink, Dialog, DialogTitle, DialogContent, IconButton, FormControlLabel, Checkbox, DialogActions, TextField, Stack, Modal
 } from "@mui/material";
 import {Link, useParams} from "react-router-dom";
 import SettingsIcon from '@mui/icons-material/Settings';
 import CloseIcon from "@mui/icons-material/Close"
+import { CreateProj } from "./createProj";
 
 interface User {
     id: string;
@@ -61,6 +62,14 @@ const Dashboard = () => { // This is the start of the function
     }
     const closepopup=()=>{
         openchange(false);
+    }
+
+    const [open1,openchange1]=useState(false);
+    const functionopenpopup1=()=>{
+        openchange1(true);
+    }
+    const closepopup1=()=>{
+        openchange1(false);
     }
     const [value, setValue] = React.useState(""); // we may not need 'React' here
     // This is the end of the report bug stuff
@@ -124,6 +133,10 @@ const Dashboard = () => { // This is the start of the function
         fetchUserOrgs();
 
     }, []);
+
+    function handleProjectSubmit(project: Project): void {
+        throw new Error("Function not implemented.");
+    }
 
     return (
         <Box>
@@ -213,14 +226,16 @@ const Dashboard = () => { // This is the start of the function
                     </Grid>
                 </Grid>
             </Grid>
-            <Grid item   container
-                direction="row"
-                justifyContent="flex-end"
-                alignItems="flex-start">
+            <Grid item     container
+  direction="column"
+  justifyContent="space-between"
+  alignItems="flex-end">
                     
                     <Button variant="outlined" startIcon={<SettingsIcon />} onClick={functionopenpopup} >
   Report Bug
 </Button>
+
+<Button variant="outlined" onClick={functionopenpopup1}>New projecet</Button>
 
 <Dialog 
             // fullScreen 
@@ -242,6 +257,14 @@ const Dashboard = () => { // This is the start of the function
                     <Button onClick={closepopup} color="error" variant="contained">Close</Button> */}
                 </DialogActions>
             </Dialog>
+</Grid>
+<Grid>
+  
+    
+        <Dialog open={open1}>
+    <CreateProj onSubmit={closepopup1} onClose={closepopup1 }                />
+                </Dialog>
+    
 </Grid>
         </Box>
       );
