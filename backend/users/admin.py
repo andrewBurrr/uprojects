@@ -42,6 +42,10 @@ class AccountAdminConfig(UserAdmin):
             'fields': ('email', 'first_name', 'last_name', 'password1', 'password2', 'is_active', 'is_staff')}
          ),
     )
+    def delete_queryset(self, request, queryset):
+        for obj in queryset:
+            obj.delete()
+
 
 
 class OwnerAdmin(admin.ModelAdmin):
@@ -84,6 +88,9 @@ class CustomUserAdmin(AccountAdminConfig):
          ),
     )
 
+    def delete_queryset(self, request, queryset):
+        for obj in queryset:
+            obj.delete()
 
     
 
@@ -110,8 +117,35 @@ class CustomAdminPermissionAdmin(admin.ModelAdmin):
     model = CustomAdminPermission
     list_display = ("admin_id", "permission",)
 
+def populate_tags(modeladmin, request, query_set):
+
+    tag_names= ["Java", "C", "Python", "C++", "C#", "Visual Basic .NET",
+    "JavaScript", "Swift", "PHP", "SQL", "Go", "Assembly language", "Ruby", "MATLAB",
+    "Groovy", "Perl", "Rust", "R", "TypeScript", "Ada", "Lua", "Kotlin", "COBOL",
+    "Fortran", "Julia", "Dart", "ABAP", "Shell", "SAS", "PL/SQL", "F#", "Objective-C",
+    "Scala", "Pascal", "Apex", "LabVIEW", "D", "Transact-SQL", "Delphi/Object Pascal",
+    "VBScript", "Logo", "Prolog", "Scratch", "REXX", "AWK", "Kotlin/Native", "RPG (OS/400)",
+    "Swift (iOS)", "Python (Stackless)", "C (Embedded)", "JCL", "Scheme", "Groovy (Android)",
+    "Go (Golang)", "Ruby (JRuby)", "Python (MicroPython)", "Lua (LuaJIT)", "Bash",
+    "PowerShell", "R (GNU S)", "JavaScript (Emscripten)", "C++ (Embedded)", "Ruby on Rails",
+    "COBOL (Micro Focus)", "Fortran (GFortran)", "LabVIEW (G)", "PHP (HHVM)", "SQL (PL/SQL)",
+    "Hack (HHVM)", "Julia (JuliaLang)", "TypeScript (Deno)", "Ada (GNAT)", "Kotlin (JVM)",
+    "Assembly language (NASM)", "Swift (Server Side)", "Go (GoLand)", "Groovy (Grails)",
+    "Perl (ActiveState Perl)", "Rust (Mozilla)", "R (Microsoft R Open)", "TypeScript (TypeScript Node)",
+    "Assembly language (WebAssembly)", "Swift (SwiftUI)", "Go (Revel)", "Groovy (Apache Groovy)",
+    "Perl (Strawberry Perl)", "Rust (Redox)", "R (RStudio)", "TypeScript (Angular)",
+    "Assembly language (ARM)", "Swift (React Native)", "Go (Fuchsia)", "Groovy (GroovyJS)",
+    "Perl (Raku)", "Rust (RustOS)", "R (Bioconductor)", "TypeScript (Vue.js)",
+    "Assembly language (MIPS)", "Swift (Perfect)", "Go (Android)", "Groovy (Grooscript)",
+    "Perl (Perl6)", "Rust (Tock)","Assembly language (x86)" "Swift", "Go" "Groovy",
+    "Perl", "Rust","R","TypeScript",]
+    for tag_name in tag_names:
+        Tag.objects.get_or_create(tag=tag_name)
+    
+populate_tags.short_description = "Populate tags from list"
 
 class TagAdmin(admin.ModelAdmin):
+    actions =[populate_tags]
     """
     Admin Definition for managing our Tag models
 
@@ -126,6 +160,27 @@ class TagAdmin(admin.ModelAdmin):
     """
     model = Tag
     list_display = ("tag",)
+
+    tag_names= ["Java", "C", "Python", "C++", "C#", "Visual Basic .NET",
+    "JavaScript", "Swift", "PHP", "SQL", "Go", "Assembly language", "Ruby", "MATLAB",
+    "Groovy", "Perl", "Rust", "R", "TypeScript", "Ada", "Lua", "Kotlin", "COBOL",
+    "Fortran", "Julia", "Dart", "ABAP", "Shell", "SAS", "PL/SQL", "F#", "Objective-C",
+    "Scala", "Pascal", "Apex", "LabVIEW", "D", "Transact-SQL", "Delphi/Object Pascal",
+    "VBScript", "Logo", "Prolog", "Scratch", "REXX", "AWK", "Kotlin/Native", "RPG (OS/400)",
+    "Swift (iOS)", "Python (Stackless)", "C (Embedded)", "JCL", "Scheme", "Groovy (Android)",
+    "Go (Golang)", "Ruby (JRuby)", "Python (MicroPython)", "Lua (LuaJIT)", "Bash",
+    "PowerShell", "R (GNU S)", "JavaScript (Emscripten)", "C++ (Embedded)", "Ruby on Rails",
+    "COBOL (Micro Focus)", "Fortran (GFortran)", "LabVIEW (G)", "PHP (HHVM)", "SQL (PL/SQL)",
+    "Hack (HHVM)", "Julia (JuliaLang)", "TypeScript (Deno)", "Ada (GNAT)", "Kotlin (JVM)",
+    "Assembly language (NASM)", "Swift (Server Side)", "Go (GoLand)", "Groovy (Grails)",
+    "Perl (ActiveState Perl)", "Rust (Mozilla)", "R (Microsoft R Open)", "TypeScript (TypeScript Node)",
+    "Assembly language (WebAssembly)", "Swift (SwiftUI)", "Go (Revel)", "Groovy (Apache Groovy)",
+    "Perl (Strawberry Perl)", "Rust (Redox)", "R (RStudio)", "TypeScript (Angular)",
+    "Assembly language (ARM)", "Swift (React Native)", "Go (Fuchsia)", "Groovy (GroovyJS)",
+    "Perl (Raku)", "Rust (RustOS)", "R (Bioconductor)", "TypeScript (Vue.js)",
+    "Assembly language (MIPS)", "Swift (Perfect)", "Go (Android)", "Groovy (Grooscript)",
+    "Perl (Perl6)", "Rust (Tock)","Assembly language (x86)" "Swift", "Go" "Groovy",
+    "Perl", "Rust","R","TypeScript",]
 
 
 class OrganizationAdmin(admin.ModelAdmin):

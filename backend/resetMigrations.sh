@@ -18,5 +18,7 @@ python3 manage.py migrate
 
 # Create superuser for CustomAccount model
 echo "from users.models import CustomAccount; CustomAccount.objects.create_superuser('zevind25@gmail.com', 'd', 'z', '1')" | python3 manage.py shell
+
 # Run the server
 python3 manage.py runserver
+

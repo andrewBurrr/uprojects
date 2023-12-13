@@ -32,3 +32,6 @@ yarn-error.log*
 sql.log
 backend/sql.log
 backend/resetMigrations.sh
+backend/sql.log
+backend/users.log
+*.log

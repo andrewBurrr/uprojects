@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.contrib.auth.password_validation import validate_password
 from projects.models import (Hosts, Own, PartOf, Project, BugResponse, Team, Follow, Event,
                              Issue, PullRequest, CodeReview, Commit, Repository,
                              Member, DropboxSubmission, SubmissionFile, BugReport, TeamPermission)
@@ -42,6 +43,44 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['id', 'profile_image', 'about', 'email', 'first_name', 'last_name', 'start_date', 'owner_id', 'tags']
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, required=False)
+    password_confirmation = serializers.CharField(write_only=True, required=False)
+    
+    class Meta:
+        model = CustomUser
+        fields = ['profile_image', 'about', 'first_name', 'last_name', 'password', 'password_confirmation', 'tags']
+        extra_kwargs = {
+            'profile_image': {'required': False},
+            'about': {'required': False},
+            'first_name': {'required': False},
+            'last_name': {'required': False},
+            'tags': {'required': False},
+        }
+
+    def validate(self, data):
+        """
+        Validates the password and password_confirmation fields.
+        """
+        if 'password' in data and 'password_confirmation' in data:
+            if data['password'] != data['password_confirmation']:
+                raise serializers.ValidationError("Passwords must match.")
+            validate_password(data['password'])
+        return data
+
+    def update(self, instance, validated_data):
+        """
+        Updates the user's information.        
+        """
+        validated_data.pop('password_confirmation', None)
+        for attr, value in validated_data.items():
+            if attr == 'password':
+                instance.set_password(value)
+            else:
+                setattr(instance, attr, value)
+        instance.save()
+        return instance
 
 
 class AdminSerializer(serializers.ModelSerializer):

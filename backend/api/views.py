@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.db.models import Q
 
@@ -38,6 +39,47 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsOwnerOrReadOnly]
     lookup_field = 'id'
 
+
+class UserUpdate(generics.UpdateAPIView):
+    """ 
+    Allows a user to update their using patch requests.
+    View to update currently logged in CustomUser attributes. 
+    If a field is left blank just returns the current user values for that field.
+    Updates the following fields:
+    - 'profile_image' 
+    - 'about' 
+    - 'first_name'
+    - 'last_name'
+    - 'password'
+    - 'tags'
+    """
+    queryset = CustomUser.objects.all()
+    serializer_class = UserUpdateSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'id'
+
+    def get_object(self):
+        return self.request.user
+
+    def partial_update(self, request, *args, **kwargs):
+        kwargs['partial'] = True
+        return self.update(request, *args, **kwargs)
+
+class UserSelfDelete(generics.DestroyAPIView):
+    """
+    Allows a user to delete their own account.
+    Uses the model delete method to delete the user.
+    """
+    queryset = CustomUser.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'id'
+
+    def destroy(self, request, *args, **kwargs):
+            user = CustomUser.objects.get(id=request.user.id)
+            user.delete()
+            return Response(status=204)
+    
 
 class UserProjectList(generics.ListCreateAPIView):
     """
