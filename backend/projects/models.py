@@ -1,30 +1,59 @@
 import uuid
 from django.db import models
-from django.utils import timezone
-from users.models import CustomAdmin, CustomUser, Organization, Owner, Tag #, image_to_path
+from users.models import CustomAdmin, CustomUser, Organization, Owner, Tag
 from users.storage import OverwriteStorage
 from datetime import date
-
-# TODO: finish filling in comments for each
 
 
 # Create your models here.
 class BugReport(models.Model):
     """
+    Model representing a bug report in the system.
+
+    Each bug report has a unique identifier, a timestamp of creation,
+    a description of the bug, and is associated with a user.
+
+    Attributes:
+        bug_id (UUID): Unique identifier for the bug report.
+        time_stamp (DateTimeField): Date and time when the bug report was created (auto-generated).
+        description (TextField): Description of the bug.
+        Watching for file changes with StatReloader
+        user_id (ForeignKey to CustomUser): Foreign key to the user associated with the bug report.
+
+    Methods:
+        None
     """
-    bug_id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
-    time_stamp = models.DateTimeField(default=timezone.now)
+    bug_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    time_stamp = models.DateTimeField(auto_now_add=True)
     description = models.TextField()
     user_id = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
 
 
-class Respond(models.Model):
+class BugResponse(models.Model):
     """
+    Model representing a response to a bug report in the system.
+
+    Each response has an administrator associated with it, the bug report it responds to,
+    a timestamp of creation, and a comment providing additional information.
+
+    Attributes:
+        admin_id (ForeignKey to CustomAdmin): Foreign key to the administrator associated with the response.
+        bug_id (ForeignKey to BugReport): Foreign key to the bug report being responded to.
+        time_stamp (DateTimeField): Date and time when the response was created (auto-updated).
+        comment (TextField): Comment providing additional information about the response.
+
+    Meta:
+        constraints (list): List of constraints applied to the model.
+            - UniqueConstraint: Ensures the combination of admin, bug report, and timestamp is unique.
+
+    Methods:
+        None
     """
     admin_id = models.ForeignKey(CustomAdmin, on_delete=models.SET_NULL, null=True)
     bug_id = models.ForeignKey(BugReport, on_delete=models.CASCADE)
-    time_stamp = models.DateTimeField(default=timezone.now)
+    time_stamp = models.DateTimeField(auto_now=True)
     comment = models.TextField()
+
     class Meta:
         constraints = [
             models.UniqueConstraint(
@@ -34,12 +63,25 @@ class Respond(models.Model):
         ]
 
 
-
 class Team(models.Model):
     """
-    TODO: comment, verify unique constraint actually works
+    Model representing a team in the system.
+
+    Each team has an owner, a team name, and can be associated with tags.
+
+    Attributes:
+        owner_id (ForeignKey to Owner): Foreign key to the owner associated with the team.
+        team_name (CharField): Name of the team.
+        tags (ManyToManyField to Tag): Many-to-many relationship with tags associated with the team.
+
+    Meta:
+        constraints (list): List of constraints applied to the model.
+            - UniqueConstraint: Ensures the combination of owner and team name is unique.
+
+    Methods:
+        None
     """
-    owner_id = models.ForeignKey(Owner, on_delete=models.SET_NULL, null=True)
+    owner_id = models.ForeignKey(Owner, on_delete=models.CASCADE)
     team_name = models.CharField(max_length=60)
     tags = models.ManyToManyField(Tag)
 
@@ -76,11 +118,24 @@ class TeamPermission(models.Model):
 
 class Member(models.Model):
     """
-    TODO: comment, if unique constraint causes issues try team.etc
+    Model representing a member's association with a team in the system.
+
+    Each member is associated with a user, a team, and has a specific role within the team.
+
+    Attributes:
+        user_id (ForeignKey to CustomUser): Foreign key to the user associated with the member.
+        team (ForeignKey to Team): Foreign key to the team associated with the member.
+        role (CharField): Role of the member within the team.
+
+    Meta:
+        constraints (list): List of constraints applied to the model.
+            - UniqueConstraint: Ensures the combination of user and team is unique.
+
+    Methods:
+        None
     """
     user_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    #team = models.ForeignKey(Team, on_delete=models.CASCADE, to_fields=['owner_id', 'team_name'])
-    team = models.ForeignKey(Team, on_delete=models.CASCADE) # let's assume it only retrieves unique pairs from collaborator.
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)  # let's assume it only retrieves unique pairs from collaborator.
     role = models.CharField(max_length=60)
 
     class Meta:
@@ -105,12 +160,16 @@ class Project(models.Model):
         visibility (str): The text field containing the projects visibility.
         description (str): The text field containing the projects description.
         owner_id (int): The id of the owner of the project. Is a foreign key.
+        tags (ManyToManyField to Tag): Many-to-many relationship with tags associated with the project.
+
+    Methods:
+        __str__: Returns a string representation of the project based on its name.
     """
     VISIBILITY = [
         ("PUBLIC", "public"),
         ("PRIVATE", "private"),
     ]
-    project_id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
+    project_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=60)
     visibility = models.CharField(max_length=60, choices=VISIBILITY, default="PRIVATE")
     description = models.TextField()
@@ -123,11 +182,27 @@ class Project(models.Model):
 
 class Event(models.Model):
     """
+    Model representing an event in the system.
+
+    Each event has a unique identifier, is hosted by an organization,
+    has an event type, start and end dates, a name, and can be associated with tags.
+
+    Attributes:
+        id (UUID): Unique identifier for the event.
+        organization (ForeignKey to Organization): Foreign key to the organization hosting the event.
+        event_type (CharField): Type or category of the event.
+        start_date (DateTimeField): Date and time when the event starts.
+        end_date (DateTimeField): Date and time when the event ends.
+        name (CharField): Name of the event.
+        tags (ManyToManyField to Tag): Many-to-many relationship with tags associated with the event.
+
+    Methods:
+        None
     """
-    event_id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
+    event_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)  # events need to be hosted by an organization
     event_type = models.CharField(max_length=60)
-    start_date = models.DateTimeField(default=timezone.now)
+    start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     name = models.CharField(max_length=60)
     tags = models.ManyToManyField(Tag)
@@ -135,6 +210,20 @@ class Event(models.Model):
 
 class Hosts(models.Model):
     """
+    Model representing the hosting relationship between events and organizations in the system.
+
+    Each entry in this model signifies that an organization hosts a specific event.
+
+    Attributes:
+        event_id (ForeignKey to Event): Foreign key to the event being hosted.
+        org_id (ForeignKey to Organization): Foreign key to the organization hosting the event.
+
+    Meta:
+        constraints (list): List of constraints applied to the model.
+            - UniqueConstraint: Ensures that a specific organization hosts a specific event only once.
+
+    Methods:
+        None
     """
     event_id = models.ForeignKey(Event, on_delete=models.CASCADE)
     org_id = models.ForeignKey(Organization, on_delete=models.CASCADE)
@@ -149,10 +238,26 @@ class Hosts(models.Model):
 
 
 class DropboxSubmission(models.Model):
-    # TODO verify unique constraint is unique
+    """
+    Model representing a submission to a Dropbox for a specific event and team in the system.
+
+    Each entry in this model signifies a submission made by a team for a specific event.
+
+    Attributes:
+        event_id (ForeignKey to Event): Foreign key to the event associated with the submission.
+        team (ForeignKey to Team): Foreign key to the team making the submission.
+        comment (TextField): Additional comments or information related to the submission (optional).
+        submission_date (DateTimeField): Date and time when the submission was made (auto-generated).
+
+    Meta:
+        constraints (list): List of constraints applied to the model.
+            - UniqueConstraint: Ensures that a specific team can make a submission for a specific event only once.
+
+    Methods:
+        None
+    """
     event_id = models.ForeignKey(Event, on_delete=models.CASCADE)
-    #collaborator = models.ForeignKey(Team, on_delete=models.CASCADE, to_fields=['owner_id', 'team_name'])
-    team = models.ForeignKey(Team, on_delete=models.CASCADE) # let's assume it only retrieves unique pairs from collaborator.
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
     comment = models.TextField(blank=True)
     submission_date = models.DateTimeField(auto_now_add=True)
     
@@ -165,21 +270,42 @@ class DropboxSubmission(models.Model):
         ]
 
 
-
 class SubmissionFile(models.Model):
-    #submission = models.ForeignKey(DropboxSubmission, on_delete=models.CASCADE, to_fields=['event_id', 'collaborator'])
-    submission = models.ForeignKey(DropboxSubmission, on_delete=models.CASCADE) # trusting django magic
-    #file = models.FileField(upload_to=lambda instance, filename: image_to_path(instance, filename, "submission_file"), storage=OverwriteStorage(), blank=True)  # TODO figure out file paths
-    file = models.FileField(upload_to="submission/files/",storage=OverwriteStorage(), blank=True)
+    """
+    Model representing a file associated with a submission in the system.
+
+    Each entry in this model signifies a file uploaded as part of a submission.
+
+    Attributes:
+        submission (ForeignKey to DropboxSubmission): Foreign key to the submission associated with the file.
+        file (FileField): Field to store the uploaded file.
+            - The files are stored in the "submission/files/" directory using OverwriteStorage.
+
+    Methods:
+        None
+    """
+    submission = models.ForeignKey(DropboxSubmission, on_delete=models.CASCADE)  # trusting django magic
+    file = models.FileField(upload_to="submission/files/", storage=OverwriteStorage(), blank=True)
 
 
 class PartOf(models.Model):
     """
-        # TODO verify unique constraint is unique
+    Model representing the relationship between a project and a team in the system.
 
+    Each entry in this model signifies that a team is part of a specific project.
+
+    Attributes:
+        project_id (ForeignKey to Project): Foreign key to the project the team is part of.
+        team (ForeignKey to Team): Foreign key to the team that is part of the project.
+
+    Meta:
+        constraints (list): List of constraints applied to the model.
+            - UniqueConstraint: Ensures that a specific team is part of a specific project only once.
+
+    Methods:
+        None
     """
     project_id = models.ForeignKey(Project, on_delete=models.CASCADE)
-    #team = models.ForeignKey(Team, on_delete=models.CASCADE, to_fields=['owner_id', 'team_name'])
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
 
     class Meta:
@@ -193,13 +319,21 @@ class PartOf(models.Model):
 
 class Repository(models.Model):
     """
-
     This model defines the fields and parameters that will be defined for
-    the repository table
+    the repository table. Each repository is associated with a specific project and has a unique identifier,
+    a name, and a Git base path.
 
     Attributes:
         project_id (int): The id of the project this repository belongs to. Is a foreign key.
         repo_name (str): The text field containing the name of this repository.
+        git_base_path (CharField): Path to the repository in Git (unique).
+
+    Meta:
+        constraints (list): List of constraints applied to the model.
+            - UniqueConstraint: Ensures that a specific project has a repository with a unique name.
+
+    Methods:
+        None
     """
     project_id = models.ForeignKey(Project, on_delete=models.CASCADE)
     repo_name = models.CharField(max_length=60)
@@ -221,16 +355,15 @@ class Item(models.Model):
     the item table
 
     Attributes:
-        project_id (int): The id of the project this item belongs to. Is a foreign key.
-        repo_name (str): The name of the repository this item belongs to. It is a foreign key.
-        item_id (int): The id of this item.
-        item_name (str): The text field containing the name of this item.
-        status (str): The text field containing the status of this item.
-        description (str): The text field containing this item's description.
-        is_approved (bool): The boolean value representing is this item is approved.
-        due_date (): default django date format see docs
-        owner_id (int): foreign key of the owner of the project this belongs to
-        team_name (str): name of the team assigned to this.
+        repo (ForeignKey to Repository): Foreign key to the repository this item belongs to.
+        item_id (IntegerField): Unique identifier for the item (auto-incremented by default).
+        item_name (CharField): Name of the item.
+        status (CharField): Status of the item (chosen from predefined choices).
+        description (TextField): Description of the item.
+        is_approved (BooleanField): Approval status of the item.
+        due_date (DateField): Due date for the item.
+        team (ForeignKey to Team): Foreign key to the team assigned to this item.
+
     """
 
     # TODO: test if item id will auto increment
@@ -240,17 +373,14 @@ class Item(models.Model):
         ("PENDINGAPPROVAL", "pending approval"),
         ("COMPLETED", "completed"),
     ]
-    #repository = models.ForeignKey(Repository, on_delete=models.CASCADE, to_fields=['project_id', 'repo_name'])
-    repo = models.ForeignKey(Repository, on_delete=models.CASCADE) # django magic
+    repo = models.ForeignKey(Repository, on_delete=models.CASCADE)  # django magic
     item_id = models.IntegerField(default=1)
     item_name = models.CharField(max_length=60)
     status = models.CharField(max_length=60, choices=STATUS, default="NOTAPPROVED")
     description = models.TextField(default="")
     is_approved = models.BooleanField()
-    due_date = models.DateField(default=date.today)
-
-    #team = models.ForeignKey(Team, on_delete=models.SET_NULL, null=True, to_fields=['owner_id', 'team_name'])
-    team = models.ForeignKey(Team, on_delete=models.SET_NULL, null=True) #django magic
+    due_date = models.DateField()
+    team = models.ForeignKey(Team, on_delete=models.SET_NULL, null=True)  # django magic
 
     def save(self, *args, **kwargs):
         if self._state.adding:
@@ -260,6 +390,7 @@ class Item(models.Model):
         super(Item, self).save(*args, **kwargs)
 
     class Meta:
+        abstract = True
         constraints = [
             models.UniqueConstraint(
                 fields=["repo", "item_id"],
@@ -276,7 +407,7 @@ class PullRequest(Item):
     the pull request table
 
     Attributes:
-        branch_name (str): The text field containing the name of this pull request.
+        branch_name (CharField): The text field containing the name of this pull request.
     """
     branch_name = models.CharField(max_length=60)
 
@@ -288,44 +419,49 @@ class Issue(Item):
     the issue table
 
     Attributes:
-        issue_type (str): The text field containing the type of this issue.
+        issue_type (CharField): The text field containing the type of this issue.
+
     """
     issue_type = models.CharField(max_length=60)  # could this also be a choice?
 
 
-class Commit(Item):
+class Commit(models.Model):
     """
+    Model representing a commit in the system.
 
-    This model defines the fields and parameters that will be defined for
-    the commit table
+    Each commit is an extension of the Item model and inherits its attributes.
+    Additionally, it has a commit_id associated with it.
 
     Attributes:
-        commit_id (str): #TODO: finish
+        commit_id (CharField): Identifier for the commit.
+
     """
     commit_id = models.CharField(max_length=60)
 
 
 class CodeReview(Item):
     """
+    Model representing a code review in the system.
 
-    This model defines the fields and parameters that will be defined for
-    the code review table
+    Each code review is an extension of the Item model and inherits its attributes.
+    Additionally, it has a relationship with multiple commits.
 
     Attributes:
-        #TODO: fill in
+        commits (ManyToManyField to Commit): Relationship with multiple commits associated with the code review.
+
     """
     commits = models.ManyToManyField(Commit)
 
 
 class Follow(models.Model):
     """
-
     This model defines the fields and parameters that will be defined for
     the follows table
 
     Attributes:
         user_id (int): The id of the user that follows this project. Is a foreign key.
         project_id (int): The id of the project this user follows. Is a foreign key.
+
     """
     user_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     project_id = models.ForeignKey(Project, on_delete=models.CASCADE)
@@ -341,13 +477,13 @@ class Follow(models.Model):
 
 class Own(models.Model):
     """
-
     This model defines the fields and parameters that will be defined for
     the owns table
 
     Attributes:
         owner_id (int): The id of the owner of the project. Is a foreign key.
         project_id (int): The id of the project that is owned by the owner. Is a foreign key.
+
     """
     owner_id = models.ForeignKey(Owner, on_delete=models.CASCADE)
     project_id = models.ForeignKey(Project, on_delete=models.CASCADE)
@@ -359,4 +495,3 @@ class Own(models.Model):
                 name="unique_owner_project_owns_constraint"
             )
         ]
-
