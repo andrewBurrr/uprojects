@@ -1,7 +1,4 @@
-import {Avatar, Button, Card, Chip, Grid, Typography} from "@mui/material";
-// @ts-ignore
-import Andrew from "assets/andrew.jpg";
-import {GitHub} from "@mui/icons-material";
+import {Avatar, Chip, Grid, Typography} from "@mui/material";
 import React from "react";
 
 interface TeamMember {
