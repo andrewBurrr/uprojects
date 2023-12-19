@@ -33,6 +33,10 @@ env = environ.Env(
 )
 env.read_env(BASE_DIR / '.env.prod')
 
+print("KEY: ", env("SECRET_KEY", ""))
+print("DEBUG: ", env("DEBUG", False))
+print("ALLOWED_HOSTS: ", env("DJANGO_ALLOWED_HOSTS", ""))
+print("SQL_ENGINE", "django.db.backends.sqlite3")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
