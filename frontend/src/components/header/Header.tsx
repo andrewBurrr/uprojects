@@ -63,7 +63,7 @@ const Header: React.FC = () => {
 
     useEffect(() => {
         console.log(links);
-    }, []);
+    }, [links]);
 
     const handleUserMenuClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElUser(event.currentTarget);
