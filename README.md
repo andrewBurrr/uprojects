@@ -116,6 +116,7 @@ When any of the models.py files are updated:
     ```bash
     python manage.py shell
     ```
+
 3. Using the custom serializer inspection function:
     ```python
     # Check all serializers
