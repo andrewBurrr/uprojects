@@ -2,7 +2,7 @@ import React, {createContext, ReactNode, useContext} from 'react';
 import { API } from "apis/axios";
 
 const ApiContext = createContext({
-    api: new API("http://localhost:8000"),
+    api: new API("http://api.uprojects.ca"),
 });
 
 interface ApiProviderProps {
@@ -14,7 +14,7 @@ export const useApi = () => {
 }
 
 const ApiProvider: React.FC<ApiProviderProps> = ({ children }: ApiProviderProps) => {
-    const api = new API('http://localhost:8000');
+    const api = new API('http://api.uprojects.ca');
 
     return (
         <ApiContext.Provider value={{ api }}>
