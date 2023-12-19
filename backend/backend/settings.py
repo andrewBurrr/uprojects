@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
+
+import environ
 from pathlib import Path
 from datetime import timedelta
 
@@ -18,17 +20,30 @@ import rest_framework.schemas.coreapi
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+env = environ.Env(
+    SECRET_KEY=(str, ""),
+    DEBUG=(bool, False),
+    DJANGO_ALLOWED_HOSTS=(str, ""),
+    SQL_ENGINE=(str, "django.db.backends.sqlite3"),
+    SQL_DATABASE=(str, BASE_DIR / "db.sqlite3"),
+    SQL_USER=(str, "user"),
+    SQL_PASSWORD=(str, "password"),
+    SQL_HOST=(str, "localhost"),
+    SQL_PORT=(str, "5432"),
+)
+env.read_env(BASE_DIR / '.env.dev')
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY")
-
+SECRET_KEY = env("SECRET_KEY")
+print(f"key: {SECRET_KEY}", type(SECRET_KEY))
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(os.environ.get("DEBUG", default=0))
+DEBUG = env("DEBUG")
 
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
+ALLOWED_HOSTS = env("DJANGO_ALLOWED_HOSTS").split(" ")
 
 
 # Application definition
@@ -50,6 +65,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -57,7 +73,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -86,12 +101,12 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': os.environ.get("SQL_ENGINE", "django.db.backends.sqlite3"),
-        'NAME': os.environ.get("SQL_DATABASE", BASE_DIR / 'db.sqlite3'),
-        'USER': os.environ.get("SQL_USER", "user"),
-        'PASSWORD': os.environ.get("SQL_PASSWORD", "password"),
-        'HOST': os.environ.get("SQL_HOST", "localhost"),
-        'PORT': os.environ.get("SQL_PORT", "5432"),
+        'ENGINE': env("SQL_ENGINE", "django.db.backends.sqlite3"),
+        'NAME': env("SQL_DATABASE", BASE_DIR / 'db.sqlite3'),
+        'USER': env("SQL_USER", "user"),
+        'PASSWORD': env("SQL_PASSWORD", "password"),
+        'HOST': env("SQL_HOST", "localhost"),
+        'PORT': env("SQL_PORT", "5432"),
     }
 }
 
@@ -100,19 +115,38 @@ DATABASES = {
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    # {
+    #     'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    # },
+    # {
+    #     'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    # },
+    # {
+    #     'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    # },
+    # {
+    #     'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    # },
 ]
+#
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'file': {
+#             'level': 'DEBUG',
+#             'class': 'logging.FileHandler',
+#             'filename': 'sql.log',
+#         },
+#     },
+#     'loggers': {
+#         'django.db.backends': {
+#             'handlers': ['file'],
+#             'level': 'DEBUG',
+#             'propagate': True,
+#         },
+#     },
+# }
 
 
 # Internationalization
@@ -144,7 +178,7 @@ REST_FRAMEWORK = {
 # allow resource sharing with the following origins
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "http://localhost:8000"
+    "http://localhost:8000",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -157,7 +191,7 @@ CSRF_TRUSTED_ORIGINS = [
 
 
 # Custom User model
-AUTH_USER_MODEL = "users.CustomUser"
+AUTH_USER_MODEL = "users.CustomAccount"
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),

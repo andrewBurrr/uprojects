@@ -1,12 +1,17 @@
-import { Link } from "react-router-dom";
+import { Stack } from "@mui/material";
+import { Welcome } from "views/home-page/Welcome";
+import { Connect } from "views/home-page/Connect";
+import { Features } from "views/home-page/Features";
+import { Testimonials } from "views/home-page/Testimonials";
 
 const Home = () => {
-    return (<>
-    <h1>This is the Home page</h1>
-    <Link to="about">About</Link>
-    <br></br>
-    <Link to="register">Register</Link>
-    </>);
+    return (
+        <>
+            <Welcome />
+            <Features />
+            <Testimonials />
+        </>
+    );
 }
 
 export { Home };

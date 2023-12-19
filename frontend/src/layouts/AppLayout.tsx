@@ -1,6 +1,6 @@
 import React, {ReactNode} from 'react';
-import { Header } from 'components/Header';
-import { Footer } from 'components/Footer';
+import { Header } from 'components/header/Header';
+import { Footer } from 'components/footer/Footer';
 import { theme } from 'styles/AppTheme';
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import Box from "@mui/material/Box";

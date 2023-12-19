@@ -23,6 +23,15 @@ Follow these steps to clone and run U-Projects using Docker:
     # Activate the virtual environment (macOS/Linux)
     source venv/bin/activate  
     ```
+    Now if this is a fresh install you will need to download your backend python dependences.
+    ```bash
+    # Install Python environment dependences after activating your venv
+    # change directory to ~/backend/ 
+    pip install -r requirements.txt
+    ``` 
+    This will install all dependencies listed in the requirements file.
+
+    
 3. **Build and Run the Docker Containers**
     To build and run the containers, we use the following command:
     ```bash
@@ -76,3 +85,63 @@ The directory structure of this project is listed below:
     This directory defines types that are shared across components (i.e. defined types for the expected api objects)
 10. `views`:
     This directory will have subdirectories that define each page of the application. These subdirectories should contain any single use components and a primary page component that can be routed to by react router
+## Updates to Models (Backend)
+When any of the models.py files are updated:
+1. Clean-up:
+    Delete the `*/uprojects/backend/db.sqlite3` file
+2. Re-make all migrations:
+    Navigate to `*/uprojects/backend/`
+    If you have not made migrations before execute:
+    ```bash
+    python manage.py makemigrations users
+    python manage.py makemigrations projects
+    python manage.py migrate users
+    python manage.py migrate projects
+    ```
+    If you have made migrations for both users and projects before execute:
+    ```bash
+    python manage.py makemigrations
+    python manage.py migrate
+    ```
+3. Run
+    If you need the forntend running, follow the instructions for building and running the docker containers.
+    If you only need the backend running, execute:
+    ```bash
+    python manage.py runserver
+    ```
+
+## How to inspect Serializer relationships (Backend)
+1.  Make migrations as above. 
+2.  Open the Django shell
+    ```bash
+    python manage.py shell
+    ```
+3. Using the custom serializer inspection function:
+    ```python
+    # Check all serializers
+    >>> from api.checkSerial import * # Prints out info for all serializers. 
+                                      # Produces list of problem Serializers
+    ```
+    To check individual Serializers:
+    ```python
+    # Check all serializers
+    >>> from api.checkSerial import func_test 
+    >>> func_test(ExampleSerializer)
+    ```
+
+## How to autopopulate the usertable (Backend)
+Make sure you have migrated and started the server already then:
+1. open a bash terminal
+2. Enter:
+    ```bash
+    bash createusers.sh
+    ```
+3.  Creates 100 users and a test user.
+    ```txt
+    {
+        email:'test@gmail.com', 
+        first_name:'test', 
+        last_name:'test', 
+        password:'1'
+    }
+    ```
