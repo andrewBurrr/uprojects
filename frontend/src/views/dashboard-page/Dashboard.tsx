@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useCallback} from "react";
 import {useApi} from "contexts/ApiContext";
 import {
     Avatar,
@@ -58,7 +58,7 @@ const Dashboard = () => { // This is the start of the function
     const [teams, setTeams] = useState<Team[]>();
     const [orgs, setOrgs] = useState<Org[]>();
 
-    const fetchUser = async () => {
+    const fetchUser = useCallback(async () => {
         try {
             // Fetch the user
             const response = await api.getData<User>(`/user/${user_id}`);
@@ -67,9 +67,9 @@ const Dashboard = () => { // This is the start of the function
         } catch (error) {
             console.error('Error fetching user data: ', error);
         }
-    };
+    }, [api, user_id]);
 
-    const fetchUserProjects = async () => {
+    const fetchUserProjects = useCallback(async () => {
         try {
             const response = await api.getData<Project[]>(`/user-projects/${user?.owner_id}`);
             console.log("user:", response);
@@ -77,9 +77,9 @@ const Dashboard = () => { // This is the start of the function
         } catch (error) {
             console.error('Error fetching user projects: ', error);
         }
-    }
+    }, [api, user?.owner_id]);
 
-    const fetchUserTeams = async () => {
+    const fetchUserTeams = useCallback(async () => {
         try {
             console.log("user = ", user);
             const response = await api.getData<Team[]>(`/user-teams/${user?.id}`);
@@ -88,9 +88,9 @@ const Dashboard = () => { // This is the start of the function
         } catch (error) {
             console.error('Error fetching user teams: ', error);
         }
-    }
+    }, [api, user?.id]);
 
-    const fetchUserOrgs = async () => {
+    const fetchUserOrgs = useCallback(async () => {
             try {
                 const response = await api.getData<Org[]>(`/user-orgs/${user?.owner_id}`);
                 console.log("user:", response);
@@ -98,7 +98,7 @@ const Dashboard = () => { // This is the start of the function
             } catch (error) {
                 console.error('Error fetching user orgs: ', error);
             }
-        }
+        }, [api, user?.owner_id]);
 
     useEffect(() => {
         // Fetch the user
