@@ -31,7 +31,7 @@ env = environ.Env(
     SQL_HOST=(str, "localhost"),
     SQL_PORT=(str, "5432"),
 )
-env.read_env(BASE_DIR / '.env.dev')
+env.read_env(BASE_DIR / '.env.prod')
 
 
 # Quick-start development settings - unsuitable for production
