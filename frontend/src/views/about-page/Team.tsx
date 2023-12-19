@@ -1,4 +1,4 @@
-import {Avatar, Box, Button, Card, CardContent, Grid, styled, Typography} from "@mui/material";
+import { Button, Card, Grid, styled} from "@mui/material";
 
 import { Contact } from "views/about-page/Contact";
 // @ts-ignore
