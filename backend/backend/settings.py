@@ -168,6 +168,8 @@ REST_FRAMEWORK = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:8000",
+    "http://uprojects.ca",
+    "http://api.uprojects.ca"
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -175,7 +177,9 @@ CORS_ALLOW_CREDENTIALS = True
 # Specify which hosts can submit csrf protected forms and other data
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
-    'http://localhost:8000'
+    'http://localhost:8000',
+    "http://uprojects.ca",
+    "http://api.uprojects.ca"
 ]
 
 
