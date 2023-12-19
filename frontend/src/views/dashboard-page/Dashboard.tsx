@@ -88,7 +88,7 @@ const Dashboard = () => { // This is the start of the function
         } catch (error) {
             console.error('Error fetching user teams: ', error);
         }
-    }, [api, user, user?.id]);
+    }, [api, user]);
 
     const fetchUserOrgs = useCallback(async () => {
             try {
