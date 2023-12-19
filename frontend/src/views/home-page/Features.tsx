@@ -1,5 +1,5 @@
 import React from 'react';
-import {Box, styled, lighten, darken, Container, Typography, Grid, SxProps} from "@mui/material";
+import {Box, styled, lighten, Container, Typography, Grid, SxProps} from "@mui/material";
 // @ts-ignore
 import Lines from "assets/curvedlines.png";
 import {Theme} from "@mui/material/styles";
