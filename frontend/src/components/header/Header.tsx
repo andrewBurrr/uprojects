@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useMemo} from 'react';
 import {Link as RouterLink, useNavigate} from 'react-router-dom';
 import { useAuth } from "contexts/AuthContext";
 import {
@@ -56,10 +56,10 @@ const Header: React.FC = () => {
     const [drawerState, setDrawerState] = useState(false);
     const open = Boolean(anchorElUser);
 
-    const links = [
+    const links = useMemo(() => [
         ...(isAuthenticated ? authOnlyRoutes : unauthOnlyRoutes),
         ...publicRoutes
-    ]
+    ], [isAuthenticated]);
 
     useEffect(() => {
         console.log(links);
