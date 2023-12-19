@@ -20,17 +20,7 @@ import rest_framework.schemas.coreapi
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-env = environ.Env(
-    SECRET_KEY=(str, ""),
-    DEBUG=(bool, False),
-    DJANGO_ALLOWED_HOSTS=(str, ""),
-    SQL_ENGINE=(str, "django.db.backends.sqlite3"),
-    SQL_DATABASE=(str, BASE_DIR / "db.sqlite3"),
-    SQL_USER=(str, "user"),
-    SQL_PASSWORD=(str, "password"),
-    SQL_HOST=(str, "localhost"),
-    SQL_PORT=(str, "5432"),
-)
+env = environ.Env()
 env.read_env(BASE_DIR / '.env.prod')
 
 print("KEY: ", env("SECRET_KEY", ""))
