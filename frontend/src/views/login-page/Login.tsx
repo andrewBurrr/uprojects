@@ -46,7 +46,7 @@ const Login = () => {
         if (user?.user_id) {
             navigate(`user/${user.user_id}`);
         }
-    }, [user]);
+    }, [user, navigate]);
 
     return (
         <FormGridContainer container>
