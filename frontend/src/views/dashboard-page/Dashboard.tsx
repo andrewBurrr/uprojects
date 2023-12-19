@@ -2,7 +2,6 @@ import React, {useEffect, useState} from "react";
 import {useApi} from "contexts/ApiContext";
 import {
     Avatar,
-    Button,
     Paper,
     Typography,
     Box,
@@ -111,7 +110,7 @@ const Dashboard = () => { // This is the start of the function
         // Fetch the user's orgs
         fetchUserOrgs();
 
-    }, []);
+    }, [fetchUser, fetchUserProjects, fetchUserTeams, fetchUserOrgs]);
 
     return (
         <Box>
